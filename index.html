@@ -1022,6 +1022,14 @@ button{
     <div class="logo">ngl<span>.yo</span></div>
 
 <div class="header-right">
+    <button
+    class="small-btn"
+    onclick="refreshDashboard()"
+    id="refreshButton"
+>
+    <i class="bx bx-refresh"></i>
+    Rifres
+</button>
     <!-- Admin access disembunyikan -->
 </div>
 </header>
@@ -3719,6 +3727,90 @@ function closePublicConfirm(){
         .getElementById("publicConfirmModal")
         .classList
         .add("hidden");
+
+}
+
+    async function refreshDashboard(){
+
+    const button =
+        document.getElementById(
+            "refreshButton"
+        );
+
+    if(!button){
+
+        return;
+
+    }
+
+    const icon =
+        button.querySelector(
+            "i"
+        );
+
+    const text =
+        button.querySelector(
+            "span"
+        );
+
+
+    // Efek loading
+
+    button.disabled = true;
+
+    if(icon){
+
+        icon.classList.add(
+            "bx-spin"
+        );
+
+    }
+
+    if(text){
+
+        text.textContent =
+            "Memuat...";
+
+    }
+
+
+    try{
+
+        await loadMessages();
+
+        showToast(
+            "Rifres sakses ✦"
+        );
+
+    }catch(error){
+
+        console.error(error);
+
+        showToast(
+            "Gagal Rifres."
+        );
+
+    }
+
+
+    // Kembalikan tombol
+
+    button.disabled = false;
+
+    if(icon){
+
+        icon.classList.remove(
+            "bx-spin"
+        );
+
+    }
+
+    if(text){
+
+        text.textContent =
+            "Refresh";
+
+    }
 
 }
 </script>
