@@ -1,0 +1,3727 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- BASIC SEO -->
+<meta name="title" content="ngl.yo — anonymous messages">
+<meta name="description" content="Send and receive anonymous messages. Say what you really think, anonymously.">
+
+<!-- OPEN GRAPH / WHATSAPP / FACEBOOK / DISCORD -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://ngl-yo.my.id/">
+<meta property="og:title" content="ngl.yo — anonymous messages">
+<meta property="og:description" content="Send and receive anonymous messages. Say what you really think, anonymously.">
+<meta property="og:image" content="https://ngl-yo.my.id/preview.png">
+
+<!-- TWITTER / X -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:url" content="https://ngl-yo.my.id/">
+<meta name="twitter:title" content="ngl.yo — anonymous messages">
+<meta name="twitter:description" content="Send and receive anonymous messages. Say what you really think, anonymously.">
+<meta name="twitter:image" content="https://ngl-yo.my.id/preview.png">
+<link
+    href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+    rel="stylesheet"
+>
+<title>ngl.yo — anonymous messages</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+:root{
+    --bg:#09090b;
+    --card:#141416;
+    --card2:#1b1b1f;
+    --border:#29292f;
+    --text:#f5f5f5;
+    --muted:#85858e;
+    --pink:#ff4f91;
+    --purple:#805cff;
+    --green:#48d597;
+    --red:#ff5d6c;
+}
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'DM Sans',sans-serif;
+    min-height:100vh;
+}
+
+button,
+input,
+textarea{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+    border:0;
+}
+
+.hidden{
+    display:none!important;
+}
+
+/* ================= HEADER ================= */
+
+.header{
+    height:72px;
+    padding:0 24px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:1px solid #1b1b1f;
+    background:#09090b;
+    position:sticky;
+    top:0;
+    z-index:20;
+}
+
+.logo{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:25px;
+    font-weight:700;
+    letter-spacing:-1.5px;
+}
+
+.logo span{
+    color:var(--pink);
+}
+
+.header-right{
+    display:flex;
+    gap:8px;
+}
+
+.icon-button{
+    width:40px;
+    height:40px;
+    border-radius:12px;
+    color:#aaa;
+    background:#17171b;
+    border:1px solid var(--border);
+}
+
+/* ================= BUTTON ================= */
+
+.btn{
+    padding:13px 18px;
+    border-radius:12px;
+    font-weight:700;
+    transition:.2s;
+}
+
+.btn:hover{
+    transform:translateY(-2px);
+}
+
+.btn-primary{
+    color:white;
+    background:linear-gradient(135deg,var(--pink),var(--purple));
+}
+
+.btn-secondary{
+    color:#eee;
+    background:var(--card2);
+    border:1px solid var(--border);
+}
+
+.btn-danger{
+    color:#ff8994;
+    background:#32181d;
+}
+
+.btn-green{
+    color:#71e5ad;
+    background:#153326;
+}
+
+/* ================= PUBLIC PAGE ================= */
+
+.public-page{
+    min-height:calc(100vh - 72px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:30px 18px;
+    position:relative;
+    overflow:hidden;
+}
+
+.public-page{
+    min-height:calc(100vh - 72px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:30px 18px;
+    position:relative;
+    overflow:hidden;
+
+    background-color:var(--bg);
+
+    background-image:
+        linear-gradient(
+            rgba(255,255,255,.035) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,.035) 1px,
+            transparent 1px
+        );
+
+    background-size:40px 40px;
+}
+
+.public-page:before{
+    content:"";
+    position:absolute;
+    width:400px;
+    height:400px;
+    background:var(--purple);
+    opacity:.12;
+    filter:blur(120px);
+    top:-160px;
+    left:-120px;
+}
+
+.public-page:after{
+    content:"";
+    position:absolute;
+    width:400px;
+    height:400px;
+    background:var(--pink);
+    opacity:.08;
+    filter:blur(120px);
+    bottom:-180px;
+    right:-100px;
+}
+
+.public-box{
+    width:100%;
+    max-width:480px;
+    position:relative;
+    z-index:2;
+}
+
+.public-heading{
+    text-align:center;
+    margin-bottom:26px;
+}
+
+.public-heading .emoji{
+    font-size:42px;
+    margin-bottom:16px;
+}
+
+.public-heading h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:clamp(35px,8vw,58px);
+    line-height:1;
+    letter-spacing:-3px;
+    margin-bottom:14px;
+}
+
+.gradient{
+    background:linear-gradient(110deg,#ff4f91,#a479ff,#5995ff);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.public-heading p{
+    color:var(--muted);
+    line-height:1.6;
+}
+
+.message-box{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:24px;
+    padding:18px;
+}
+
+.message-box textarea{
+    width:100%;
+    min-height:180px;
+    resize:none;
+    border:0;
+    outline:0;
+    background:transparent;
+    color:white;
+    font-size:17px;
+    line-height:1.6;
+}
+
+.message-box textarea::placeholder{
+    color:#65656e;
+}
+
+.message-bottom{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    padding-top:14px;
+    border-top:1px solid var(--border);
+}
+
+.char-count{
+    font-size:12px;
+    color:var(--muted);
+}
+
+.public-footer{
+    text-align:center;
+    color:#55555d;
+    font-size:12px;
+    margin-top:20px;
+}
+
+/* ================= ADMIN ================= */
+
+.admin-page{
+    max-width:1200px;
+    margin:auto;
+    padding:35px 20px 80px;
+}
+
+.admin-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:20px;
+    margin-bottom:30px;
+}
+
+.admin-top h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:36px;
+    letter-spacing:-1px;
+}
+
+.admin-top p{
+    color:var(--muted);
+    margin-top:6px;
+}
+
+.admin-actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:15px;
+    margin-bottom:28px;
+}
+
+.stat{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:22px;
+}
+
+.stat small{
+    color:var(--muted);
+    font-size:12px;
+    display:block;
+    margin-bottom:12px;
+}
+
+.stat strong{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:36px;
+}
+
+.toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-bottom:18px;
+}
+
+.filters{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.filter{
+    color:#999;
+    background:var(--card);
+    border:1px solid var(--border);
+    padding:10px 14px;
+    border-radius:10px;
+}
+
+.filter.active{
+    color:white;
+    border-color:var(--purple);
+    background:#211d30;
+}
+
+.search{
+    width:220px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:10px;
+    color:white;
+    padding:11px 13px;
+    outline:0;
+}
+
+.messages{
+    display:flex;
+    flex-direction:column;
+    gap:13px;
+}
+
+.message{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:20px;
+}
+
+.message.unread{
+    border-left:4px solid var(--pink);
+}
+
+.message-content{
+    font-size:17px;
+    line-height:1.6;
+    white-space:pre-wrap;
+    word-break:break-word;
+}
+
+.message-info{
+    display:flex;
+    justify-content:space-between;
+    color:var(--muted);
+    font-size:12px;
+    margin-top:15px;
+}
+
+.message-buttons{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:15px;
+}
+
+.small-btn{
+    padding:8px 12px;
+    border-radius:9px;
+    color:#ddd;
+    background:#24242a;
+    font-size:12px;
+}
+
+.empty{
+    text-align:center;
+    padding:70px 20px;
+    border:1px dashed var(--border);
+    border-radius:20px;
+    color:var(--muted);
+}
+
+.empty-icon{
+    font-size:38px;
+    margin-bottom:12px;
+}
+
+/* ================= CREATOR ================= */
+
+.creator{
+    max-width:1200px;
+    margin:auto;
+    padding:35px 20px 80px;
+}
+
+.creator-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:28px;
+}
+
+.creator-head h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:34px;
+}
+
+.creator-layout{
+    display:grid;
+    grid-template-columns:380px 1fr;
+    gap:30px;
+    align-items:start;
+}
+
+.preview-area{
+    display:flex;
+    justify-content:center;
+}
+
+.canvas-wrapper{
+    width:360px;
+    height:640px;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 15px 50px rgba(0,0,0,.5);
+}
+
+#storyCanvas{
+    width:100%;
+    height:100%;
+    display:block;
+}
+
+.controls{
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+}
+
+.control-card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:20px;
+}
+
+.control-card h3{
+    margin-bottom:14px;
+}
+
+.control-card textarea{
+    width:100%;
+    min-height:140px;
+    resize:vertical;
+    background:#0d0d10;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:13px;
+    color:white;
+    outline:0;
+    line-height:1.5;
+}
+
+.backgrounds{
+    display:flex;
+    gap:9px;
+    flex-wrap:wrap;
+}
+
+.bg-option{
+    width:48px;
+    height:48px;
+    border-radius:12px;
+    cursor:pointer;
+    border:2px solid transparent;
+}
+
+.bg-option.active{
+    border-color:white;
+}
+
+.bg-a{
+    background:linear-gradient(145deg,#ff4f91,#7049db);
+}
+
+.bg-b{
+    background:linear-gradient(145deg,#4f8cff,#43c6ac);
+}
+
+.bg-c{
+    background:linear-gradient(145deg,#ff9966,#ff5e62);
+}
+
+.bg-d{
+    background:linear-gradient(145deg,#171717,#444);
+}
+
+.bg-e{
+    background:linear-gradient(145deg,#8360c3,#2ebf91);
+}
+
+.bg-f{
+    background:linear-gradient(145deg,#141e30,#243b55);
+}
+
+.platform-buttons{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+}
+
+/* ================= MODAL ================= */
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.75);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:100;
+}
+
+.modal-box{
+    width:100%;
+    max-width:430px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:24px;
+    padding:25px;
+}
+
+.modal-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.close{
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background:#28282e;
+    color:white;
+}
+
+/* ================= TOAST ================= */
+
+.toast{
+    position:fixed;
+    left:50%;
+    bottom:25px;
+    transform:translate(-50%,100px);
+    opacity:0;
+    background:white;
+    color:#111;
+    padding:13px 20px;
+    border-radius:12px;
+    font-weight:700;
+    z-index:200;
+    transition:.3s;
+}
+
+.toast.show{
+    transform:translate(-50%,0);
+    opacity:1;
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:800px){
+
+    .stats{
+        grid-template-columns:1fr;
+    }
+
+    .creator-layout{
+        grid-template-columns:1fr;
+    }
+
+    .creator-head,
+    .admin-top{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .toolbar{
+        flex-direction:column;
+        align-items:stretch;
+    }
+
+    .search{
+        width:100%;
+    }
+}
+
+@media(max-width:500px){
+
+    .header{
+        padding:0 16px;
+    }
+
+    .admin-page,
+    .creator{
+        padding-left:15px;
+        padding-right:15px;
+    }
+
+    .canvas-wrapper{
+        width:320px;
+        height:568px;
+    }
+
+    .platform-buttons{
+        grid-template-columns:1fr;
+    }
+
+}
+
+.message-type{
+
+    display:flex;
+
+    gap:8px;
+
+    margin-bottom:14px;
+
+}
+
+
+.type-option{
+
+    flex:1;
+
+    padding:12px;
+
+    border:1px solid #29292f;
+
+    background:#111114;
+
+    color:#888;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-family:inherit;
+
+    transition:.2s;
+
+}
+
+
+.type-option:hover{
+
+    border-color:#555;
+
+}
+
+
+.type-option.active{
+
+    background:#fff;
+
+    color:#000;
+
+    border-color:#fff;
+
+}
+
+.reply-box{
+
+    margin-top:14px;
+
+    padding:14px;
+
+    background:#111114;
+
+    border:1px solid #29292f;
+
+    border-radius:12px;
+
+}
+
+
+.reply-box textarea{
+
+    width:100%;
+
+    min-height:80px;
+
+    resize:vertical;
+
+    box-sizing:border-box;
+
+    padding:12px;
+
+    background:#0d0d10;
+
+    color:#fff;
+
+    border:1px solid #29292f;
+
+    border-radius:9px;
+
+    font-family:inherit;
+
+    font-size:13px;
+
+    outline:none;
+
+}
+
+
+.reply-box textarea:focus{
+
+    border-color:#777;
+
+}
+
+
+.reply-box button{
+
+    margin-top:9px;
+
+}
+
+/* ================= PUBLIC MESSAGES ================= */
+
+.public-messages-section{
+    margin-top:32px;
+}
+
+.section-title{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:14px;
+}
+
+.section-title-left{
+    display:flex;
+    align-items:center;
+    gap:9px;
+}
+
+.section-title-left i{
+    color:var(--pink);
+    font-size:20px;
+}
+
+.section-title span{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:13px;
+    font-weight:700;
+    letter-spacing:.8px;
+    color:#d5d5da;
+}
+
+.refresh-button{
+    width:34px;
+    height:34px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:10px;
+    color:#999;
+    background:#141416;
+    border:1px solid var(--border);
+    transition:.2s;
+}
+
+.refresh-button:hover{
+    color:white;
+    border-color:#555;
+    transform:rotate(30deg);
+}
+
+.public-messages{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.public-message{
+    display:flex;
+    gap:14px;
+    padding:17px;
+    background:linear-gradient(
+        145deg,
+        #151518,
+        #111113
+    );
+    border:1px solid var(--border);
+    border-radius:18px;
+    transition:.2s;
+}
+
+.public-message:hover{
+    border-color:#3b3b45;
+    transform:translateY(-2px);
+}
+
+.public-message-icon{
+    flex-shrink:0;
+    width:38px;
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:12px;
+    color:white;
+    background:linear-gradient(
+        135deg,
+        var(--pink),
+        var(--purple)
+    );
+    font-size:20px;
+}
+
+.public-message-body{
+    min-width:0;
+    flex:1;
+}
+
+.public-message-text{
+    color:#f0f0f2;
+    font-size:15px;
+    line-height:1.6;
+    white-space:pre-wrap;
+    word-break:break-word;
+}
+
+.public-message-date{
+    margin-top:8px;
+    color:#686871;
+    font-size:11px;
+}
+
+.owner-reply{
+    margin-top:14px;
+    padding:13px 14px;
+    background:#1b1824;
+    border:1px solid #332b46;
+    border-left:3px solid var(--purple);
+    border-radius:12px;
+    color:#e9e5f5;
+    font-size:13px;
+    line-height:1.6;
+}
+
+.reply-label{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin-bottom:6px;
+    color:#ae9bff;
+    font-size:11px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.5px;
+}
+
+.reply-label i{
+    font-size:15px;
+}
+
+.empty-public{
+    padding:28px 20px;
+    text-align:center;
+    color:#686871;
+    background:#111113;
+    border:1px dashed var(--border);
+    border-radius:16px;
+    font-size:13px;
+}
+
+.public-icon{
+    width:64px;
+    height:64px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0 auto 18px;
+    border-radius:20px;
+    color:white;
+    font-size:32px;
+    background:linear-gradient(
+        135deg,
+        var(--pink),
+        var(--purple)
+    );
+    box-shadow:
+        0 15px 40px rgba(128,92,255,.22);
+}
+
+.type-option{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+}
+
+.type-option i{
+    font-size:18px;
+}
+
+.btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+}
+
+.confirm-box{
+    text-align:center;
+    max-width:390px;
+}
+
+.confirm-icon{
+    width:58px;
+    height:58px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    margin:0 auto 18px;
+    border-radius:18px;
+    color:white;
+    font-size:28px;
+    background:linear-gradient(
+        135deg,
+        var(--pink),
+        var(--purple)
+    );
+}
+
+.confirm-box h2{
+    font-family:'Space Grotesk',sans-serif;
+    margin-bottom:12px;
+}
+
+.confirm-box p{
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.6;
+}
+
+.confirm-actions{
+    display:flex;
+    gap:10px;
+    margin-top:24px;
+}
+
+.confirm-actions .btn{
+    flex:1;
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="logo">ngl<span>.yo</span></div>
+
+<div class="header-right">
+    <!-- Admin access disembunyikan -->
+</div>
+</header>
+
+
+<!-- ================= PUBLIC MESSAGE PAGE ================= -->
+
+<main id="publicPage" class="public-page">
+
+<div class="public-box">
+
+    <div class="public-heading">
+
+        <div class="public-icon">
+            <i class="bx bx-message-rounded-detail"></i>
+        </div>
+
+        <h1>
+            send me something<br>
+            <span class="gradient">anonymous.</span>
+        </h1>
+
+        <p>
+            Tulis apa saja yang ingin kamu sampaikan.
+            Aku tidak akan tahu siapa kamu.
+        </p>
+
+    </div>
+
+    <div class="message-box">
+            <div class="message-type">
+
+<button
+    type="button"
+    class="type-option active"
+    data-type="public"
+    onclick="selectMessageType('public')"
+>
+    <i class="bx bx-globe"></i>
+    <span>Public</span>
+</button>
+
+<button
+    type="button"
+    class="type-option"
+    data-type="private"
+    onclick="selectMessageType('private')"
+>
+    <i class="bx bx-lock-alt"></i>
+    <span>Private</span>
+</button>
+
+</div>
+
+<input
+    type="hidden"
+    id="messageType"
+    value="public"
+>
+            <textarea
+                id="publicMessage"
+                maxlength="500"
+                placeholder="Tulis pesan anonim di sini..."
+                oninput="updateCounter()"></textarea>
+
+            <div class="message-bottom">
+
+                <span class="char-count">
+                    <span id="counter">0</span>/500
+                </span>
+
+<button
+    class="btn btn-primary"
+    onclick="sendAnonymousMessage()"
+>
+    <span>Send anonymously</span>
+    <i class="bx bx-send"></i>
+</button>
+
+            </div>
+
+        </div>
+
+        <section class="public-messages-section">
+
+    <div class="section-title">
+
+        <div class="section-title-left">
+
+            <i class="bx bx-message-square-dots"></i>
+
+            <span>PUBLIC MESSAGES</span>
+
+        </div>
+
+        <button
+            class="refresh-button"
+            onclick="loadPublicMessages()"
+            aria-label="Refresh public messages"
+        >
+
+            <i class="bx bx-refresh"></i>
+
+        </button>
+
+    </div>
+
+
+    <div
+        id="publicMessages"
+        class="public-messages"
+    >
+
+        <div class="empty-public">
+
+            Belum ada pesan publik.
+
+        </div>
+
+    </div>
+
+</section>
+
+        <div class="public-footer">
+            powered by <b>ngl.yo</b>
+        </div>
+
+    </div>
+
+</main>
+
+
+<!-- ================= ADMIN PAGE ================= -->
+
+<section id="adminPage" class="hidden">
+
+    <div class="admin-page">
+
+        <div class="admin-top">
+
+            <div>
+                <h1>Inbox.</h1>
+                <p>Anonymous messages sent to you.</p>
+            </div>
+
+            <div class="admin-actions">
+
+                <button
+                    class="btn btn-secondary"
+                    onclick="copyPublicLink()">
+                    Copy Link
+                </button>
+
+                <button
+                    class="btn btn-secondary"
+                    onclick="showPublicPage()">
+                    Public Page
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <div class="stats">
+
+            <div class="stat">
+                <small>TOTAL MESSAGES</small>
+                <strong id="totalCount">0</strong>
+            </div>
+
+            <div class="stat">
+                <small>UNREAD</small>
+                <strong id="unreadCount">0</strong>
+            </div>
+
+            <div class="stat">
+                <small>THIS WEEK</small>
+                <strong id="weekCount">0</strong>
+            </div>
+
+        </div>
+
+
+        <div class="toolbar">
+
+            <div class="filters">
+
+                <button
+                    class="filter active"
+                    onclick="changeFilter('all',this)">
+                    All
+                </button>
+
+                <button
+                    class="filter"
+                    onclick="changeFilter('unread',this)">
+                    Unread
+                </button>
+
+                <button
+                    class="filter"
+                    onclick="changeFilter('read',this)">
+                    Read
+                </button>
+
+            </div>
+
+            <input
+                class="search"
+                id="searchInput"
+                placeholder="Search messages..."
+                oninput="renderMessages()">
+
+        </div>
+
+
+        <div id="messages" class="messages"></div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= CONTENT CREATOR ================= -->
+
+<section id="creatorPage" class="hidden">
+
+    <div class="creator">
+
+        <div class="creator-head">
+
+            <h1>Create content.</h1>
+
+            <button
+                class="btn btn-secondary"
+                onclick="backToAdmin()">
+                ← Back to inbox
+            </button>
+
+        </div>
+
+
+        <div class="creator-layout">
+
+
+            <div class="preview-area">
+
+                <div class="canvas-wrapper">
+                    <canvas id="storyCanvas" width="1080" height="1920"></canvas>
+                </div>
+
+            </div>
+
+
+            <div class="controls">
+
+
+                <div class="control-card">
+
+                    <h3>Message</h3>
+
+                    <textarea
+                        id="creatorText"
+                        oninput="drawCanvas()"></textarea>
+
+                </div>
+
+
+                <div class="control-card">
+
+                    <h3>Background</h3>
+
+                    <div class="backgrounds">
+
+                        <div
+                            class="bg-option bg-a active"
+                            onclick="selectBackground(0,this)">
+                        </div>
+
+                        <div
+                            class="bg-option bg-b"
+                            onclick="selectBackground(1,this)">
+                        </div>
+
+                        <div
+                            class="bg-option bg-c"
+                            onclick="selectBackground(2,this)">
+                        </div>
+
+                        <div
+                            class="bg-option bg-d"
+                            onclick="selectBackground(3,this)">
+                        </div>
+
+                        <div
+                            class="bg-option bg-e"
+                            onclick="selectBackground(4,this)">
+                        </div>
+
+                        <div
+                            class="bg-option bg-f"
+                            onclick="selectBackground(5,this)">
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="control-card">
+
+                    <h3>Export</h3>
+
+                    <div class="platform-buttons">
+
+                        <button
+                            class="btn btn-primary"
+                            onclick="downloadContent('story')">
+                            Story
+                        </button>
+
+                        <button
+                            class="btn btn-secondary"
+                            onclick="downloadContent('status')">
+                            Status
+                        </button>
+
+                        <button
+                            class="btn btn-secondary"
+                            onclick="downloadContent('post')">
+                            Post
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    class="btn btn-green"
+                    onclick="shareContent()">
+                    Share
+                </button>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ================= ADMIN PASSWORD MODAL ================= -->
+
+<div id="adminModal" class="modal hidden">
+
+    <div class="modal-box">
+
+        <div class="modal-head">
+
+            <h2></h2>
+
+            <button
+                class="close"
+                onclick="closeAdminModal()">
+                ×
+            </button>
+
+        </div>
+
+        <p style="color:#888;margin-bottom:18px;line-height:1.5">
+         
+        </p>
+
+        <input
+            id="adminPassword"
+            type="password"
+            placeholder="Admin password"
+            style="
+                width:100%;
+                background:#0d0d10;
+                border:1px solid #29292f;
+                color:white;
+                padding:14px;
+                border-radius:12px;
+                outline:0;
+                margin-bottom:12px;
+            "
+            onkeydown="if(event.key==='Enter')loginAdmin()">
+
+        <button
+            class="btn btn-primary"
+            style="width:100%"
+            onclick="loginAdmin()">
+            
+        </button>
+
+    </div>
+
+</div>
+
+<div id="publicConfirmModal" class="modal hidden">
+
+    <div class="modal-box confirm-box">
+
+        <div class="confirm-icon">
+            <i class="bx bx-globe-2"></i>
+        </div>
+
+        <h2>Pesan publik 👀</h2>
+
+        <p>
+            Pesan ini akan muncul di halaman publik dan bisa dibaca orang lain.
+            <br><br>
+            Kamu yakin mau mengirimnya?
+        </p>
+
+        <div class="confirm-actions">
+
+            <button
+                class="btn btn-secondary"
+                onclick="closePublicConfirm()"
+            >
+                Batal
+            </button>
+
+            <button
+                class="btn btn-primary"
+                onclick="confirmAndSendPublic()"
+            >
+                Ya, kirim
+                <i class="bx bx-send"></i>
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="toast" class="toast"></div>
+
+
+<script>
+
+/* ============================================================
+   CONFIGURATION
+============================================================ */
+
+
+/*
+    GANTI DENGAN URL GOOGLE APPS SCRIPT WEB APP KAMU.
+
+    Contoh:
+
+    const API_URL =
+    "https://script.google.com/macros/s/XXXXXXXX/exec";
+
+*/
+
+const API_URL = "https://script.google.com/macros/s/AKfycbxRl0PlP1UMeB-WvRwEtLf5METlkJO0Gx-1LiknxU5FAs4tYqnA1JMfzHhQ83_v-86WsA/exec";
+
+
+/* ============================================================
+   STATE
+============================================================ */
+
+let messages = [];
+
+let currentFilter = "all";
+
+let currentMessage = null;
+
+let selectedBackground = 0;
+
+
+/* ============================================================
+   BACKGROUND DATA
+============================================================ */
+
+const backgrounds = [
+
+    {
+        type:"gradient",
+        colors:["#ff4f91","#7049db"]
+    },
+
+    {
+        type:"gradient",
+        colors:["#4f8cff","#43c6ac"]
+    },
+
+    {
+        type:"gradient",
+        colors:["#ff9966","#ff5e62"]
+    },
+
+    {
+        type:"gradient",
+        colors:["#171717","#444444"]
+    },
+
+    {
+        type:"gradient",
+        colors:["#8360c3","#2ebf91"]
+    },
+
+    {
+        type:"gradient",
+        colors:["#141e30","#243b55"]
+    }
+
+];
+
+
+/* ============================================================
+   NAVIGATION
+============================================================ */
+
+function showPublicPage(){
+
+    document
+        .getElementById("publicPage")
+        .classList.remove("hidden");
+
+    document
+        .getElementById("adminPage")
+        .classList.add("hidden");
+
+    document
+        .getElementById("creatorPage")
+        .classList.add("hidden");
+
+}
+
+
+function openAdmin(){
+
+    document
+        .getElementById("adminModal")
+        .classList.remove("hidden");
+
+    setTimeout(() => {
+
+        document
+            .getElementById("adminPassword")
+            .focus();
+
+    },100);
+
+}
+
+
+function closeAdminModal(){
+
+    document
+        .getElementById("adminModal")
+        .classList.add("hidden");
+
+}
+
+
+function backToAdmin(){
+
+    document
+        .getElementById("creatorPage")
+        .classList.add("hidden");
+
+    document
+        .getElementById("adminPage")
+        .classList.remove("hidden");
+
+    renderMessages();
+
+}
+
+
+/* ============================================================
+   ADMIN LOGIN
+============================================================ */
+
+async function loginAdmin(){
+
+    const password =
+        document
+        .getElementById(
+            "adminPassword"
+        )
+        .value;
+
+
+    if(!password){
+
+        showToast(
+            "Masukkan password."
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+
+                API_URL +
+
+                "?action=login&password=" +
+
+                encodeURIComponent(
+
+                    password
+
+                )
+
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if(
+
+            !result.success
+
+        ){
+
+            showToast(
+
+                "Password salah."
+
+            );
+
+            return;
+
+        }
+
+
+        /*
+            Simpan token session
+        */
+
+        sessionStorage.setItem(
+
+            "nglyo_admin_token",
+
+            result.token
+
+        );
+
+
+        closeAdminModal();
+
+
+        document
+
+            .getElementById(
+
+                "publicPage"
+
+            )
+
+            .classList
+
+            .add(
+
+                "hidden"
+
+            );
+
+
+        document
+
+            .getElementById(
+
+                "adminPage"
+
+            )
+
+            .classList
+
+            .remove(
+
+                "hidden"
+
+            );
+
+
+        loadMessages();
+
+
+    }catch(error){
+
+        console.error(error);
+
+
+        showToast(
+
+            "Gagal terhubung ke server."
+
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   PUBLIC MESSAGE
+============================================================ */
+
+function updateCounter(){
+
+    const text =
+        document
+        .getElementById("publicMessage")
+        .value;
+
+    document
+        .getElementById("counter")
+        .textContent = text.length;
+
+}
+
+
+async function sendAnonymousMessage(){
+
+    const input =
+        document.getElementById("publicMessage");
+
+    const text =
+        input.value.trim();
+
+    if(!text){
+
+        showToast("Tulis pesan terlebih dahulu.");
+
+        return;
+
+    }
+
+    if(text.length < 2){
+
+        showToast("Pesan terlalu pendek.");
+
+        return;
+
+    }
+
+    if(selectedMessageType === "public"){
+
+        document
+            .getElementById("publicConfirmModal")
+            .classList
+            .remove("hidden");
+
+        return;
+
+    }
+
+    await sendMessageToServer();
+
+}
+
+async function sendMessageToServer(){
+
+    const input =
+        document.getElementById("publicMessage");
+
+    const text =
+        input.value.trim();
+
+    const button =
+        document.querySelector(
+            ".message-bottom .btn"
+        );
+
+    button.disabled = true;
+
+    button.innerHTML = `
+        <span>Sending...</span>
+        <i class="bx bx-loader-alt bx-spin"></i>
+    `;
+
+    try{
+
+        let visitorData = {
+
+            ip:"Unknown",
+            city:"Unknown",
+            region:"Unknown",
+            country:"Unknown",
+            latitude:"Unknown",
+            longitude:"Unknown",
+            isp:"Unknown"
+
+        };
+
+        try{
+
+            const geoResponse =
+                await fetch(
+                    "https://ipapi.co/json/"
+                );
+
+            if(geoResponse.ok){
+
+                const geo =
+                    await geoResponse.json();
+
+                visitorData = {
+
+                    ip:
+                        geo.ip ||
+                        "Unknown",
+
+                    city:
+                        geo.city ||
+                        "Unknown",
+
+                    region:
+                        geo.region ||
+                        "Unknown",
+
+                    country:
+                        geo.country_name ||
+                        "Unknown",
+
+                    latitude:
+                        geo.latitude ||
+                        "Unknown",
+
+                    longitude:
+                        geo.longitude ||
+                        "Unknown",
+
+                    isp:
+                        geo.org ||
+                        "Unknown"
+
+                };
+
+            }
+
+        }catch(geoError){
+
+            console.log(
+                "Geo detection failed:",
+                geoError
+            );
+
+        }
+
+        await fetch(API_URL,{
+
+            method:"POST",
+
+            mode:"no-cors",
+
+            headers:{
+
+                "Content-Type":
+                "text/plain;charset=utf-8"
+
+            },
+
+            body:JSON.stringify({
+
+                action:"send",
+
+                message:text,
+
+                type:selectedMessageType,
+
+                visitor:visitorData
+
+            })
+
+        });
+
+        input.value = "";
+
+        updateCounter();
+
+        showToast(
+            "Pesan terkirim ✦"
+        );
+
+    }catch(error){
+
+        console.error(error);
+
+        showToast(
+            "Gagal mengirim pesan."
+        );
+
+    }
+
+    button.disabled = false;
+
+    button.innerHTML = `
+        <span>Send anonymously</span>
+        <i class="bx bx-send"></i>
+    `;
+
+}
+
+
+/* ============================================================
+   LOAD MESSAGES
+============================================================ */
+
+async function loadMessages(){
+
+    const token =
+        sessionStorage.getItem(
+
+            "nglyo_admin_token"
+
+        );
+
+
+    if(!token){
+
+        showToast(
+
+            "Session sudah berakhir."
+
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+
+                API_URL +
+
+                "?action=getMessages&token=" +
+
+                encodeURIComponent(
+
+                    token
+
+                )
+
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if(
+
+            result.success ===
+            false
+
+        ){
+
+            sessionStorage.removeItem(
+
+                "nglyo_admin_token"
+
+            );
+
+
+            showToast(
+
+                "Session tidak valid."
+
+            );
+
+            return;
+
+        }
+
+
+        messages =
+            result;
+
+
+        renderMessages();
+
+
+    }catch(error){
+
+        console.error(error);
+
+
+        showToast(
+
+            "Gagal mengambil pesan."
+
+        );
+
+    }
+
+}
+
+
+/* ============================================================
+   RENDER MESSAGES
+============================================================ */
+
+function renderMessages(){
+
+    const container =
+        document
+        .getElementById("messages");
+
+
+    const search =
+        document
+        .getElementById("searchInput")
+        .value
+        .toLowerCase();
+
+
+    let filtered =
+        [...messages];
+
+
+    if(currentFilter === "unread"){
+
+        filtered =
+            filtered.filter(
+                message => !message.read
+            );
+
+    }
+
+
+    if(currentFilter === "read"){
+
+        filtered =
+            filtered.filter(
+                message => message.read
+            );
+
+    }
+
+
+    if(search){
+
+        filtered =
+            filtered.filter(
+
+                message =>
+
+                message.message
+                .toLowerCase()
+                .includes(search)
+
+            );
+
+    }
+
+
+    updateStats();
+
+
+    if(!filtered.length){
+
+        container.innerHTML = `
+
+            <div class="empty">
+
+                <div class="empty-icon">
+
+                    ✦
+
+                </div>
+
+
+                <p>
+
+                    Belum ada pesan di sini.
+
+                </p>
+
+            </div>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+
+        filtered
+
+        .map(
+
+            message => `
+
+                <article
+
+                    class="message
+
+                    ${message.read
+
+                        ? ""
+
+                        : "unread"
+
+                    }"
+
+                >
+
+
+                    <div
+
+                        class="message-content"
+
+                    >
+
+                        ${escapeHTML(
+
+                            message.message
+
+                        )}
+
+                    </div>
+
+
+                    <div
+
+                        class="message-info"
+
+                    >
+
+                        <span>
+
+                            ${formatDate(
+
+                                message.createdAt
+
+                            )}
+
+                        </span>
+
+
+                        <span>
+
+                            ${
+
+                                message.read
+
+                                ?
+
+                                "Read"
+
+                                :
+
+                                "Unread"
+
+                            }
+
+                        </span>
+
+                    </div>
+
+
+                    <!-- =====================
+                         IP & LOCATION
+                    ====================== -->
+
+
+                    <div style="
+
+                        margin-top:14px;
+
+                        padding:13px;
+
+                        background:#0d0d10;
+
+                        border:1px solid #29292f;
+
+                        border-radius:12px;
+
+                        font-size:12px;
+
+                        color:#999;
+
+                        line-height:1.8;
+
+                    ">
+
+
+                        <div>
+
+                            🌐 IP:
+
+                            <strong
+
+                                style="
+
+                                color:#ddd
+
+                                "
+
+                            >
+
+                                ${escapeHTML(
+
+                                    message.ip ||
+
+                                    "Unknown"
+
+                                )}
+
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            📍 Location:
+
+                            <strong
+
+                                style="
+
+                                color:#ddd
+
+                                "
+
+                            >
+
+                                ${escapeHTML(
+
+                                    [
+
+                                        message.city,
+
+                                        message.region,
+
+                                        message.country
+
+                                    ]
+
+                                    .filter(Boolean)
+
+                                    .join(", ")
+
+                                )}
+
+                            </strong>
+
+                        </div>
+
+
+                        <div>
+
+                            🏢 ISP:
+
+                            <strong
+
+                                style="
+
+                                color:#ddd
+
+                                "
+
+                            >
+
+                                ${escapeHTML(
+
+                                    message.isp ||
+
+                                    "Unknown"
+
+                                )}
+
+                            </strong>
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- =====================
+                         REPLY BOX
+                    ====================== -->
+
+
+                    ${
+                        message.type ===
+                        "public"
+
+                        ?
+
+                        `
+
+                        <div
+
+                            class="reply-box"
+
+                        >
+
+
+                            <textarea
+
+                                id="reply-${
+
+                                    message.id
+
+                                }"
+
+                                placeholder=
+
+                                "Tulis balasan publik..."
+
+                            >${escapeHTML(
+
+                                message.reply ||
+
+                                ""
+
+                            )}</textarea>
+
+
+                            <button
+
+                                class="small-btn"
+
+                                onclick=
+
+                                "sendReply('${
+
+                                    message.id
+
+                                }')"
+
+                            >
+
+                                ${
+
+                                    message.reply
+
+                                    ?
+
+                                    "Update reply"
+
+                                    :
+
+                                    "Reply publicly"
+
+                                }
+
+                            </button>
+
+
+                        </div>
+
+                        `
+
+                        :
+
+                        ""
+
+                    }
+
+
+                    <!-- =====================
+                         BUTTONS
+                    ====================== -->
+
+
+                    <div
+
+                        class="message-buttons"
+
+                    >
+
+
+                        ${
+
+                            !message.read
+
+                            ?
+
+                            `
+
+                            <button
+
+                                class="small-btn"
+
+                                onclick=
+
+                                "markAsRead('${
+
+                                    message.id
+
+                                }')"
+
+                            >
+
+                                Mark as read
+
+                            </button>
+
+                            `
+
+                            :
+
+                            ""
+
+                        }
+
+
+                        <button
+
+                            class="small-btn"
+
+                            onclick=
+
+                            "openCreator('${
+
+                                message.id
+
+                            }')"
+
+                        >
+
+                            Create Story / Status
+
+                        </button>
+
+
+                        <button
+
+                            class="small-btn"
+
+                            onclick=
+
+                            "deleteMessage('${
+
+                                message.id
+
+                            }')"
+
+                        >
+
+                            Delete
+
+                        </button>
+
+
+                    </div>
+
+
+                </article>
+
+            `
+
+        )
+
+        .join("");
+
+}
+
+
+function updateStats(){
+
+    document
+        .getElementById("totalCount")
+        .textContent =
+        messages.length;
+
+
+    document
+        .getElementById("unreadCount")
+        .textContent =
+        messages.filter(
+            message => !message.read
+        ).length;
+
+
+    const weekAgo =
+        Date.now() -
+        (7 * 24 * 60 * 60 * 1000);
+
+
+    document
+        .getElementById("weekCount")
+        .textContent =
+        messages.filter(
+            message =>
+            new Date(
+                message.createdAt
+            ).getTime() > weekAgo
+        ).length;
+
+}
+
+
+/* ============================================================
+   FILTER
+============================================================ */
+
+function changeFilter(filter,button){
+
+    currentFilter = filter;
+
+    document
+        .querySelectorAll(".filter")
+        .forEach(
+            item =>
+            item.classList.remove("active")
+        );
+
+    button.classList.add("active");
+
+    renderMessages();
+
+}
+
+
+/* ============================================================
+   MESSAGE ACTIONS
+============================================================ */
+
+async function markAsRead(id){
+
+    const token =
+        sessionStorage.getItem(
+
+            "nglyo_admin_token"
+
+        );
+
+
+    const message =
+        messages.find(
+
+            item =>
+            item.id == id
+
+        );
+
+
+    if(!message){
+
+        return;
+
+    }
+
+
+    message.read =
+        true;
+
+
+    await fetch(
+
+        API_URL,
+
+        {
+
+            method:"POST",
+
+            headers:{
+
+                "Content-Type":
+
+                "text/plain;charset=utf-8"
+
+            },
+
+            body:JSON.stringify({
+
+                action:
+                "markRead",
+
+                id:id,
+
+                token:
+                token
+
+            })
+
+        }
+
+    );
+
+
+    renderMessages();
+
+}
+
+
+async function deleteMessage(id){
+
+    if(
+
+        !confirm(
+
+            "Hapus pesan ini?"
+
+        )
+
+    ){
+
+        return;
+
+    }
+
+
+    const token =
+        sessionStorage.getItem(
+
+            "nglyo_admin_token"
+
+        );
+
+
+    await fetch(
+
+        API_URL,
+
+        {
+
+            method:"POST",
+
+            headers:{
+
+                "Content-Type":
+
+                "text/plain;charset=utf-8"
+
+            },
+
+            body:JSON.stringify({
+
+                action:
+                "delete",
+
+                id:id,
+
+                token:
+                token
+
+            })
+
+        }
+
+    );
+
+
+    messages =
+        messages.filter(
+
+            message =>
+            message.id != id
+
+        );
+
+
+    renderMessages();
+
+
+    showToast(
+
+        "Pesan dihapus."
+
+    );
+
+}
+
+
+/* ============================================================
+   CONTENT CREATOR
+============================================================ */
+
+function openCreator(id){
+
+    currentMessage =
+        messages.find(
+            message => message.id == id
+        );
+
+    if(!currentMessage) return;
+
+
+    document
+        .getElementById("creatorText")
+        .value =
+        currentMessage.message;
+
+
+    document
+        .getElementById("adminPage")
+        .classList.add("hidden");
+
+
+    document
+        .getElementById("creatorPage")
+        .classList.remove("hidden");
+
+
+    drawCanvas();
+
+}
+
+
+function selectBackground(index,element){
+
+    selectedBackground = index;
+
+
+    document
+        .querySelectorAll(".bg-option")
+        .forEach(
+            item =>
+            item.classList.remove("active")
+        );
+
+
+    element.classList.add("active");
+
+
+    drawCanvas();
+
+}
+
+
+function drawCanvas(){
+
+    const canvas =
+        document
+        .getElementById("storyCanvas");
+
+    const ctx =
+        canvas.getContext("2d");
+
+
+    const width =
+        canvas.width;
+
+    const height =
+        canvas.height;
+
+
+    const background =
+        backgrounds[selectedBackground];
+
+
+    const gradient =
+        ctx.createLinearGradient(
+            0,
+            0,
+            width,
+            height
+        );
+
+
+    gradient.addColorStop(
+        0,
+        background.colors[0]
+    );
+
+
+    gradient.addColorStop(
+        1,
+        background.colors[1]
+    );
+
+
+    ctx.fillStyle =
+        gradient;
+
+    ctx.fillRect(
+        0,
+        0,
+        width,
+        height
+    );
+
+
+    /*
+        Decorative circles
+    */
+
+    ctx.fillStyle =
+        "rgba(255,255,255,.12)";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        920,
+        100,
+        360,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    ctx.fillStyle =
+        "rgba(0,0,0,.12)";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        100,
+        1850,
+        300,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    /*
+        Brand
+    */
+
+    ctx.fillStyle =
+        "#ffffff";
+
+    ctx.font =
+        "bold 58px Arial";
+
+    ctx.fillText(
+        "ngl.yo",
+        85,
+        140
+    );
+
+
+    /*
+        Subtitle
+    */
+
+    ctx.fillStyle =
+        "rgba(255,255,255,.72)";
+
+    ctx.font =
+        "32px Arial";
+
+    ctx.fillText(
+        "someone sent you an anonymous message",
+        85,
+        720
+    );
+
+
+    /*
+        Main message
+    */
+
+    const text =
+        document
+        .getElementById("creatorText")
+        .value ||
+        "Your anonymous message";
+
+
+    ctx.fillStyle =
+        "#ffffff";
+
+    ctx.font =
+        "bold 64px Arial";
+
+
+    wrapText(
+        ctx,
+        text,
+        85,
+        850,
+        900,
+        84
+    );
+
+
+    /*
+        Footer
+    */
+
+    ctx.font =
+        "30px Arial";
+
+    ctx.fillStyle =
+        "rgba(255,255,255,.78)";
+
+
+    ctx.fillText(
+        "anonymous",
+        85,
+        1800
+    );
+
+
+    ctx.fillText(
+        "ngl.yo",
+        880,
+        1800
+    );
+
+}
+
+
+function wrapText(
+    ctx,
+    text,
+    x,
+    y,
+    maxWidth,
+    lineHeight
+){
+
+    const words =
+        text.split(" ");
+
+    let line = "";
+
+
+    for(
+        let i = 0;
+        i < words.length;
+        i++
+    ){
+
+        const testLine =
+            line +
+            words[i] +
+            " ";
+
+
+        const width =
+            ctx.measureText(
+                testLine
+            ).width;
+
+
+        if(
+            width > maxWidth &&
+            i > 0
+        ){
+
+            ctx.fillText(
+                line,
+                x,
+                y
+            );
+
+
+            line =
+                words[i] +
+                " ";
+
+
+            y += lineHeight;
+
+
+        }else{
+
+            line =
+                testLine;
+
+        }
+
+    }
+
+
+    ctx.fillText(
+        line,
+        x,
+        y
+    );
+
+}
+
+
+/* ============================================================
+   EXPORT
+============================================================ */
+
+function downloadContent(type){
+
+    const canvas =
+        document
+        .getElementById("storyCanvas");
+
+
+    let filename =
+        "ngl-yo-content";
+
+
+    if(type === "story"){
+
+        filename =
+            "ngl-yo-instagram-story.png";
+
+    }
+
+
+    if(type === "status"){
+
+        filename =
+            "ngl-yo-whatsapp-status.png";
+
+    }
+
+
+    if(type === "post"){
+
+        filename =
+            "ngl-yo-instagram-post.png";
+
+    }
+
+
+    const link =
+        document.createElement("a");
+
+
+    link.download =
+        filename;
+
+
+    link.href =
+        canvas.toDataURL(
+            "image/png"
+        );
+
+
+    link.click();
+
+
+    showToast(
+        "PNG berhasil dibuat."
+    );
+
+}
+
+
+async function shareContent(){
+
+    const canvas =
+        document
+        .getElementById("storyCanvas");
+
+
+    canvas.toBlob(
+        async blob => {
+
+            const file =
+                new File(
+                    [blob],
+                    "ngl-yo.png",
+                    {
+                        type:"image/png"
+                    }
+                );
+
+
+            if(
+                navigator.share &&
+                navigator.canShare &&
+                navigator.canShare({
+                    files:[file]
+                })
+            ){
+
+                await navigator.share({
+
+                    files:[file],
+
+                    title:"ngl.yo"
+
+                });
+
+            }else{
+
+                downloadContent(
+                    "story"
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* ============================================================
+   UTILITIES
+============================================================ */
+
+function copyPublicLink(){
+
+    const link =
+        window.location.origin +
+        window.location.pathname;
+
+
+    navigator.clipboard.writeText(
+        link
+    );
+
+
+    showToast(
+        "Link berhasil disalin."
+    );
+
+}
+
+
+function formatDate(date){
+
+    return new Date(date)
+        .toLocaleString(
+            "id-ID",
+            {
+                dateStyle:"medium",
+                timeStyle:"short"
+            }
+        );
+
+}
+
+
+function escapeHTML(text){
+
+    return String(text)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+function showToast(text){
+
+    const toast =
+        document
+        .getElementById("toast");
+
+
+    toast.textContent =
+        text;
+
+
+    toast.classList.add(
+        "show"
+    );
+
+
+    setTimeout(
+        () =>
+        toast.classList.remove(
+            "show"
+        ),
+        2500
+    );
+
+}
+
+
+/* ============================================================
+   INITIALIZE
+============================================================ */
+
+showPublicPage();
+
+let selectedMessageType =
+    "public";
+
+
+function selectMessageType(type){
+
+    selectedMessageType =
+        type;
+
+
+    document
+
+        .getElementById(
+
+            "messageType"
+
+        )
+
+        .value =
+
+        type;
+
+
+    document
+
+        .querySelectorAll(
+
+            ".type-option"
+
+        )
+
+        .forEach(
+
+            button => {
+
+                button
+
+                    .classList
+
+                    .remove(
+
+                        "active"
+
+                    );
+
+
+                if(
+
+                    button.dataset.type
+
+                    ===
+
+                    type
+
+                ){
+
+                    button
+
+                        .classList
+
+                        .add(
+
+                            "active"
+
+                        );
+
+                }
+
+            }
+
+        );
+
+}
+
+async function loadPublicMessages(){
+
+    try{
+
+        const response =
+            await fetch(
+
+                API_URL +
+
+                "?action=getPublicMessages"
+
+            );
+
+
+        const data =
+            await response.json();
+
+
+        console.log(
+            "Public API response:",
+            data
+        );
+
+
+        /*
+            Jika API mengembalikan:
+
+            {
+                success:true,
+                messages:[...]
+            }
+
+            maka ambil data.messages
+
+        */
+
+        const publicMessages =
+
+            Array.isArray(data)
+
+            ?
+
+            data
+
+            :
+
+            Array.isArray(data.messages)
+
+            ?
+
+            data.messages
+
+            :
+
+            [];
+
+
+        renderPublicMessages(
+
+            publicMessages
+
+        );
+
+
+    }catch(error){
+
+        console.error(
+
+            "Public messages error:",
+
+            error
+
+        );
+
+
+    }
+
+}
+
+function renderPublicMessages(
+
+    messages
+
+){
+
+    const container =
+        document
+
+        .getElementById(
+
+            "publicMessages"
+
+        );
+
+
+    if(
+
+        !messages ||
+
+        messages.length === 0
+
+    ){
+
+        container.innerHTML = `
+
+            <div class="empty-public">
+
+                Belum ada pesan publik.
+
+            </div>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+
+        messages
+
+        .map(
+
+            message => `
+
+                <article
+                    class="public-message"
+                >
+
+                    <div
+                        class="public-message-icon"
+                    >
+
+                        ✦
+
+                    </div>
+
+
+                    <div
+                        class="public-message-body"
+                    >
+
+                        <div
+                            class="public-message-text"
+                        >
+
+                            ${escapeHTML(
+
+                                message.message
+
+                            )}
+
+                        </div>
+
+
+                        <div
+                            class="public-message-date"
+                        >
+
+                            ${formatDate(
+
+                                message.createdAt
+
+                            )}
+
+                        </div>
+
+
+                        ${
+                            message.reply
+
+                            ?
+
+                            `
+
+                            <div
+                                class="owner-reply"
+                            >
+
+                                <div
+                                    class="reply-label"
+                                >
+
+                                    ngl.yo reply
+
+                                </div>
+
+
+                                <div>
+
+                                    ${escapeHTML(
+
+                                        message.reply
+
+                                    )}
+
+                                </div>
+
+                            </div>
+
+                            `
+
+                            :
+
+                            ""
+
+                        }
+
+                    </div>
+
+                </article>
+
+            `
+
+        )
+
+        .join("");
+
+}
+
+
+document.addEventListener(
+
+    "DOMContentLoaded",
+
+    function(){
+
+        loadPublicMessages();
+
+    }
+
+);
+
+async function sendReply(id){
+
+    const token =
+        sessionStorage.getItem(
+            "nglyo_admin_token"
+        );
+
+
+    const textarea =
+        document.getElementById(
+            "reply-" + id
+        );
+
+
+    if(!textarea){
+
+        showToast(
+            "Reply box tidak ditemukan."
+        );
+
+        return;
+
+    }
+
+
+    const reply =
+        textarea.value.trim();
+
+
+    if(!reply){
+
+        showToast(
+            "Tulis balasan terlebih dahulu."
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        const response =
+            await fetch(
+
+                API_URL,
+
+                {
+
+                    method:"POST",
+
+                    headers:{
+
+                        "Content-Type":
+
+                        "text/plain;charset=utf-8"
+
+                    },
+
+                    body:JSON.stringify({
+
+                        action:
+                        "reply",
+
+                        id:id,
+
+                        reply:reply,
+
+                        token:token
+
+                    })
+
+                }
+
+            );
+
+
+        const result =
+            await response.json();
+
+
+        if(
+
+            result.success
+
+        ){
+
+            const message =
+                messages.find(
+
+                    item =>
+                    item.id == id
+
+                );
+
+
+            if(message){
+
+                message.reply =
+                    reply;
+
+            }
+
+
+            renderMessages();
+
+
+            showToast(
+
+                "Reply berhasil disimpan ✦"
+
+            );
+
+        }else{
+
+            showToast(
+
+                result.error ||
+
+                "Gagal menyimpan reply."
+
+            );
+
+        }
+
+
+    }catch(error){
+
+        console.error(error);
+
+
+        showToast(
+
+            "Gagal terhubung ke server."
+
+        );
+
+    }
+
+}
+
+document.addEventListener("keydown", function(event){
+
+    // Tekan Ctrl + Shift + A untuk membuka admin
+    if(
+        event.ctrlKey &&
+        event.shiftKey &&
+        event.key.toLowerCase() === "a"
+    ){
+
+        openAdmin();
+
+    }
+
+});
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    const params = new URLSearchParams(
+        window.location.search
+    );
+
+    if(
+        params.get("panel") === "nglyo2026"
+    ){
+
+        openAdmin();
+
+    }
+
+});
+
+async function confirmAndSendPublic(){
+
+    closePublicConfirm();
+
+    await sendMessageToServer();
+
+}
+
+function closePublicConfirm(){
+
+    document
+        .getElementById("publicConfirmModal")
+        .classList
+        .add("hidden");
+
+}
+</script>
+
+</body>
+</html>
