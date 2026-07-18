@@ -1493,7 +1493,7 @@ button{
 
 */
 
-const API_URL = "https://script.google.com/macros/s/AKfycbxRl0PlP1UMeB-WvRwEtLf5METlkJO0Gx-1LiknxU5FAs4tYqnA1JMfzHhQ83_v-86WsA/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwBLd5cB2IOkVkdX3HcpjNNj2wwo0orUacV_jUcIuwSykCTeEpa58TKuwccD6XKV_tdng/exec";
 
 
 /* ============================================================
@@ -2456,6 +2456,37 @@ function renderMessages(){
 
                         }
 
+                        <button
+
+    class="small-btn"
+
+    onclick=
+
+    "toggleVisibility('${
+
+        message.id
+
+    }')"
+
+>
+
+    ${
+
+        message.type ===
+
+        "public"
+
+        ?
+
+        "🔒 Switch to Private"
+
+        :
+
+        "🌐 Switch to Public"
+
+    }
+
+</button>
 
                         <button
 
@@ -3809,6 +3840,140 @@ function closePublicConfirm(){
 
         text.textContent =
             "Refresh";
+
+    }
+
+}
+
+async function toggleVisibility(id){
+
+    const token =
+        sessionStorage.getItem(
+            "nglyo_admin_token"
+        );
+
+
+    const message =
+        messages.find(
+
+            item =>
+
+            String(item.id) ===
+
+            String(id)
+
+        );
+
+
+    if(!message){
+
+        showToast(
+
+            "Pesan tidak ditemukan."
+
+        );
+
+        return;
+
+    }
+
+
+    try{
+
+        const response =
+
+            await fetch(
+
+                API_URL,
+
+                {
+
+                    method:"POST",
+
+                    headers:{
+
+                        "Content-Type":
+
+                        "text/plain;charset=utf-8"
+
+                    },
+
+                    body:JSON.stringify({
+
+                        action:
+
+                        "toggleVisibility",
+
+                        id:id,
+
+                        token:token
+
+                    })
+
+                }
+
+            );
+
+
+        const result =
+
+            await response.json();
+
+
+        if(
+
+            result.success
+
+        ){
+
+            message.type =
+
+                result.type;
+
+
+            renderMessages();
+
+
+            showToast(
+
+                result.type ===
+
+                "public"
+
+                ?
+
+                "Pesan sekarang Public ✦"
+
+                :
+
+                "Pesan sekarang Private ✦"
+
+            );
+
+
+        }else{
+
+            showToast(
+
+                result.error ||
+
+                "Gagal mengubah status pesan."
+
+            );
+
+        }
+
+
+    }catch(error){
+
+        console.error(error);
+
+
+        showToast(
+
+            "Gagal terhubung ke server."
+
+        );
 
     }
 
