@@ -3638,9 +3638,24 @@ function isServiceAdmin() {
   );
 }
 
-
 /* =========================================================
    SESSION
+========================================================= */
+
+const SESSION_KEY = "ngl-session";
+
+/*
+ * Session aktif hanya selama tab masih terbuka.
+ * sessionStorage otomatis dibersihkan ketika tab ditutup.
+ */
+const SESSION_TIMEOUT = 60 * 60 * 1000; // 1 jam
+
+let activityThrottle = null;
+let inactivityTimer = null;
+
+
+/* =========================================================
+   SAVE SESSION
 ========================================================= */
 
 function saveSession() {
@@ -3649,11 +3664,10 @@ function saveSession() {
     return;
   }
 
+  const now = Date.now();
 
-  localStorage.setItem(
-
-    "ngl-session",
-
+  sessionStorage.setItem(
+    SESSION_KEY,
     JSON.stringify({
 
       id:
@@ -3663,49 +3677,277 @@ function saveSession() {
         verifiedUser.name,
 
       role:
-        verifiedUser.role,
+        normalizeRole(
+          verifiedUser.role
+        ),
 
       verifiedAt:
-        Date.now()
+        now,
+
+      lastActivity:
+        now
 
     })
-
   );
+
 }
 
+
+/* =========================================================
+   GET SESSION
+========================================================= */
+
+function getStoredSession() {
+
+  try {
+
+    const raw =
+      sessionStorage.getItem(
+        SESSION_KEY
+      );
+
+    if (!raw) {
+      return null;
+    }
+
+    return JSON.parse(raw);
+
+  } catch (error) {
+
+    console.error(
+      "Session parse error:",
+      error
+    );
+
+    sessionStorage.removeItem(
+      SESSION_KEY
+    );
+
+    return null;
+  }
+}
+
+
+/* =========================================================
+   UPDATE ACTIVITY
+========================================================= */
+
+function updateSessionActivity() {
+
+  /*
+   * Jangan melakukan write ke sessionStorage
+   * pada setiap mouse movement / scroll.
+   */
+  if (activityThrottle) {
+    return;
+  }
+
+  activityThrottle =
+    setTimeout(() => {
+
+      activityThrottle =
+        null;
+
+    }, 30000);
+
+
+  const session =
+    getStoredSession();
+
+  if (!session) {
+    return;
+  }
+
+
+  const now =
+    Date.now();
+
+  const lastActivity =
+    Number(
+      session.lastActivity ||
+      session.verifiedAt ||
+      0
+    );
+
+
+  /*
+   * Jika sudah melewati 1 jam,
+   * jangan perbarui aktivitas.
+   */
+  if (
+    !lastActivity ||
+    now - lastActivity >= SESSION_TIMEOUT
+  ) {
+
+    logoutNGL(
+      "Sesi berakhir karena tidak ada aktivitas selama 1 jam."
+    );
+
+    return;
+  }
+
+
+  session.lastActivity =
+    now;
+
+
+  sessionStorage.setItem(
+    SESSION_KEY,
+    JSON.stringify(session)
+  );
+
+}
+
+
+/* =========================================================
+   CHECK INACTIVITY
+========================================================= */
+
+function checkSessionInactivity() {
+
+  const session =
+    getStoredSession();
+
+  if (!session) {
+    return;
+  }
+
+
+  const now =
+    Date.now();
+
+  const lastActivity =
+    Number(
+      session.lastActivity ||
+      session.verifiedAt ||
+      0
+    );
+
+
+  if (
+    !lastActivity ||
+    now - lastActivity >= SESSION_TIMEOUT
+  ) {
+
+    logoutNGL(
+      "Sesi berakhir karena tidak ada aktivitas selama 1 jam."
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   SESSION ACTIVITY LISTENER
+========================================================= */
+
+function initSessionSecurity() {
+
+  const activityEvents = [
+
+    "click",
+    "keydown",
+    "touchstart",
+    "scroll",
+    "mousemove"
+
+  ];
+
+
+  activityEvents.forEach(
+    eventName => {
+
+      window.addEventListener(
+        eventName,
+        updateSessionActivity,
+        {
+          passive: true
+        }
+      );
+
+    }
+  );
+
+
+  /*
+   * Cek setiap 30 detik.
+   */
+  inactivityTimer =
+    setInterval(
+      checkSessionInactivity,
+      30000
+    );
+
+
+  /*
+   * Saat user kembali ke tab,
+   * langsung periksa apakah session
+   * sudah melewati batas waktu.
+   */
+  document.addEventListener(
+    "visibilitychange",
+    function () {
+
+      if (!document.hidden) {
+
+        checkSessionInactivity();
+
+      }
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   CHECK EXISTING SESSION
+========================================================= */
 
 function checkExistingSession() {
 
   try {
 
-    const raw =
-      localStorage.getItem(
-        "ngl-session"
-      );
+    /*
+     * Bersihkan session lama dari versi
+     * yang masih menggunakan localStorage.
+     */
+    localStorage.removeItem(
+      SESSION_KEY
+    );
 
 
-    if (!raw) {
+    const session =
+      getStoredSession();
+
+
+    if (!session) {
       return;
     }
 
 
-    const session =
-      JSON.parse(raw);
+    const now =
+      Date.now();
+
+    const lastActivity =
+      Number(
+        session.lastActivity ||
+        session.verifiedAt ||
+        0
+      );
 
 
-    const maxAge =
-      8 * 60 * 60 * 1000;
-
-
+    /*
+     * Session sudah tidak valid.
+     */
     if (
-      !session.verifiedAt ||
-      Date.now() -
-        session.verifiedAt >
-        maxAge
+      !lastActivity ||
+      now - lastActivity >= SESSION_TIMEOUT
     ) {
 
-      localStorage.removeItem(
-        "ngl-session"
+      sessionStorage.removeItem(
+        SESSION_KEY
       );
 
       return;
@@ -3731,6 +3973,23 @@ function checkExistingSession() {
     };
 
 
+    /*
+     * Reload halaman masih dianggap
+     * sebagai aktivitas dalam tab yang sama.
+     */
+    session.lastActivity =
+      now;
+
+
+    sessionStorage.setItem(
+
+      SESSION_KEY,
+
+      JSON.stringify(session)
+
+    );
+
+
     enterNGL();
 
 
@@ -3741,13 +4000,13 @@ function checkExistingSession() {
       error
     );
 
-    localStorage.removeItem(
-      "ngl-session"
+    sessionStorage.removeItem(
+      SESSION_KEY
     );
+
   }
+
 }
-
-
 /* =========================================================
    ENTER NGL
 ========================================================= */
