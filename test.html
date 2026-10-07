@@ -4859,7 +4859,9 @@ function initKeyboardSearch() {
    LOGOUT
 ========================================================= */
 
-function logoutNGL() {
+function logoutNGL(
+  message = ""
+) {
 
   stopCamera();
 
@@ -4869,8 +4871,21 @@ function logoutNGL() {
   verifiedUser =
     null;
 
+
+  /*
+   * Hapus session tab.
+   */
+  sessionStorage.removeItem(
+    SESSION_KEY
+  );
+
+
+  /*
+   * Bersihkan session lama jika
+   * masih tersimpan dari versi sebelumnya.
+   */
   localStorage.removeItem(
-    "ngl-session"
+    SESSION_KEY
   );
 
 
@@ -4891,7 +4906,10 @@ function logoutNGL() {
     $("verifyName");
 
   if (name) {
-    name.value = "";
+
+    name.value =
+      "";
+
   }
 
 
@@ -4900,11 +4918,27 @@ function logoutNGL() {
   );
 
 
-  $("startCameraButton").disabled =
-    false;
+  const startButton =
+    $("startCameraButton");
 
-  $("verifyButton").disabled =
-    true;
+  const verifyButton =
+    $("verifyButton");
+
+
+  if (startButton) {
+
+    startButton.disabled =
+      false;
+
+  }
+
+
+  if (verifyButton) {
+
+    verifyButton.disabled =
+      true;
+
+  }
 
 
   updateCameraStatus(
@@ -4918,11 +4952,27 @@ function logoutNGL() {
 
   updateUserDisplay();
 
-
   applyRoleAccess();
+
+
+  /*
+   * Tampilkan pemberitahuan jika
+   * logout disebabkan timeout.
+   */
+  if (message) {
+
+    setTimeout(
+      () => {
+
+        showToast(message);
+
+      },
+      150
+    );
+
+  }
+
 }
-
-
 /* =========================================================
    ESCAPE HTML
 ========================================================= */
