@@ -1450,6 +1450,201 @@ body.dark .verification-card {
   }
 
 }
+
+/* =========================================================
+   AUTH MODE
+========================================================= */
+
+.auth-mode-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 5px;
+  margin-bottom: 20px;
+  background: #f3f5f7;
+  border-radius: 10px;
+}
+
+.auth-mode {
+  border: 0;
+  background: transparent;
+  color: #667085;
+  padding: 10px 12px;
+  border-radius: 7px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: .2s ease;
+}
+
+.auth-mode i {
+  font-size: 17px;
+  vertical-align: -2px;
+  margin-right: 5px;
+}
+
+.auth-mode:hover {
+  color: #1d2939;
+}
+
+.auth-mode.active {
+  background: #fff;
+  color: #1d4ed8;
+  box-shadow: 0 1px 4px rgba(16, 24, 40, .08);
+}
+
+
+/* =========================================================
+   REGISTER INFO
+========================================================= */
+
+.register-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 13px;
+  margin-bottom: 16px;
+  border: 1px solid #dbeafe;
+  background: #eff6ff;
+  color: #1e40af;
+  border-radius: 9px;
+}
+
+.register-info > i {
+  font-size: 19px;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.register-info div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.register-info strong {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.register-info span {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #365899;
+}
+
+.register-info b {
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   VERIFICATION STATUS
+========================================================= */
+
+.verification-status {
+  min-height: 20px;
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.verification-status i {
+  margin-right: 5px;
+  vertical-align: -2px;
+}
+
+.verification-status.error {
+  color: #dc2626;
+}
+
+.verification-status.success {
+  color: #15803d;
+}
+
+.verification-status.loading {
+  color: #475467;
+}
+
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+.camera-box {
+  position: relative;
+  overflow: hidden;
+}
+
+.camera-box video {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 260px;
+  object-fit: cover;
+  transform: scaleX(-1);
+  background: #101828;
+}
+
+.camera-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+
+/* =========================================================
+   BUTTON STATE
+========================================================= */
+
+.verify-button:disabled,
+.camera-button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+
+/* =========================================================
+   SERVICE LOCK
+========================================================= */
+
+.service-locked {
+  position: relative;
+}
+
+.service-locked::after {
+  content: "Akses admin diperlukan";
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 600px) {
+
+  .auth-mode-tabs {
+    margin-bottom: 16px;
+  }
+
+  .auth-mode {
+    font-size: 13px;
+  }
+
+  .camera-box video {
+    min-height: 220px;
+  }
+}
   </style>
 </head>
 
@@ -2287,17 +2482,155 @@ body.dark .verification-card {
     Berhasil
   </div>
 
+<!-- =========================================================
+     FACE VERIFICATION GATE
+========================================================= -->
+<div id="verificationGate" class="verification-gate">
+  <div class="verification-card">
+
+    <div class="verification-header">
+      <div class="verification-logo">
+        <i class='bx bx-shield-quarter'></i>
+      </div>
+
+      <div>
+        <h2 id="gateTitle">Verifikasi Identitas</h2>
+        <p id="gateSubtitle">
+          Verifikasi wajah dan nama untuk masuk ke Network Gateway Link.
+        </p>
+      </div>
+    </div>
+
+    <!-- MODE -->
+    <div class="auth-mode-tabs">
+      <button
+        type="button"
+        class="auth-mode active"
+        id="loginModeButton"
+        onclick="switchAuthMode('login')"
+      >
+        <i class='bx bx-log-in'></i>
+        Masuk
+      </button>
+
+      <button
+        type="button"
+        class="auth-mode"
+        id="registerModeButton"
+        onclick="switchAuthMode('register')"
+      >
+        <i class='bx bx-user-plus'></i>
+        Daftar
+      </button>
+    </div>
+
+    <!-- NAMA -->
+    <div class="verification-field">
+      <label for="verifyName">
+        Nama
+      </label>
+
+      <div class="input-with-icon">
+        <i class='bx bx-user'></i>
+
+        <input
+          type="text"
+          id="verifyName"
+          placeholder="Masukkan nama lengkap"
+          autocomplete="name"
+          maxlength="100"
+        >
+      </div>
+    </div>
+
+    <!-- INFO REGISTER -->
+    <div
+      class="register-info"
+      id="registerInfo"
+      style="display:none;"
+    >
+      <i class='bx bx-info-circle'></i>
+
+      <div>
+        <strong>Pendaftaran anggota</strong>
+        <span>
+          Akun baru otomatis dibuat sebagai <b>anggota</b>.
+          Hak akses admin tidak dapat dibuat dari halaman ini.
+        </span>
+      </div>
+    </div>
+
+    <!-- CAMERA -->
+    <div class="camera-box">
+      <video
+        id="faceVideo"
+        autoplay
+        muted
+        playsinline
+      ></video>
+
+      <canvas id="faceCanvas"></canvas>
+
+      <div
+        class="camera-status"
+        id="cameraStatus"
+      >
+        <i class='bx bx-camera'></i>
+        Kamera belum dimulai
+      </div>
+    </div>
+
+    <!-- CAMERA BUTTON -->
+    <button
+      type="button"
+      class="camera-button"
+      id="startCameraButton"
+      onclick="startFaceVerification()"
+    >
+      <i class='bx bx-camera'></i>
+      Mulai kamera
+    </button>
+
+    <!-- VERIFY / REGISTER -->
+    <button
+      type="button"
+      class="verify-button"
+      id="verifyButton"
+      onclick="verifyIdentity()"
+      disabled
+    >
+      <i class='bx bx-shield-check'></i>
+      Verifikasi & Masuk
+    </button>
+
+    <!-- STATUS -->
+    <div
+      class="verification-status"
+      id="verificationStatus"
+    ></div>
+
+    <!-- PRIVACY -->
+    <div class="verification-privacy">
+      <i class='bx bx-lock-alt'></i>
+      <span>
+        Data wajah digunakan untuk verifikasi identitas NGL.
+      </span>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- =========================================================
+     FACE API
+========================================================= -->
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
+
 <script>
-
-/* =====================================================
-   NGL — NETWORK GATEWAY LINK
-   FULL JAVASCRIPT
-===================================================== */
-
-
-/* =====================================================
-   FACE VERIFICATION CONFIG
-===================================================== */
+/* =========================================================
+   NGL AUTH CONFIG
+========================================================= */
 
 const AUTH_CONFIG = {
 
@@ -2308,846 +2641,504 @@ const AUTH_CONFIG = {
     "https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@master/weights",
 
   FACE_THRESHOLD: 0.50
-
 };
 
 
-/* =====================================================
-   FACE VERIFICATION STATE
-===================================================== */
+/* =========================================================
+   AUTH STATE
+========================================================= */
 
 let faceStream = null;
 let faceDescriptor = null;
 let verifiedUser = null;
+
 let faceModelsLoaded = false;
+let authMode = "login";
 
 
-/* =====================================================
-   SERVICES CONFIG
-===================================================== */
+/* =========================================================
+   ELEMENT HELPER
+========================================================= */
 
-const SERVICES = {
+function $(id) {
+  return document.getElementById(id);
+}
 
-  "Secarik": {
-    url: "23.html"
-  },
 
-  "Moodly": {
-    url: "32.html"
-  },
+/* =========================================================
+   SWITCH LOGIN / REGISTER
+========================================================= */
 
-  "Jadwal Tugas": {
-    url: "#"
-  },
+function switchAuthMode(mode) {
 
-  "To-Do List": {
-    url: "#"
-  },
+  authMode = mode;
 
-  "Daily Monitor": {
-    url: "#"
-  },
+  const loginButton = $("loginModeButton");
+  const registerButton = $("registerModeButton");
 
-  "Personal Notes": {
-    url: "#"
+  const title = $("gateTitle");
+  const subtitle = $("gateSubtitle");
+
+  const registerInfo = $("registerInfo");
+  const verifyButton = $("verifyButton");
+
+  if (mode === "register") {
+
+    loginButton.classList.remove("active");
+    registerButton.classList.add("active");
+
+    title.textContent = "Daftar Identitas";
+
+    subtitle.textContent =
+      "Daftarkan nama dan wajah untuk membuat akun NGL.";
+
+    registerInfo.style.display = "flex";
+
+    verifyButton.innerHTML =
+      "<i class='bx bx-user-plus'></i> Daftar & Masuk";
+
+  } else {
+
+    registerButton.classList.remove("active");
+    loginButton.classList.add("active");
+
+    title.textContent = "Verifikasi Identitas";
+
+    subtitle.textContent =
+      "Verifikasi wajah dan nama untuk masuk ke Network Gateway Link.";
+
+    registerInfo.style.display = "none";
+
+    verifyButton.innerHTML =
+      "<i class='bx bx-shield-check'></i> Verifikasi & Masuk";
   }
 
-};
+  clearVerificationStatus();
 
+  faceDescriptor = null;
 
-/* =====================================================
-   ELEMENTS
-===================================================== */
+  if (faceStream) {
+    stopCamera();
+  }
 
-const body =
-  document.body;
+  $("verifyButton").disabled = true;
 
-const searchInput =
-  document.getElementById(
-    "searchInput"
+  updateCameraStatus(
+    "Kamera belum dimulai",
+    "bx-camera"
   );
-
-const appCards =
-  [
-    ...document.querySelectorAll(
-      ".app-card"
-    )
-  ];
-
-const categoryButtons =
-  [
-    ...document.querySelectorAll(
-      ".category"
-    )
-  ];
-
-const navItems =
-  [
-    ...document.querySelectorAll(
-      ".nav-item"
-    )
-  ];
-
-let currentFilter = "all";
-let currentService = null;
-
-
-/* =====================================================
-   SEARCH
-===================================================== */
-
-if (searchInput) {
-
-  searchInput.addEventListener(
-    "input",
-    filterApps
-  );
-
 }
 
 
-function filterApps() {
+/* =========================================================
+   STATUS UI
+========================================================= */
 
-  const keyword =
-    searchInput
-      ? searchInput.value
-          .toLowerCase()
-          .trim()
-      : "";
+function updateCameraStatus(message, icon = "bx-camera") {
 
-  appCards.forEach(
-    card => {
+  const status = $("cameraStatus");
 
-      const name =
-        (
-          card.dataset.name ||
-          ""
-        ).toLowerCase();
+  if (!status) return;
 
-      const description =
-        (
-          card.dataset.description ||
-          ""
-        ).toLowerCase();
-
-      const category =
-        card.dataset.category ||
-        "";
-
-      const matchesSearch =
-        name.includes(keyword) ||
-        description.includes(keyword);
-
-      const matchesCategory =
-        currentFilter === "all" ||
-        category === currentFilter;
-
-      card.style.display =
-        matchesSearch &&
-        matchesCategory
-          ? "flex"
-          : "none";
-
-    }
-  );
-
+  status.innerHTML =
+    `<i class='bx ${icon}'></i>${message}`;
 }
 
 
-/* =====================================================
-   FACE MODEL LOADER
-===================================================== */
+function setVerificationStatus(message, type = "info") {
+
+  const box = $("verificationStatus");
+
+  if (!box) return;
+
+  box.className =
+    "verification-status " + type;
+
+  box.innerHTML = message;
+}
+
+
+function clearVerificationStatus() {
+
+  const box = $("verificationStatus");
+
+  if (!box) return;
+
+  box.className = "verification-status";
+  box.innerHTML = "";
+}
+
+
+/* =========================================================
+   LOAD FACE MODELS
+========================================================= */
 
 async function loadFaceModels() {
 
-  if (faceModelsLoaded) {
-    return true;
-  }
+  if (faceModelsLoaded) return;
 
-  updateCameraStatus(
-    "Memuat model pengenalan wajah..."
+  setVerificationStatus(
+    "<i class='bx bx-loader-alt bx-spin'></i> Menyiapkan sistem verifikasi wajah...",
+    "loading"
   );
 
   try {
 
-    if (
-      typeof faceapi ===
-      "undefined"
-    ) {
+    await faceapi.nets.tinyFaceDetector.loadFromUri(
+      AUTH_CONFIG.MODELS_URL
+    );
 
-      throw new Error(
-        "Library face-api.js belum berhasil dimuat."
-      );
+    await faceapi.nets.faceLandmark68Net.loadFromUri(
+      AUTH_CONFIG.MODELS_URL
+    );
 
-    }
-
-    await Promise.all([
-
-      faceapi.nets.tinyFaceDetector
-        .loadFromUri(
-          AUTH_CONFIG.MODELS_URL
-        ),
-
-      faceapi.nets.faceLandmark68Net
-        .loadFromUri(
-          AUTH_CONFIG.MODELS_URL
-        ),
-
-      faceapi.nets.faceRecognitionNet
-        .loadFromUri(
-          AUTH_CONFIG.MODELS_URL
-        )
-
-    ]);
+    await faceapi.nets.faceRecognitionNet.loadFromUri(
+      AUTH_CONFIG.MODELS_URL
+    );
 
     faceModelsLoaded = true;
 
-    updateCameraStatus(
-      "Model wajah siap digunakan."
-    );
-
-    return true;
+    clearVerificationStatus();
 
   } catch (error) {
 
-    console.error(
-      "Face model error:",
-      error
-    );
-
-    faceModelsLoaded = false;
-
-    updateCameraStatus(
-      "Model wajah gagal dimuat."
-    );
-
-    throw new Error(
-      "Model wajah gagal dimuat. Periksa koneksi internet."
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   START FACE VERIFICATION
-===================================================== */
-
-async function startFaceVerification() {
-
-  const startButton =
-    document.getElementById(
-      "startCameraButton"
-    );
-
-  const verifyButton =
-    document.getElementById(
-      "verifyButton"
-    );
-
-  try {
-
-    if (startButton) {
-
-      startButton.disabled = true;
-
-      startButton.innerHTML =
-        "<i class='bx bx-loader-alt bx-spin'></i> Menyiapkan kamera...";
-
-    }
-
-    if (verifyButton) {
-
-      verifyButton.disabled = true;
-
-    }
+    console.error("Face model error:", error);
 
     setVerificationStatus(
-      "Menyiapkan sistem verifikasi wajah...",
-      ""
-    );
-
-    /* Pastikan face-api tersedia */
-
-    if (
-      typeof faceapi ===
-      "undefined"
-    ) {
-
-      throw new Error(
-        "Library face-api.js belum berhasil dimuat."
-      );
-
-    }
-
-    /* Muat model wajah */
-
-    await loadFaceModels();
-
-    /* Aktifkan kamera */
-
-    await startCamera();
-
-    /*
-      Kamera berhasil aktif.
-      Tombol verifikasi sekarang dapat digunakan.
-    */
-
-    if (verifyButton) {
-
-      verifyButton.disabled = false;
-
-    }
-
-    if (startButton) {
-
-      startButton.disabled = false;
-
-      startButton.innerHTML =
-        "<i class='bx bx-refresh'></i> Kamera aktif";
-
-    }
-
-    updateCameraStatus(
-      "Kamera aktif. Posisikan wajah di dalam bingkai."
-    );
-
-    setVerificationStatus(
-      "Kamera aktif. Pastikan wajah terlihat jelas.",
-      ""
-    );
-
-  } catch (error) {
-
-    console.error(
-      "Face verification error:",
-      error
-    );
-
-    if (verifyButton) {
-
-      verifyButton.disabled = true;
-
-    }
-
-    if (startButton) {
-
-      startButton.disabled = false;
-
-      startButton.innerHTML =
-        "<i class='bx bx-camera'></i> Mulai verifikasi wajah";
-
-    }
-
-    updateCameraStatus(
-      "Kamera belum siap."
-    );
-
-    setVerificationStatus(
-      error.message ||
-      "Tidak dapat memulai verifikasi wajah.",
+      "<i class='bx bx-error-circle'></i> Model wajah gagal dimuat. Periksa koneksi internet.",
       "error"
     );
 
+    throw error;
   }
-
 }
 
 
-/* =====================================================
-   START CAMERA
-===================================================== */
+/* =========================================================
+   START FACE VERIFICATION
+========================================================= */
 
-async function startCamera() {
+async function startFaceVerification() {
 
-  const video =
-    document.getElementById(
-      "faceVideo"
+  const name = $("verifyName").value.trim();
+
+  if (!name) {
+
+    setVerificationStatus(
+      "<i class='bx bx-error-circle'></i> Masukkan nama terlebih dahulu.",
+      "error"
     );
 
-  if (!video) {
+    $("verifyName").focus();
 
-    throw new Error(
-      "Elemen kamera #faceVideo tidak ditemukan."
-    );
-
+    return;
   }
-
-  if (
-    !navigator.mediaDevices ||
-    !navigator.mediaDevices.getUserMedia
-  ) {
-
-    throw new Error(
-      "Browser tidak mendukung akses kamera."
-    );
-
-  }
-
-  /*
-    Hentikan kamera lama
-    jika masih aktif.
-  */
-
-  stopCamera();
 
   try {
 
-    faceStream =
-      await navigator.mediaDevices.getUserMedia({
+    $("startCameraButton").disabled = true;
 
-        video: {
+    await loadFaceModels();
 
-          facingMode: "user",
+    await startCamera();
 
-          width: {
-            ideal: 640
-          },
+    $("verifyButton").disabled = false;
 
-          height: {
-            ideal: 480
-          }
-
-        },
-
-        audio: false
-
-      });
-
-    video.srcObject =
-      faceStream;
-
-    video.muted =
-      true;
-
-    video.playsInline =
-      true;
-
-    await video.play();
-
-    video.style.display =
-      "block";
-
-    updateCameraStatus(
-      "Kamera aktif. Posisikan wajah di dalam bingkai."
+    setVerificationStatus(
+      "<i class='bx bx-check-circle'></i> Kamera siap. Pastikan wajah terlihat jelas.",
+      "success"
     );
-
-    return true;
 
   } catch (error) {
 
-    console.error(
-      "Camera error:",
-      error
+    console.error("Face verification error:", error);
+
+    $("startCameraButton").disabled = false;
+
+    setVerificationStatus(
+      "<i class='bx bx-error-circle'></i> Kamera tidak dapat digunakan. Pastikan izin kamera diberikan.",
+      "error"
     );
-
-    /*
-      Izin kamera ditolak
-    */
-
-    if (
-      error.name ===
-      "NotAllowedError"
-    ) {
-
-      throw new Error(
-        "Izin kamera ditolak. Izinkan akses kamera pada browser."
-      );
-
-    }
-
-    /*
-      Kamera tidak ditemukan
-    */
-
-    if (
-      error.name ===
-      "NotFoundError"
-    ) {
-
-      throw new Error(
-        "Kamera tidak ditemukan pada perangkat ini."
-      );
-
-    }
-
-    /*
-      Kamera sedang dipakai
-    */
-
-    if (
-      error.name ===
-      "NotReadableError"
-    ) {
-
-      throw new Error(
-        "Kamera sedang digunakan aplikasi lain."
-      );
-
-    }
-
-    /*
-      Permission policy
-    */
-
-    if (
-      error.name ===
-      "SecurityError"
-    ) {
-
-      throw new Error(
-        "Akses kamera diblokir oleh browser."
-      );
-
-    }
-
-    throw new Error(
-      "Tidak dapat mengakses kamera: " +
-      (
-        error.message ||
-        "Kesalahan tidak diketahui."
-      )
-    );
-
   }
-
 }
 
 
-/* =====================================================
+/* =========================================================
+   START CAMERA
+========================================================= */
+
+async function startCamera() {
+
+  if (faceStream) {
+    stopCamera();
+  }
+
+  const video = $("faceVideo");
+
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    throw new Error("Browser tidak mendukung kamera.");
+  }
+
+  faceStream = await navigator.mediaDevices.getUserMedia({
+    video: {
+      facingMode: "user",
+      width: {
+        ideal: 640
+      },
+      height: {
+        ideal: 480
+      }
+    },
+    audio: false
+  });
+
+  video.srcObject = faceStream;
+
+  await video.play();
+
+  updateCameraStatus(
+    "Kamera aktif — posisikan wajah di tengah",
+    "bx-user-circle"
+  );
+}
+
+
+/* =========================================================
    STOP CAMERA
-===================================================== */
+========================================================= */
 
 function stopCamera() {
 
   if (faceStream) {
 
-    faceStream
-      .getTracks()
-      .forEach(
-        track => {
+    faceStream.getTracks().forEach(track => {
+      track.stop();
+    });
 
-          try {
-
-            track.stop();
-
-          } catch (error) {
-
-            console.warn(
-              "Camera track error:",
-              error
-            );
-
-          }
-
-        }
-      );
-
-    faceStream =
-      null;
-
+    faceStream = null;
   }
 
-  const video =
-    document.getElementById(
-      "faceVideo"
-    );
+  const video = $("faceVideo");
 
   if (video) {
-
-    video.srcObject =
-      null;
-
+    video.srcObject = null;
   }
 
+  updateCameraStatus(
+    "Kamera belum dimulai",
+    "bx-camera"
+  );
 }
 
 
-/* =====================================================
-   CAMERA STATUS
-===================================================== */
+/* =========================================================
+   CAPTURE FACE
+========================================================= */
 
-function updateCameraStatus(
-  message
-) {
+async function captureFaceDescriptor() {
 
-  const element =
-    document.getElementById(
-      "cameraStatus"
+  const video = $("faceVideo");
+
+  if (!video || video.readyState < 2) {
+    throw new Error("Kamera belum siap.");
+  }
+
+  updateCameraStatus(
+    "Mendeteksi wajah...",
+    "bx-loader-alt bx-spin"
+  );
+
+  const detection =
+    await faceapi
+      .detectSingleFace(
+        video,
+        new faceapi.TinyFaceDetectorOptions({
+          inputSize: 416,
+          scoreThreshold: 0.5
+        })
+      )
+      .withFaceLandmarks()
+      .withFaceDescriptor();
+
+  if (!detection) {
+
+    updateCameraStatus(
+      "Wajah tidak terdeteksi",
+      "bx-error-circle"
     );
 
-  if (!element) {
-    return;
-  }
-
-  element.innerHTML =
-    "<i class='bx bx-camera'></i> " +
-    message;
-
-}
-
-
-/* =====================================================
-   VERIFICATION STATUS
-===================================================== */
-
-function setVerificationStatus(
-  message,
-  type = ""
-) {
-
-  const element =
-    document.getElementById(
-      "verificationStatus"
+    throw new Error(
+      "Wajah tidak terdeteksi. Pastikan wajah terlihat jelas dan pencahayaan cukup."
     );
-
-  if (!element) {
-    return;
   }
 
-  element.textContent =
-    message;
+  const descriptor = Array.from(
+    detection.descriptor
+  );
 
-  element.className =
-    "verification-status " +
-    type;
-
+  return descriptor;
 }
 
 
-/* =====================================================
-   VERIFY IDENTITY
-===================================================== */
+/* =========================================================
+   VERIFY / REGISTER
+========================================================= */
 
 async function verifyIdentity() {
 
-  const nameInput =
-    document.getElementById(
-      "verifyName"
-    );
-
-  const video =
-    document.getElementById(
-      "faceVideo"
-    );
-
-  const verifyButton =
-    document.getElementById(
-      "verifyButton"
-    );
-
-  if (!nameInput) {
-
-    setVerificationStatus(
-      "Input nama tidak ditemukan.",
-      "error"
-    );
-
-    return;
-
-  }
-
-  if (!video) {
-
-    setVerificationStatus(
-      "Elemen kamera tidak ditemukan.",
-      "error"
-    );
-
-    return;
-
-  }
-
-  const name =
-    nameInput.value
-      .trim();
-
-  /*
-    Nama wajib
-  */
+  const name = $("verifyName").value.trim();
 
   if (!name) {
 
     setVerificationStatus(
-      "Nama wajib diisi.",
+      "<i class='bx bx-error-circle'></i> Nama wajib diisi.",
       "error"
     );
 
-    nameInput.focus();
+    $("verifyName").focus();
 
     return;
-
   }
-
-  /*
-    Kamera wajib aktif
-  */
 
   if (!faceStream) {
 
     setVerificationStatus(
-      "Aktifkan kamera terlebih dahulu.",
+      "<i class='bx bx-camera'></i> Mulai kamera terlebih dahulu.",
       "error"
     );
 
     return;
-
   }
 
-  /*
-    Model wajib siap
-  */
-
-  if (!faceModelsLoaded) {
-
-    setVerificationStatus(
-      "Model wajah belum siap. Aktifkan kamera terlebih dahulu.",
-      "error"
-    );
-
-    return;
-
-  }
-
-  if (verifyButton) {
-
-    verifyButton.disabled =
-      true;
-
-    verifyButton.innerHTML =
-      "<i class='bx bx-loader-alt bx-spin'></i> Memverifikasi...";
-
-  }
-
-  setVerificationStatus(
-    "Menganalisis wajah...",
-    ""
-  );
+  const button = $("verifyButton");
 
   try {
 
-    /*
-      Pastikan video sudah memiliki
-      frame yang dapat dibaca.
-    */
+    button.disabled = true;
 
-    if (
-      video.readyState <
-      HTMLMediaElement.HAVE_CURRENT_DATA
-    ) {
+    button.innerHTML =
+      "<i class='bx bx-loader-alt bx-spin'></i> Memproses...";
 
-      throw new Error(
-        "Kamera belum siap. Tunggu beberapa saat lalu coba lagi."
-      );
-
-    }
+    clearVerificationStatus();
 
     /*
-      Deteksi satu wajah.
-    */
-
-    const detection =
-      await faceapi
-        .detectSingleFace(
-          video,
-          new faceapi.TinyFaceDetectorOptions({
-
-            inputSize:
-              320,
-
-            scoreThreshold:
-              0.5
-
-          })
-        )
-        .withFaceLandmarks()
-        .withFaceDescriptor();
-
-    /*
-      Wajah tidak ditemukan.
-    */
-
-    if (!detection) {
-
-      throw new Error(
-        "Wajah belum terdeteksi. Posisikan wajah tepat di dalam bingkai."
-      );
-
-    }
-
-    /*
-      Simpan descriptor.
-    */
-
+     * Ambil descriptor wajah dari kamera.
+     */
     faceDescriptor =
-      Array.from(
-        detection.descriptor
+      await captureFaceDescriptor();
+
+
+    /* =====================================================
+       REGISTER
+    ===================================================== */
+
+    if (authMode === "register") {
+
+      setVerificationStatus(
+        "<i class='bx bx-cloud-upload'></i> Mendaftarkan identitas...",
+        "loading"
       );
 
-    setVerificationStatus(
-      "Wajah terdeteksi. Memeriksa identitas...",
-      ""
-    );
+      const response =
+        await fetch(AUTH_CONFIG.API_URL, {
 
-    /*
-      Kirim data ke Apps Script.
-    */
-
-    const response =
-      await fetch(
-        AUTH_CONFIG.API_URL,
-        {
-
-          method:
-            "POST",
+          method: "POST",
 
           headers: {
-
             "Content-Type":
               "text/plain;charset=utf-8"
-
           },
 
-          body:
-            JSON.stringify({
+          body: JSON.stringify({
 
-              action:
-                "verify",
+            action: "register",
 
-              name:
-                name,
+            name: name,
 
-              faceDescriptor:
-                faceDescriptor
+            faceDescriptor:
+              faceDescriptor
+          })
+        });
 
-            })
 
-        }
+      const result =
+        await response.json();
+
+
+      if (!result.success) {
+
+        throw new Error(
+          result.message ||
+          "Pendaftaran gagal."
+        );
+      }
+
+
+      /*
+       * Setelah berhasil daftar,
+       * langsung login.
+       */
+
+      verifiedUser = {
+        id: result.user.id,
+        name: result.user.name,
+        role: result.user.role,
+        status: result.user.status
+      };
+
+
+      saveSession();
+
+      setVerificationStatus(
+        "<i class='bx bx-check-circle'></i> Pendaftaran berhasil. Selamat datang!",
+        "success"
       );
 
-    /*
-      Cek HTTP response.
-    */
+      setTimeout(() => {
 
-    if (!response.ok) {
+        enterNGL();
 
-      throw new Error(
-        "Server verifikasi tidak dapat dihubungi."
-      );
+      }, 700);
 
+      return;
     }
 
-    /*
-      Ambil JSON.
-    */
+
+    /* =====================================================
+       LOGIN / VERIFY
+    ===================================================== */
+
+    setVerificationStatus(
+      "<i class='bx bx-search-alt'></i> Mencari identitas...",
+      "loading"
+    );
+
+
+    const response =
+      await fetch(AUTH_CONFIG.API_URL, {
+
+        method: "POST",
+
+        headers: {
+          "Content-Type":
+            "text/plain;charset=utf-8"
+        },
+
+        body: JSON.stringify({
+
+          action: "verify",
+
+          name: name,
+
+          faceDescriptor:
+            faceDescriptor
+        })
+      });
+
 
     const result =
       await response.json();
 
-    /*
-      Backend menolak.
-    */
 
     if (!result.success) {
 
@@ -3155,68 +3146,42 @@ async function verifyIdentity() {
         result.message ||
         "Identitas tidak ditemukan."
       );
-
     }
 
+
     /*
-      Pastikan user tersedia.
-    */
+     * Backend mengembalikan descriptor
+     * milik user yang namanya cocok.
+     */
 
     if (
-      !result.user
+      !Array.isArray(result.storedDescriptor) ||
+      result.storedDescriptor.length === 0
     ) {
 
       throw new Error(
-        "Data pengguna tidak tersedia dari server."
+        "Data wajah akun belum tersedia."
       );
-
     }
 
-    /*
-      Pastikan descriptor tersedia.
-    */
-
-    if (
-      !result.storedDescriptor ||
-      !Array.isArray(
-        result.storedDescriptor
-      )
-    ) {
-
-      throw new Error(
-        "Data wajah pengguna tidak tersedia."
-      );
-
-    }
 
     /*
-      Konversi descriptor.
-    */
-
-    const storedDescriptor =
-      new Float32Array(
-        result.storedDescriptor
-      );
-
-    /*
-      Hitung jarak wajah.
-      Semakin kecil = semakin mirip.
-    */
+     * Bandingkan wajah live dengan
+     * wajah yang tersimpan.
+     */
 
     const distance =
       faceapi.euclideanDistance(
-        detection.descriptor,
-        storedDescriptor
+        faceDescriptor,
+        result.storedDescriptor
       );
+
 
     console.log(
       "Face distance:",
       distance
     );
 
-    /*
-      Cek threshold.
-    */
 
     if (
       distance >
@@ -3224,1246 +3189,394 @@ async function verifyIdentity() {
     ) {
 
       throw new Error(
-        "Wajah tidak cocok dengan identitas tersebut."
+        "Wajah tidak cocok dengan akun tersebut."
       );
-
     }
 
-    /*
-      VERIFIKASI BERHASIL
-    */
-
-    verifiedUser =
-      result.user;
 
     /*
-      Simpan session lokal
-      selama 8 jam.
-    */
+     * Identitas valid.
+     */
 
-    localStorage.setItem(
+    verifiedUser = {
+      id: result.user.id,
+      name: result.user.name,
+      role: normalizeRole(result.user.role),
+      status: result.user.status
+    };
 
-      "ngl-session",
 
-      JSON.stringify({
+    saveSession();
 
-        id:
-          verifiedUser.id,
-
-        name:
-          verifiedUser.name,
-
-        role:
-          verifiedUser.role,
-
-        verifiedAt:
-          Date.now()
-
-      })
-
-    );
 
     setVerificationStatus(
-      "Verifikasi berhasil.",
+      "<i class='bx bx-check-circle'></i> Identitas berhasil diverifikasi.",
       "success"
     );
 
+
+    setTimeout(() => {
+
+      enterNGL();
+
+    }, 500);
+
+
+  } catch (error) {
+
+    console.error(
+      "Authentication error:",
+      error
+    );
+
+    setVerificationStatus(
+      "<i class='bx bx-error-circle'></i> " +
+      escapeHTML(error.message),
+      "error"
+    );
+
+    button.disabled = false;
+
+  } finally {
+
+    if (authMode === "register") {
+
+      button.innerHTML =
+        "<i class='bx bx-user-plus'></i> Daftar & Masuk";
+
+    } else {
+
+      button.innerHTML =
+        "<i class='bx bx-shield-check'></i> Verifikasi & Masuk";
+    }
+  }
+}
+
+
+/* =========================================================
+   ROLE NORMALIZER
+========================================================= */
+
+function normalizeRole(role) {
+
+  const value =
+    String(role || "")
+      .trim()
+      .toLowerCase();
+
+  if (value === "admin") {
+    return "admin";
+  }
+
+  if (
+    value === "admin-dev" ||
+    value === "admindev" ||
+    value === "admin dev"
+  ) {
+    return "admin-dev";
+  }
+
+  return "anggota";
+}
+
+
+/* =========================================================
+   SAVE SESSION
+========================================================= */
+
+function saveSession() {
+
+  if (!verifiedUser) return;
+
+  localStorage.setItem(
+    "ngl-session",
+
+    JSON.stringify({
+
+      id: verifiedUser.id,
+
+      name: verifiedUser.name,
+
+      role: verifiedUser.role,
+
+      verifiedAt: Date.now()
+
+    })
+  );
+}
+
+
+/* =========================================================
+   EXISTING SESSION
+========================================================= */
+
+function checkExistingSession() {
+
+  try {
+
+    const raw =
+      localStorage.getItem(
+        "ngl-session"
+      );
+
+    if (!raw) return;
+
+    const session =
+      JSON.parse(raw);
+
     /*
-      Masuk ke NGL.
-    */
+     * Session berlaku 8 jam.
+     */
+
+    const maxAge =
+      8 * 60 * 60 * 1000;
+
+    if (
+      !session.verifiedAt ||
+      Date.now() -
+        session.verifiedAt >
+        maxAge
+    ) {
+
+      localStorage.removeItem(
+        "ngl-session"
+      );
+
+      return;
+    }
+
+
+    verifiedUser = {
+      id: session.id,
+      name: session.name,
+      role: normalizeRole(session.role),
+      status: "aktif"
+    };
+
 
     enterNGL();
 
   } catch (error) {
 
     console.error(
-      "Identity verification error:",
-      error
-    );
-
-    setVerificationStatus(
-      error.message ||
-      "Verifikasi gagal.",
-      "error"
-    );
-
-    /*
-      Aktifkan kembali tombol.
-    */
-
-    if (verifyButton) {
-
-      verifyButton.disabled =
-        false;
-
-      verifyButton.innerHTML =
-        "<i class='bx bx-shield-check'></i> Verifikasi & Masuk";
-
-    }
-
-  }
-
-}
-
-
-/* =====================================================
-   ENTER NGL
-===================================================== */
-
-function enterNGL() {
-
-  const gate =
-    document.getElementById(
-      "verificationGate"
-    );
-
-  if (gate) {
-
-    gate.classList.add(
-      "hidden"
-    );
-
-  }
-
-  stopCamera();
-
-  if (verifiedUser) {
-
-    showToast(
-      "Selamat datang, " +
-      verifiedUser.name
-    );
-
-  }
-
-  applyRoleAccess();
-
-}
-
-
-/* =====================================================
-   EXISTING SESSION
-===================================================== */
-
-function checkExistingSession() {
-
-  const session =
-    localStorage.getItem(
-      "ngl-session"
-    );
-
-  if (!session) {
-    return;
-  }
-
-  try {
-
-    const data =
-      JSON.parse(
-        session
-      );
-
-    /*
-      Session berlaku 8 jam.
-    */
-
-    const eightHours =
-      8 *
-      60 *
-      60 *
-      1000;
-
-    /*
-      Validasi struktur session.
-    */
-
-    if (
-      !data ||
-      !data.id ||
-      !data.name ||
-      !data.role ||
-      !data.verifiedAt
-    ) {
-
-      throw new Error(
-        "Session tidak valid."
-      );
-
-    }
-
-    /*
-      Cek masa berlaku.
-    */
-
-    if (
-      Date.now() -
-      Number(
-        data.verifiedAt
-      ) <
-      eightHours
-    ) {
-
-      verifiedUser =
-        data;
-
-      const gate =
-        document.getElementById(
-          "verificationGate"
-        );
-
-      if (gate) {
-
-        gate.classList.add(
-          "hidden"
-        );
-
-      }
-
-      applyRoleAccess();
-
-    } else {
-
-      localStorage.removeItem(
-        "ngl-session"
-      );
-
-    }
-
-  } catch (error) {
-
-    console.warn(
-      "Invalid NGL session:",
+      "Session error:",
       error
     );
 
     localStorage.removeItem(
       "ngl-session"
     );
-
   }
-
 }
 
 
-/* =====================================================
-   ROLE ACCESS
-===================================================== */
+/* =========================================================
+   ENTER NGL
+========================================================= */
 
-function isServiceAdmin() {
+function enterNGL() {
 
-  if (!verifiedUser) {
+  const gate =
+    $("verificationGate");
 
-    return false;
+  if (gate) {
 
+    gate.classList.add(
+      "verification-complete"
+    );
+
+    setTimeout(() => {
+
+      gate.style.display = "none";
+
+    }, 250);
   }
 
-  return (
-    verifiedUser.role ===
-      "admin" ||
 
-    verifiedUser.role ===
-      "admin-dev"
-  );
+  applyRoleAccess();
 
+  updateUserDisplay();
+
+  stopCamera();
 }
 
 
-/* =====================================================
-   APPLY USER ROLE
-===================================================== */
+/* =========================================================
+   USER DISPLAY
+========================================================= */
 
-function applyRoleAccess() {
+function updateUserDisplay() {
 
-  if (!verifiedUser) {
-    return;
-  }
+  if (!verifiedUser) return;
 
   const userName =
-    document.getElementById(
-      "userName"
-    );
+    $("userName");
 
   const userRoleName =
-    document.getElementById(
-      "userRoleName"
-    );
+    $("userRoleName");
+
 
   if (userName) {
 
     userName.textContent =
       verifiedUser.name;
-
   }
+
 
   if (userRoleName) {
 
     userRoleName.textContent =
-      String(
+      normalizeRole(
         verifiedUser.role
-      )
-        .replace(
-          "-",
-          " "
-        )
-        .toUpperCase();
-
+      ).toUpperCase();
   }
-
 }
 
 
-/* =====================================================
-   CATEGORY
-===================================================== */
+/* =========================================================
+   ROLE ACCESS
+========================================================= */
 
-categoryButtons.forEach(
-  button => {
-
-    button.addEventListener(
-      "click",
-      () => {
-
-        categoryButtons.forEach(
-          item => {
-
-            item.classList.remove(
-              "active"
-            );
-
-          }
-        );
-
-        button.classList.add(
-          "active"
-        );
-
-        currentFilter =
-          button.dataset.filter ||
-          "all";
-
-        filterApps();
-
-      }
-    );
-
-  }
-);
-
-
-/* =====================================================
-   OPEN SERVICE
-===================================================== */
-
-function openService(card) {
-
-  /*
-    Belum login.
-  */
+function isServiceAdmin() {
 
   if (!verifiedUser) {
-
-    showToast(
-      "Silakan verifikasi identitas terlebih dahulu."
-    );
-
-    return;
-
+    return false;
   }
 
-  /*
-    Hanya admin dan admin-dev.
-  */
-
-  if (!isServiceAdmin()) {
-
-    showToast(
-      "Layanan hanya dapat digunakan oleh admin."
+  const role =
+    normalizeRole(
+      verifiedUser.role
     );
-
-    return;
-
-  }
-
-  if (!card) {
-    return;
-  }
-
-  currentService =
-    card.dataset.name ||
-    null;
-
-  if (!currentService) {
-
-    showToast(
-      "Layanan tidak ditemukan."
-    );
-
-    return;
-
-  }
-
-  const icon =
-    document.getElementById(
-      "modalIcon"
-    );
-
-  const iconElement =
-    document.getElementById(
-      "modalIconElement"
-    );
-
-  if (icon) {
-
-    icon.className =
-      "app-icon " +
-      (
-        card.dataset.iconClass ||
-        ""
-      );
-
-  }
-
-  if (iconElement) {
-
-    iconElement.className =
-      "bx " +
-      (
-        card.dataset.icon ||
-        ""
-      );
-
-  }
-
-  const modalTitle =
-    document.getElementById(
-      "modalTitle"
-    );
-
-  const modalDescription =
-    document.getElementById(
-      "modalDescription"
-    );
-
-  const modalCategory =
-    document.getElementById(
-      "modalCategory"
-    );
-
-  if (modalTitle) {
-
-    modalTitle.textContent =
-      card.dataset.name ||
-      "";
-
-  }
-
-  if (modalDescription) {
-
-    modalDescription.textContent =
-      card.dataset.description ||
-      "";
-
-  }
-
-  if (modalCategory) {
-
-    modalCategory.textContent =
-      getCategoryName(
-        card.dataset.category ||
-        ""
-      );
-
-  }
-
-  const modalOverlay =
-    document.getElementById(
-      "modalOverlay"
-    );
-
-  if (modalOverlay) {
-
-    modalOverlay.classList.add(
-      "show"
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   CATEGORY NAME
-===================================================== */
-
-function getCategoryName(
-  category
-) {
-
-  const names = {
-
-    productivity:
-      "Produktivitas",
-
-    personal:
-      "Personal",
-
-    mental:
-      "Kesehatan Jiwa",
-
-    social:
-      "Sosial"
-
-  };
 
   return (
-    names[category] ||
-    "Layanan"
+    role === "admin" ||
+    role === "admin-dev"
   );
-
 }
 
 
-/* =====================================================
-   CLOSE MODAL
-===================================================== */
+function applyRoleAccess() {
 
-function closeModal() {
+  const allowed =
+    isServiceAdmin();
 
-  const modalOverlay =
-    document.getElementById(
-      "modalOverlay"
-    );
-
-  if (modalOverlay) {
-
-    modalOverlay.classList.remove(
-      "show"
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   LAUNCH SERVICE
-===================================================== */
-
-function launchService() {
-
-  if (!currentService) {
-    return;
-  }
 
   /*
-    Cek autentikasi lagi.
-  */
+   * Semua anggota tetap dapat masuk
+   * ke NGL, tetapi service dikunci.
+   */
 
-  if (!verifiedUser) {
+  document
+    .querySelectorAll("[data-service]")
+    .forEach(card => {
 
-    closeModal();
-
-    showToast(
-      "Silakan verifikasi identitas terlebih dahulu."
-    );
-
-    return;
-
-  }
-
-  /*
-    Cek role lagi.
-  */
-
-  if (!isServiceAdmin()) {
-
-    closeModal();
-
-    showToast(
-      "Layanan hanya dapat digunakan oleh admin."
-    );
-
-    return;
-
-  }
-
-  const service =
-    SERVICES[
-      currentService
-    ];
-
-  if (
-    !service ||
-    !service.url ||
-    service.url === "#"
-  ) {
-
-    showToast(
-      currentService +
-      " sedang dalam perbaikan."
-    );
-
-    return;
-
-  }
-
-  /*
-    Buka service.
-  */
-
-  window.open(
-    service.url,
-    "_blank"
-  );
-
-}
-
-
-/* =====================================================
-   MODAL CLICK OUTSIDE
-===================================================== */
-
-const modalOverlay =
-  document.getElementById(
-    "modalOverlay"
-  );
-
-if (modalOverlay) {
-
-  modalOverlay.addEventListener(
-    "click",
-    event => {
-
-      if (
-        event.target ===
-        modalOverlay
-      ) {
-
-        closeModal();
-
-      }
-
-    }
-  );
-
-}
-
-
-/* =====================================================
-   DARK MODE
-===================================================== */
-
-const themeButton =
-  document.getElementById(
-    "themeButton"
-  );
-
-
-function updateThemeIcon() {
-
-  if (!themeButton) {
-    return;
-  }
-
-  const icon =
-    themeButton.querySelector(
-      "i"
-    );
-
-  if (!icon) {
-    return;
-  }
-
-  if (
-    body.classList.contains(
-      "dark"
-    )
-  ) {
-
-    icon.className =
-      "bx bx-sun";
-
-  } else {
-
-    icon.className =
-      "bx bx-moon";
-
-  }
-
-}
-
-
-/*
-  Load saved theme.
-*/
-
-if (
-  localStorage.getItem(
-    "ngl-theme"
-  ) ===
-  "dark"
-) {
-
-  body.classList.add(
-    "dark"
-  );
-
-}
-
-updateThemeIcon();
-
-
-/*
-  Theme button.
-*/
-
-if (themeButton) {
-
-  themeButton.addEventListener(
-    "click",
-    () => {
-
-      body.classList.toggle(
-        "dark"
+      card.classList.toggle(
+        "service-locked",
+        !allowed
       );
-
-      localStorage.setItem(
-
-        "ngl-theme",
-
-        body.classList.contains(
-          "dark"
-        )
-          ? "dark"
-          : "light"
-
-      );
-
-      updateThemeIcon();
-
-    }
-  );
-
-}
-
-
-/* =====================================================
-   INFO
-===================================================== */
-
-const infoButton =
-  document.getElementById(
-    "infoButton"
-  );
-
-if (infoButton) {
-
-  infoButton.addEventListener(
-    "click",
-    () => {
-
-      showToast(
-        "Network Gateway Link — pusat akses layanan."
-      );
-
-    }
-  );
-
-}
-
-
-/* =====================================================
-   NAVIGATION
-===================================================== */
-
-function setActiveNav(
-  name
-) {
-
-  navItems.forEach(
-    item => {
-
-      item.classList.toggle(
-
-        "active",
-
-        item.dataset.nav ===
-          name
-
-      );
-
-    }
-  );
-
-}
-
-
-function goHome(
-  event
-) {
-
-  if (event) {
-
-    event.preventDefault();
-
-  }
-
-  window.scrollTo({
-
-    top:
-      0,
-
-    behavior:
-      "smooth"
-
-  });
-
-  setActiveNav(
-    "home"
-  );
-
-}
-
-
-function scrollToApps() {
-
-  const section =
-    document.getElementById(
-      "appsSection"
-    );
-
-  if (section) {
-
-    section.scrollIntoView({
-
-      behavior:
-        "smooth",
-
-      block:
-        "start"
 
     });
-
-  }
-
-  setActiveNav(
-    "apps"
-  );
-
 }
 
 
-function scrollToMental() {
+/* =========================================================
+   LOGOUT
+========================================================= */
 
-  const section =
-    document.querySelector(
-      ".featured-grid"
-    );
+function logoutNGL() {
 
-  if (section) {
+  stopCamera();
 
-    section.scrollIntoView({
+  verifiedUser = null;
 
-      behavior:
-        "smooth",
+  faceDescriptor = null;
 
-      block:
-        "start"
-
-    });
-
-  }
-
-  setActiveNav(
-    "mental"
+  localStorage.removeItem(
+    "ngl-session"
   );
 
+
+  const gate =
+    $("verificationGate");
+
+  if (gate) {
+
+    gate.style.display = "flex";
+
+    gate.classList.remove(
+      "verification-complete"
+    );
+  }
+
+
+  $("verifyName").value = "";
+
+  switchAuthMode("login");
+
+
+  $("startCameraButton").disabled =
+    false;
+
+
+  $("verifyButton").disabled =
+    true;
+
+
+  updateCameraStatus(
+    "Kamera belum dimulai",
+    "bx-camera"
+  );
+
+
+  clearVerificationStatus();
 }
 
 
-function scrollToDonation() {
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
 
-  const section =
-    document.getElementById(
-      "donationSection"
-    );
+function escapeHTML(value) {
 
-  if (section) {
-
-    section.scrollIntoView({
-
-      behavior:
-        "smooth",
-
-      block:
-        "start"
-
-    });
-
-  }
-
-  setActiveNav(
-    "donation"
-  );
-
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 }
 
 
-/* =====================================================
-   KEYBOARD SEARCH
-===================================================== */
-
-document.addEventListener(
-  "keydown",
-  event => {
-
-    if (
-
-      event.key === "/" &&
-
-      document.activeElement !==
-        searchInput
-
-    ) {
-
-      event.preventDefault();
-
-      if (searchInput) {
-
-        searchInput.focus();
-
-      }
-
-    }
-
-    if (
-      event.key ===
-      "Escape"
-    ) {
-
-      closeModal();
-
-      if (
-        searchInput
-      ) {
-
-        searchInput.blur();
-
-      }
-
-    }
-
-  }
-);
-
-
-/* =====================================================
-   TOAST
-===================================================== */
-
-let toastTimer = null;
-
-
-function showToast(
-  message
-) {
-
-  const toast =
-    document.getElementById(
-      "toast"
-    );
-
-  if (!toast) {
-    return;
-  }
-
-  toast.textContent =
-    message;
-
-  toast.classList.add(
-    "show"
-  );
-
-  clearTimeout(
-    toastTimer
-  );
-
-  toastTimer =
-    setTimeout(
-      () => {
-
-        toast.classList.remove(
-          "show"
-        );
-
-      },
-      2400
-    );
-
-}
-
-
-/* =====================================================
-   SCROLL NAVIGATION
-===================================================== */
-
-window.addEventListener(
-  "scroll",
-  () => {
-
-    const scroll =
-      window.scrollY +
-      window.innerHeight /
-        2;
-
-    const mentalSection =
-      document.querySelector(
-        ".featured-grid"
-      );
-
-    const appsSection =
-      document.getElementById(
-        "appsSection"
-      );
-
-    const donationSection =
-      document.getElementById(
-        "donationSection"
-      );
-
-    if (
-
-      donationSection &&
-
-      scroll >=
-        donationSection.offsetTop
-
-    ) {
-
-      setActiveNav(
-        "donation"
-      );
-
-    } else if (
-
-      mentalSection &&
-
-      scroll >=
-        mentalSection.offsetTop
-
-    ) {
-
-      setActiveNav(
-        "mental"
-      );
-
-    } else if (
-
-      appsSection &&
-
-      scroll >=
-        appsSection.offsetTop
-
-    ) {
-
-      setActiveNav(
-        "apps"
-      );
-
-    } else {
-
-      setActiveNav(
-        "home"
-      );
-
-    }
-
-  }
-);
-
-
-/* =====================================================
-   DOM READY
-===================================================== */
+/* =========================================================
+   INITIALIZE
+========================================================= */
 
 document.addEventListener(
   "DOMContentLoaded",
   () => {
 
-    /*
-      Jangan load model face-api
-      ketika halaman baru dibuka.
-
-      Model akan dimuat ketika
-      user menekan tombol kamera.
-    */
-
     checkExistingSession();
-
-    /*
-      Pastikan filter awal aktif.
-    */
-
-    filterApps();
 
   }
 );
 
 
-/* =====================================================
-   GLOBAL FUNCTIONS
-===================================================== */
+/* =========================================================
+   GLOBAL
+========================================================= */
 
-/*
-  Diperlukan karena HTML menggunakan
-  onclick="..."
-*/
+window.switchAuthMode =
+  switchAuthMode;
 
 window.startFaceVerification =
   startFaceVerification;
 
-window.startCamera =
-  startCamera;
-
-window.stopCamera =
-  stopCamera;
-
 window.verifyIdentity =
   verifyIdentity;
 
-window.openService =
-  openService;
-
-window.closeModal =
-  closeModal;
-
-window.launchService =
-  launchService;
-
-window.goHome =
-  goHome;
-
-window.scrollToApps =
-  scrollToApps;
-
-window.scrollToMental =
-  scrollToMental;
-
-window.scrollToDonation =
-  scrollToDonation;
-
-
-/* =====================================================
-   END
-===================================================== */
-
+window.logoutNGL =
+  logoutNGL;
 </script>
-
-<!-- ================= VERIFICATION GATE ================= -->
-<div id="verificationGate" class="verification-gate">
-
-  <div class="verification-card">
-
-    <div class="verification-brand">
-      <div class="verification-logo">
-        <i class='bx bx-network-chart'></i>
-      </div>
-
-      <div>
-        <strong>Network Gateway Link</strong>
-        <span>VERIFIKASI AKSES</span>
-      </div>
-    </div>
-
-    <div class="verification-content">
-
-      <div class="verification-icon">
-        <i class='bx bx-face'></i>
-      </div>
-
-      <h1>Verifikasi identitas</h1>
-
-      <p>
-        Masukkan nama dan lakukan verifikasi wajah sebelum
-        mengakses Network Gateway Link.
-      </p>
-
-      <div class="verification-field">
-        <label for="verifyName">Nama</label>
-
-        <div class="verification-input">
-          <i class='bx bx-user'></i>
-
-          <input
-            type="text"
-            id="verifyName"
-            placeholder="Masukkan nama lengkap"
-            autocomplete="name"
-          >
-        </div>
-      </div>
-
-
-      <div class="camera-box">
-
-        <video
-          id="faceVideo"
-          autoplay
-          muted
-          playsinline
-        ></video>
-
-        <canvas id="faceCanvas"></canvas>
-
-        <div class="camera-overlay">
-          <div class="face-frame"></div>
-        </div>
-
-        <div class="camera-status" id="cameraStatus">
-          <i class='bx bx-camera'></i>
-          Kamera belum dimulai
-        </div>
-
-      </div>
-
-
-      <button
-        class="camera-button"
-        id="startCameraButton"
-        onclick="startFaceVerification()"
-      >
-        <i class='bx bx-camera'></i>
-        Mulai verifikasi wajah
-      </button>
-
-
-      <button
-        class="verify-button"
-        id="verifyButton"
-        onclick="verifyIdentity()"
-        disabled
-      >
-        <i class='bx bx-shield-check'></i>
-        Verifikasi & Masuk
-      </button>
-
-
-      <div class="verification-status" id="verificationStatus"></div>
-
-      <div class="verification-note">
-        <i class='bx bx-lock-alt'></i>
-
-        <span>
-          Data verifikasi digunakan untuk autentikasi akses
-          Network Gateway Link.
-        </span>
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
 
 </body>
 </html>
