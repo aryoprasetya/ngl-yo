@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>My Connection — JOTA-JOTI 2026</title>
+<style>
+:root{--orange:#ef5000;--primary:#1757a6;--primary-light:#eaf2fc;--ink:#333b46;--muted:#9299a3;--line:#dedfe2;--bg:#f4f5f7;--white:#fff;--gold:#f5b323}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--ink);font-size:14px}.app{max-width:448px;min-height:100vh;margin:auto;background:#fff;box-shadow:0 0 30px #152e4c0b;padding-bottom:65px}.topbar{height:64px;position:sticky;top:0;z-index:20;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid #f0f0f0}.brand img{display:block;width:auto;height:34px;max-width:170px;object-fit:contain}.event-chip{display:flex;align-items:center;gap:6px;border:0;border-radius:8px;background:#f6aa13;color:#fff;padding:9px 11px;font-size:11px;font-weight:700}.event-band{height:48px;background:var(--orange);color:#fff;display:flex;align-items:center;justify-content:center;text-transform:uppercase;font-weight:700;font-size:15px;position:relative;overflow:hidden;border-radius:0 0 22px 22px}.event-band:after{content:"";position:absolute;right:-20px;top:-40px;width:100px;height:120px;border:12px solid #ffffff22;transform:rotate(25deg);border-radius:20px}.tabs{position:sticky;top:64px;z-index:15;background:#fff;padding:15px 18px 12px;display:flex;gap:8px;overflow-x:auto;border-bottom:1px solid #f3f3f3}.tabs button{border:0;border-radius:30px;background:#e8e8e8;color:#50545a;padding:10px 16px;font-size:12px;white-space:nowrap}.tabs button.active{background:var(--primary);color:#fff}.content{padding:18px 20px}.title-row{display:flex;justify-content:space-between;align-items:center;margin:2px 0 15px}.title-row h1{font-size:19px;margin:0;color:#303741}.title-row p{margin:5px 0 0;font-size:11px;color:var(--muted)}.refresh{background:#fff;border:1px solid var(--line);border-radius:7px;color:var(--primary);font-size:11px;padding:8px 10px}.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:18px}.stat{border:1px solid var(--line);border-radius:9px;padding:12px 10px;background:#fff;min-width:0}.stat-label{font-size:10px;color:#8b929b;line-height:1.3}.stat-value{font-size:23px;font-weight:700;color:var(--primary);margin-top:5px}.card{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:16px;background:#fff}.card-head{padding:15px 15px 12px;border-bottom:1px solid #eceef1}.card-head h2{font-size:15px;margin:0;color:#333b46}.card-head p{font-size:11px;color:var(--muted);margin:5px 0 0}.card-body{padding:15px}.field{margin-bottom:14px}.field label{display:block;font-size:12px;color:#5b626c;font-weight:600;margin-bottom:7px}.field label small{font-weight:400;color:var(--muted)}.field input{width:100%;border:1px solid #d7d9dd;border-radius:6px;padding:12px;background:#fff;font:inherit;font-size:13px;outline:none;color:var(--ink)}.field input:focus{border-color:var(--primary);box-shadow:0 0 0 2px #1757a610}.upload{position:relative;border:1px dashed #c7cbd1;border-radius:8px;padding:20px 12px;text-align:center;background:#fafbfc}.upload input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}.upload .upicon{font-size:24px;color:var(--primary)}.upload strong{display:block;font-size:12px;margin:7px 0 4px}.upload span{font-size:10px;color:var(--muted)}.preview{display:none;max-width:100%;max-height:180px;margin:12px auto 0}.consent{display:flex;gap:8px;align-items:flex-start;font-size:10px;color:#7c838d;line-height:1.5;margin:14px 0}.consent input{margin-top:2px}.primary{width:100%;background:var(--primary);border:0;border-radius:7px;padding:13px;color:#fff;font-weight:700;font-size:12px}.primary:disabled{opacity:.6}.status{display:none;margin-top:12px;border-radius:6px;padding:11px;background:#edf8f1;color:#19734c;font-size:11px;overflow-wrap:anywhere}.status.error{background:#fff0f0;color:#a32b35}.podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding:14px 12px;background:#fafbfc}.podium-card{min-width:0;text-align:center;border:1px solid var(--line);border-radius:8px;padding:12px 4px;background:#fff}.podium-card.first{border-color:#f0c45c;background:#fffaf0}.medal{width:27px;height:27px;margin:0 auto 8px;border-radius:50%;display:grid;place-items:center;background:#e6eaf0;color:#657387;font-weight:700;font-size:12px}.first .medal{background:#f4c342;color:#694900}.second .medal{background:#d6dce4;color:#46566c}.third .medal{background:#d8aa85;color:#fff}.podium-name{font-size:10px;font-weight:700;line-height:1.35;overflow-wrap:anywhere;min-height:27px}.podium-count{font-size:20px;font-weight:700;color:var(--primary);margin-top:6px}.podium-count small{font-size:9px;font-weight:400;color:var(--muted)}.podium-jid{font-size:9px;color:var(--muted);margin-top:4px;overflow-wrap:anywhere}.empty-podium{grid-column:1/-1;text-align:center;color:var(--muted);font-size:11px;padding:22px 4px}.search{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:12px;margin-bottom:10px}.table-wrap{overflow-x:auto}.leader-table{width:100%;border-collapse:collapse;font-size:11px}.leader-table th{text-align:left;background:#fafbfc;color:#858d98;font-size:9px;text-transform:uppercase;letter-spacing:.4px;padding:11px 12px}.leader-table td{padding:12px;border-top:1px solid #eff0f2;vertical-align:middle}.leader-table tr.top-row{background:#fffaf0}.rank{width:34px;color:#8a929d;font-weight:700}.person{font-size:11px;font-weight:700;color:#3b424b}.subline{font-size:9px;color:#9299a3;margin-top:4px}.count-pill{background:#eaf2fc;color:var(--primary);padding:5px 8px;border-radius:5px;font-weight:700}.table-footer{font-size:10px;color:var(--muted);padding:12px;border-top:1px solid #eff0f2}.guide{font-size:11px;color:#727b87;line-height:1.6;padding:0 2px}.guide summary{color:#4d5661;font-weight:700;cursor:pointer;padding:8px 0}.guide ul{padding-left:18px}.footer{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:448px;height:48px;background:#fff;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:#a1a5ab;font-size:10px;z-index:30}.footer strong{color:#727b87}.section{scroll-margin-top:135px}.hidden{display:none!important}
+@media(min-width:700px){body{padding:18px 0}.app{border-radius:12px;overflow:visible;min-height:calc(100vh - 36px)}.topbar{border-radius:12px 12px 0 0}.footer{bottom:18px;border-radius:0 0 12px 12px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <a class="brand" href="#" aria-label="JOTA-JOTI"><img src="https://jjid.ayopramuka-kwarnas.id/assets/jotajoti-EJ7KqrpK.png" alt="Logo JOTA-JOTI AyoPramuka Kwarnas"></a>
+  <button class="event-chip" type="button" onclick="document.getElementById('leaderboard-section').scrollIntoView({behavior:'smooth'})">JOTI 2026 ↗</button>
+</header>
+<div class="event-band">Jota Joti 2026</div>
+<nav class="tabs" aria-label="Navigasi utama">
+<button class="active" data-target="submit">Kirim Connection</button><button data-target="leaderboard-section">Leaderboard</button><button data-target="guidelines">Panduan</button>
+</nav>
+<main class="content">
+<section class="section" id="submit">
+  <div class="title-row"><div><h1>My Connection</h1><p>Catat koneksi JOTA-JOTI kamu.</p></div></div>
+  <div class="stats">
+    <div class="stat"><div class="stat-label">Total Connection</div><div class="stat-value" id="totalConnections">—</div></div>
+    <div class="stat"><div class="stat-label">Peserta</div><div class="stat-value" id="totalParticipants">—</div></div>
+    <div class="stat"><div class="stat-label">Bukti Masuk</div><div class="stat-value" id="totalEvidence">—</div></div>
+  </div>
+  <section class="card">
+    <div class="card-head"><h2>Form Connection</h2><p>Lengkapi data dan unggah bukti.</p></div>
+    <div class="card-body">
+      <form id="connectionForm">
+        <div class="field"><label for="name">Nama lengkap</label><input id="name" name="name" required maxlength="100" autocomplete="name" placeholder="Masukkan nama lengkap"></div>
+        <div class="field"><label for="jid">JID</label><input id="jid" name="jid" required maxlength="40" autocapitalize="characters" placeholder="Contoh: 3ID014TDB"></div>
+        <div class="field"><label for="jjid">JJID <small>(opsional)</small></label><input id="jjid" name="jjid" maxlength="60" placeholder="Masukkan JJID"></div>
+        <div class="field"><label for="screenshot">Screenshot JID Connection</label><div class="upload"><input id="screenshot" name="screenshot" type="file" accept="image/png,image/jpeg,image/webp" required><div class="upicon">⇧</div><strong id="uploadTitle">Pilih screenshot</strong><span>PNG, JPG, WEBP · Maks. 5 MB</span><img id="preview" class="preview" alt="Pratinjau screenshot"></div></div>
+        <label class="consent"><input type="checkbox" id="consent" required><span>Saya menyetujui nama, JID, dan jumlah connection ditampilkan di leaderboard.</span></label>
+        <button class="primary" id="submitBtn" type="submit">KIRIM CONNECTION</button>
+        <div class="status" id="formStatus" role="status" aria-live="polite"></div>
+      </form>
+    </div>
+  </section>
+</section>
+<section class="section card" id="leaderboard-section">
+  <div class="card-head" style="display:flex;align-items:center;justify-content:space-between;gap:8px"><div><h2>Leaderboard</h2><p>Connection terbanyak</p></div><button id="refreshBtn" class="refresh" type="button">↻ Refresh</button></div>
+  <div class="podium" id="podium"><div class="empty-podium">Memuat leaderboard…</div></div>
+  <div style="padding:14px 12px 0"><input class="search" id="searchLeaderboard" placeholder="Cari nama atau JID…" aria-label="Cari peserta"></div>
+  <div class="table-wrap"><table class="leader-table"><thead><tr><th>#</th><th>Peserta</th><th>Jumlah</th></tr></thead><tbody id="leaderRows"><tr><td colspan="3" style="text-align:center;padding:24px;color:#9299a3">Mengambil data…</td></tr></tbody></table></div>
+  <div class="table-footer" id="leaderFooter">Leaderboard belum dimuat.</div>
+</section>
+<details class="guide section" id="guidelines"><summary>Panduan pengumpulan</summary><ul><li>Satu kiriman dihitung sebagai satu connection submission.</li><li>Admin memeriksa screenshot dan dapat menolak bukti tidak valid atau duplikat.</li><li>Jangan mengunggah data pribadi orang lain.</li></ul></details>
+</main>
+<footer class="footer">© <strong>&nbsp;JOTA-JOTI 2026&nbsp;</strong> · My Connection</footer>
+</div>
+<script>
+/*
+  SETUP: tempel URL Web App Google Apps Script ke API_URL.
+  Jika kosong, halaman memakai mode demo (data hanya di browser dan tidak dibagikan).
+*/
+const API_URL = "https://script.google.com/macros/s/AKfycbyB0P3YBPrYTL14MixCagcoBNga7f1Y_tirJIBAPcES7_WYOTQxMsIcx2i2mTFbrdNY-A/exec";
+const MAX_FILE_BYTES = 5 * 1024 * 1024;
+const form = document.getElementById('connectionForm');
+const fileInput = document.getElementById('screenshot');
+const preview = document.getElementById('preview');
+const statusBox = document.getElementById('formStatus');
+const submitBtn = document.getElementById('submitBtn');
+const demoKey = 'jotaJotiMyConnectionDemoV1';
+let entries = [];
+
+function showStatus(message, error=false){statusBox.textContent=message;statusBox.classList.toggle('error',error);statusBox.style.display='block'}
+function clean(s){return String(s??'').trim()}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function countConnections(rows){return rows.reduce((sum,r)=>sum+Number(r.count||1),0)}
+function getDemo(){try{return JSON.parse(localStorage.getItem(demoKey)||'[]')}catch{return []}}
+function saveDemo(rows){localStorage.setItem(demoKey,JSON.stringify(rows))}
+function dataToRows(data){
+  const grouped=new Map();
+  (data||[]).forEach(r=>{
+    const key=clean(r.jid).toUpperCase()||clean(r.name).toLowerCase();
+    if(!grouped.has(key))grouped.set(key,{name:r.name||'Peserta',jid:r.jid||'—',jjid:r.jjid||'',count:0});
+    grouped.get(key).count += Number(r.count||1);
+  });
+  return [...grouped.values()].sort((a,b)=>b.count-a.count||String(a.name).localeCompare(String(b.name)));
+}
+function render(rows){
+  const sorted=[...rows].sort((a,b)=>Number(b.count)-Number(a.count)||String(a.name).localeCompare(String(b.name)));
+  document.getElementById('totalConnections').textContent=countConnections(sorted).toLocaleString('id-ID');
+  document.getElementById('totalParticipants').textContent=sorted.length.toLocaleString('id-ID');
+  document.getElementById('totalEvidence').textContent=(entries.length||0).toLocaleString('id-ID');
+  const podium=document.getElementById('podium');
+  if(!sorted.length){podium.innerHTML='<div class="empty-podium">Belum ada connection. Jadilah yang pertama!</div>'}
+  else{
+    const medals=['1','2','3'], classes=['first','second','third'];
+    const top=sorted.slice(0,3);
+    podium.innerHTML=top.map((r,i)=>`<div class="podium-card ${classes[i]}"><div class="medal">${medals[i]}</div><div class="podium-name">${esc(r.name)}</div><div class="podium-count">${Number(r.count||0)} <small>conn.</small></div><div class="podium-jid">${esc(r.jid||'—')}</div></div>`).join('');
+    if(top.length<3)podium.innerHTML += `<div class="empty-podium">Peringkat akan lengkap saat peserta bertambah.</div>`;
+  }
+  const q=clean(document.getElementById('searchLeaderboard').value).toLowerCase();
+  const filtered=sorted.filter(r=>`${r.name} ${r.jid} ${r.jjid||''}`.toLowerCase().includes(q));
+  document.getElementById('leaderRows').innerHTML=filtered.length?filtered.map(r=>{
+    const rank=sorted.indexOf(r)+1;
+    return `<tr class="${rank<=3?'top-row':''}"><td class="rank">${String(rank).padStart(2,'0')}</td><td><div class="person">${esc(r.name)}</div><div class="subline">JID: ${esc(r.jid||'—')}${r.jjid?' · JJID: '+esc(r.jjid):''}</div></td><td><span class="count-pill">${Number(r.count||0)}</span></td></tr>`;
+  }).join(''):`<tr><td colspan="3" class="loading">Tidak ada peserta yang cocok.</td></tr>`;
+  document.getElementById('leaderFooter').textContent=`Menampilkan ${filtered.length} dari ${sorted.length} peserta · Diperbarui ${new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'})}`;
+}
+async function loadData(){
+  const btn=document.getElementById('refreshBtn');btn.disabled=true;
+  try{
+    if(API_URL && !API_URL.startsWith('PASTE_')){
+      const res=await fetch(API_URL+'?action=list',{method:'GET',cache:'no-store'});
+      if(!res.ok)throw new Error('Server merespons '+res.status);
+      const json=await res.json();
+      if(!json.success)throw new Error(json.message||'Gagal memuat data.');
+      entries=json.entries||[];
+      render(dataToRows(json.leaderboard||entries));
+    }else{
+      entries=getDemo();
+      render(dataToRows(entries));
+    }
+  }catch(err){showStatus('Tidak dapat memuat data dari server. Periksa URL Web App dan izin deployment. '+err.message,true);entries=getDemo();render(dataToRows(entries))}
+  finally{btn.disabled=false}
+}
+fileInput.addEventListener('change',()=>{
+  const f=fileInput.files[0];
+  preview.style.display='none';
+  if(!f){document.getElementById('uploadTitle').textContent='Pilih screenshot untuk diunggah';return}
+  document.getElementById('uploadTitle').textContent=f.name;
+  if(f.size>MAX_FILE_BYTES){showStatus('Ukuran file melebihi 5 MB. Pilih screenshot yang lebih kecil.',true);fileInput.value='';return}
+  if(!f.type.startsWith('image/')){showStatus('File harus berupa gambar.',true);fileInput.value='';return}
+  preview.src=URL.createObjectURL(f);preview.style.display='block';
+});
+function fileToBase64(file){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=reject;reader.readAsDataURL(file)})}
+form.addEventListener('submit',async e=>{
+  e.preventDefault();
+  const file=fileInput.files[0];
+  if(!file){showStatus('Unggah screenshot JID Connection terlebih dahulu.',true);return}
+  if(file.size>MAX_FILE_BYTES){showStatus('Ukuran screenshot maksimal 5 MB.',true);return}
+  const record={name:clean(document.getElementById('name').value),jid:clean(document.getElementById('jid').value).toUpperCase(),jjid:clean(document.getElementById('jjid').value),count:1};
+  if(!record.name||!record.jid){showStatus('Nama dan JID wajib diisi.',true);return}
+  submitBtn.disabled=true;submitBtn.textContent='MENGIRIM…';
+  try{
+    if(API_URL && !API_URL.startsWith('PASTE_')){
+      const base64=await fileToBase64(file);
+      const payload={action:'submit',...record,fileName:file.name,mimeType:file.type,base64};
+      // Apps Script ContentService supports this POST pattern; do not use custom headers.
+      const response=await fetch(API_URL,{method:'POST',body:JSON.stringify(payload)});
+      const result=await response.json();
+      if(!result.success)throw new Error(result.message||'Pengiriman gagal.');
+      form.reset();preview.style.display='none';document.getElementById('uploadTitle').textContent='Pilih screenshot untuk diunggah';
+      showStatus('Bukti berhasil dikirim. Connection tercatat setelah tersimpan; peringkat dapat berubah setelah verifikasi.');
+      await loadData();
+    }else{
+      const demo={...record,submittedAt:new Date().toISOString(),evidenceName:file.name};
+      const all=getDemo();all.push(demo);saveDemo(all);form.reset();preview.style.display='none';document.getElementById('uploadTitle').textContent='Pilih screenshot untuk diunggah';showStatus('Mode demo: kiriman tersimpan di browser ini saja, belum diunggah ke Drive dan tidak terlihat oleh pengguna lain. Pasang URL Apps Script untuk mengaktifkan database bersama.');await loadData();
+    }
+  }catch(err){showStatus('Pengiriman belum berhasil: '+err.message,true)}
+  finally{submitBtn.disabled=false;submitBtn.textContent='KIRIM BUKTI CONNECTION ↗'}
+});
+document.getElementById('refreshBtn').addEventListener('click',loadData);
+document.getElementById('searchLeaderboard').addEventListener('input',()=>render(dataToRows(entries)));
+document.querySelectorAll('.tabs button').forEach(btn=>btn.addEventListener('click',()=>{
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  document.getElementById(btn.dataset.target).scrollIntoView({behavior:'smooth',block:'start'});
+}));
+loadData();
+</script>
+</body></html>
