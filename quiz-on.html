@@ -1,0 +1,1600 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#08086F">
+<title>Pengerjaan Ujian — RUANG UJI</title>
+<link rel="icon" type="image/x-icon" href="assets/ruanguji1.png">
+<style>
+:root {
+  --navy: #08086F;
+  --navy2: #15158E;
+  --red: #FF0000;
+  --white: #FFFFFF;
+  --bg: #F2F4F8;
+  --line: #D5DBE5;
+  --text: #202638;
+  --muted: #697487;
+  --green: #217346;
+  --green-bg: #E8F4EC;
+  --yellow: #946200;
+  --yellow-bg: #FFF3D2;
+  --gray-bg: #E9EDF3;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+}
+button, input { font: inherit; }
+button { cursor: pointer; }
+button:focus-visible, input:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+button:disabled { cursor: not-allowed; opacity: .55; }
+.top-strip { height: 5px; background: var(--red); }
+.header {
+  background: white;
+  border-bottom: 1px solid var(--line);
+}
+.header-inner {
+  max-width: 1400px;
+  margin: auto;
+  padding: 10px 20px;
+  min-height: 68px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+.logo { width: auto; max-width: 230px; max-height: 44px; display: block; }
+.header-info { text-align: right; line-height: 1.5; }
+.header-info strong { color: var(--navy); font-size: 12px; }
+.header-info span { display: block; color: var(--muted); font-size: 11px; }
+.exam-bar {
+  background: var(--navy);
+  color: white;
+}
+.exam-bar-inner {
+  max-width: 1400px;
+  margin: auto;
+  padding: 11px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+}
+.exam-title { font-weight: bold; font-size: 14px; line-height: 1.5; }
+.exam-subtitle { color: #DADDF8; font-size: 11px; margin-top: 2px; }
+.timer-box {
+  flex-shrink: 0;
+  min-width: 124px;
+  border: 1px solid #7777C2;
+  padding: 7px 12px;
+  text-align: center;
+  background: #05055A;
+}
+.timer-label { font-size: 10px; color: #DADDF8; margin-bottom: 3px; }
+.timer {
+  font-size: 21px;
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 1px;
+}
+.timer.warning { color: #FFD166; }
+.timer.danger { color: #FF7777; }
+main { max-width: 1400px; margin: auto; padding: 20px; }
+.panel {
+  background: white;
+  border: 1px solid var(--line);
+}
+.panel-heading {
+  padding: 13px 16px;
+  background: #E9EDF5;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--navy);
+}
+.panel-body { padding: 17px; }
+.hidden { display: none !important; }
+.muted { color: var(--muted); }
+.small { font-size: 12px; line-height: 1.6; }
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid var(--navy);
+  border-radius: 2px;
+  background: var(--navy);
+  color: white;
+  font-weight: bold;
+  font-size: 12px;
+  text-align: center;
+}
+.btn:hover { background: var(--navy2); }
+.btn-secondary { background: white; color: var(--navy); }
+.btn-secondary:hover { color: white; }
+.btn-danger { background: var(--red); border-color: var(--red); }
+.btn-danger:hover { background: #D90000; }
+.btn-light { background: #F0F2F6; color: #30394B; border-color: #CFD5E0; }
+.btn-light:hover { background: #E2E6ED; color: #202638; }
+.btn:disabled { background: #E6E9EF; color: #858D9B; border-color: #D5DAE3; }
+.field-label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 7px; }
+.field {
+  width: 100%;
+  min-height: 43px;
+  border: 1px solid #C8D0DD;
+  border-radius: 2px;
+  padding: 10px 11px;
+  background: white;
+  color: var(--text);
+}
+.form-group { margin-bottom: 17px; }
+.form-hint { color: var(--muted); font-size: 11px; line-height: 1.6; margin-top: 6px; }
+.preexam { max-width: 680px; margin: 10px auto 30px; }
+.preexam h1 { font-size: 22px; color: var(--navy); margin: 0 0 9px; }
+.preexam-intro { color: var(--muted); font-size: 13px; line-height: 1.7; margin-bottom: 18px; }
+.exam-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--line);
+  margin-bottom: 20px;
+}
+.meta-item { padding: 13px 10px; border-right: 1px solid var(--line); }
+.meta-item:last-child { border-right: 0; }
+.meta-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+.meta-value { font-size: 16px; font-weight: bold; color: var(--navy); }
+.choice-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  margin-bottom: 9px;
+  cursor: pointer;
+  line-height: 1.5;
+}
+.choice-row:has(input:checked) { border-color: var(--navy); background: #F3F4FC; }
+.choice-row input { margin-top: 3px; accent-color: var(--navy); }
+.exam-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 275px;
+  gap: 17px;
+  align-items: start;
+}
+.question-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid #E4E8EF;
+  margin-bottom: 17px;
+}
+.question-index { color: var(--navy); font-weight: bold; font-size: 13px; }
+.question-status { color: var(--muted); font-size: 11px; }
+.question-text {
+  font-size: 16px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin-bottom: 22px;
+}
+.options { display: grid; gap: 10px; }
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  border: 1px solid #D7DDE7;
+  padding: 12px;
+  line-height: 1.7;
+  cursor: pointer;
+  background: white;
+}
+.option:hover { background: #F7F8FB; border-color: #A9B4C7; }
+.option.selected { background: #F0F1FC; border-color: var(--navy); }
+.option input { margin-top: 5px; accent-color: var(--navy); flex-shrink: 0; }
+.option-letter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 25px;
+  height: 25px;
+  border: 1px solid #C8D0DD;
+  font-size: 11px;
+  font-weight: bold;
+  color: var(--navy);
+}
+.option.selected .option-letter { background: var(--navy); color: white; border-color: var(--navy); }
+.option-content { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.question-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 9px;
+  border-top: 1px solid #E4E8EF;
+  padding-top: 16px;
+  margin-top: 23px;
+}
+.action-group { display: flex; gap: 8px; flex-wrap: wrap; }
+.flag-btn.marked { background: var(--yellow-bg); border-color: #D9B75E; color: #765000; }
+.progress-line { height: 5px; background: #E7EAF0; margin-top: 12px; }
+.progress-fill { height: 100%; background: var(--navy); width: 0; transition: width .15s linear; }
+.side-section { margin-bottom: 16px; }
+.side-section:last-child { margin-bottom: 0; }
+.side-label { font-size: 12px; font-weight: bold; color: var(--navy); margin-bottom: 10px; }
+.legend { display: grid; grid-template-columns: 1fr 1fr; gap: 9px 7px; }
+.legend-item { display: flex; align-items: center; gap: 7px; color: #596477; font-size: 10px; line-height: 1.4; }
+.legend-box { width: 15px; height: 15px; border: 1px solid #C9D1DF; flex-shrink: 0; background: white; }
+.legend-box.answered { background: var(--navy); border-color: var(--navy); }
+.legend-box.flagged { background: var(--yellow-bg); border-color: #D9B75E; }
+.legend-box.current { outline: 2px solid var(--red); outline-offset: 1px; }
+.number-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; }
+.q-number {
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  border: 1px solid #C9D1DF;
+  background: white;
+  color: #384357;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 2px;
+}
+.q-number:hover { background: #F0F2F8; }
+.q-number.answered { background: var(--navy); color: white; border-color: var(--navy); }
+.q-number.flagged { background: var(--yellow-bg); color: #765000; border-color: #D9B75E; }
+.q-number.current { outline: 2px solid var(--red); outline-offset: 1px; }
+.q-number.answered.flagged { background: #514B84; color: white; border-color: #514B84; }
+.side-summary { font-size: 12px; line-height: 1.8; color: #525D70; }
+.side-summary strong { color: var(--navy); }
+.side-buttons { display: grid; gap: 9px; }
+.side-buttons .btn { width: 100%; }
+.notice {
+  padding: 12px 13px;
+  background: #F7F8FB;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--navy);
+  font-size: 11px;
+  line-height: 1.7;
+  color: #505B6E;
+}
+.notice.warning { border-left-color: var(--red); }
+.result-wrap { max-width: 650px; margin: 30px auto; }
+.result-head { text-align: center; padding: 25px 15px; }
+.result-symbol {
+  width: 52px; height: 52px; margin: 0 auto 14px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--green-bg); color: var(--green);
+  font-size: 24px; font-weight: bold; border-radius: 50%;
+}
+.result-head h1 { color: var(--navy); font-size: 23px; margin: 0 0 10px; }
+.result-score { color: var(--navy); font-size: 38px; font-weight: bold; margin: 16px 0 5px; }
+.result-detail { color: var(--muted); font-size: 12px; line-height: 1.8; }
+.result-list { border-top: 1px solid var(--line); }
+.result-row { display: flex; justify-content: space-between; gap: 15px; padding: 12px 16px; border-bottom: 1px solid #E8EBF1; font-size: 12px; }
+.result-row strong { text-align: right; }
+.result-foot { padding: 15px; }
+.review-item { padding: 14px 0; border-bottom: 1px solid var(--line); line-height: 1.7; }
+.review-item:last-child { border-bottom: 0; }
+.review-item strong { color: var(--navy); }
+.review-correct { color: var(--green); }
+.review-wrong { color: var(--red); }
+.loading, .error-box { padding: 30px 16px; text-align: center; line-height: 1.7; }
+.error-box strong { display: block; color: var(--red); margin-bottom: 8px; }
+.footer { padding: 16px 20px; text-align: center; color: var(--muted); font-size: 11px; border-top: 1px solid var(--line); background: white; line-height: 1.6; }
+.mobile-bottom { display: none; }
+@media(max-width: 850px) {
+  main { padding: 14px; }
+  .exam-layout { grid-template-columns: minmax(0, 1fr) 235px; gap: 12px; }
+  .panel-body { padding: 14px; }
+  .number-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+  .q-number { min-height: 36px; }
+}
+@media(max-width: 650px) {
+  .header-inner { min-height: 57px; padding: 9px 12px; }
+  .logo { max-width: 150px; max-height: 34px; }
+  .header-info { display: none; }
+  .exam-bar-inner { padding: 9px 12px; gap: 9px; }
+  .exam-title { font-size: 12px; }
+  .exam-subtitle { font-size: 10px; }
+  .timer-box { min-width: 93px; padding: 6px 8px; }
+  .timer { font-size: 19px; }
+  .timer-label { font-size: 9px; }
+  main { padding: 11px; }
+  .exam-layout { display: flex; flex-direction: column; gap: 11px; }
+  .question-panel { width: 100%; order: 1; }
+  .side-panel { width: 100%; order: 2; }
+  .question-panel .panel-body { padding: 14px 12px; }
+  .question-text { font-size: 15px; line-height: 1.75; }
+  .option { padding: 11px 9px; gap: 8px; }
+  .option-letter { width: 24px; height: 24px; }
+  .question-actions { gap: 8px; }
+  .action-group { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+  .question-actions > .btn { width: 100%; }
+  .action-group .btn { width: 100%; padding: 0 8px; }
+  .side-panel .panel-body { padding: 13px; }
+  .number-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 7px; }
+  .q-number { min-height: 40px; font-size: 12px; }
+  .legend { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .side-buttons { grid-template-columns: 1fr; }
+  .side-buttons .btn { min-height: 46px; }
+  .exam-meta { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .meta-item { padding: 11px 7px; }
+  .meta-value { font-size: 14px; }
+  .meta-label { font-size: 10px; line-height: 1.4; }
+  .preexam { margin-top: 3px; }
+  .preexam h1 { font-size: 20px; }
+  .mobile-bottom {
+    display: block;
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    padding: 9px 11px;
+    background: white;
+    border-top: 1px solid var(--line);
+    box-shadow: 0 -3px 10px rgba(20,30,60,.06);
+  }
+  .mobile-bottom-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+  .mobile-bottom .btn { width: 100%; min-height: 44px; }
+  .mobile-bottom .btn:only-child { grid-column: 1 / -1; }
+  body.exam-active { padding-bottom: 0; }
+  .footer { padding: 13px; }
+}
+@media(max-width: 370px) {
+  .logo { max-width: 120px; }
+  .exam-title { max-width: 170px; }
+  .number-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .q-number { min-height: 38px; }
+  .exam-meta { grid-template-columns: 1fr; }
+  .meta-item { border-right: 0; border-bottom: 1px solid var(--line); }
+  .meta-item:last-child { border-bottom: 0; }
+}
+
+.music-player{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 18px;margin-bottom:16px;flex-wrap:wrap}
+.music-info{display:flex;flex-direction:column;gap:3px;min-width:150px}
+.music-kicker{font-size:10px;letter-spacing:.12em;font-weight:800;color:var(--navy)}
+.music-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.music-btn{min-width:40px;min-height:38px;padding:8px 12px}
+.music-select{width:auto;min-width:145px;max-width:190px}
+.music-volume{display:flex;align-items:center;gap:6px;color:var(--navy)}
+.music-volume input{width:80px}
+@media(max-width:640px){.music-player{align-items:flex-start}.music-controls{width:100%}.music-select{flex:1;min-width:120px}.music-volume input{width:65px}}
+
+</style>
+</head>
+<body>
+<div class="top-strip"></div>
+
+<header class="header">
+  <div class="header-inner">
+    <a href="ruanguji.html" aria-label="Kembali ke beranda">
+      <img class="logo" src="assets/ruanguji.png" alt="RUANG UJI">
+    </a>
+    <div class="header-info">
+      <strong>PORTAL UJIAN ONLINE</strong>
+      <span>Computer Based Test</span>
+    </div>
+  </div>
+</header>
+
+<div id="examBar" class="exam-bar hidden">
+  <div class="exam-bar-inner">
+    <div>
+      <div id="barTitle" class="exam-title">Pengerjaan Ujian</div>
+      <div id="barSubtitle" class="exam-subtitle">RUANG UJI</div>
+    </div>
+    <div class="timer-box">
+      <div class="timer-label">SISA WAKTU</div>
+      <div id="timer" class="timer">--:--</div>
+    </div>
+  </div>
+</div>
+
+<main>
+  <section id="loadingPanel" class="panel">
+    <div class="loading">Memuat informasi ujian...</div>
+  </section>
+
+  <section id="errorPanel" class="panel hidden">
+    <div class="error-box">
+      <strong>Ujian tidak dapat dibuka</strong>
+      <div id="errorMessage" class="small"></div>
+      <p><a class="btn btn-secondary" href="ruanguji.html">Kembali ke daftar ujian</a></p>
+    </div>
+  </section>
+
+  <section id="preexam" class="preexam hidden">
+    <div class="page-heading">
+      <h1 id="preTitle">Persiapan Ujian</h1>
+      <div id="preDescription" class="preexam-intro"></div>
+    </div>
+
+    <div class="exam-meta">
+      <div class="meta-item">
+        <div class="meta-label">Durasi</div>
+        <div id="metaDuration" class="meta-value">-- menit</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Jumlah soal</div>
+        <div id="metaQuestions" class="meta-value">-- soal</div>
+      </div>
+      <div class="meta-item">
+        <div class="meta-label">Sistem</div>
+        <div id="metaSystem" class="meta-value">CBT</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-heading">Identitas Peserta</div>
+      <div class="panel-body">
+        <p class="small muted" style="margin-top:0">
+          Pilih mode pengerjaan. Mode identitas mencatat nama dan email peserta.
+          Mode tamu tidak mencatat email atau nomor identitas.
+        </p>
+
+        <label class="choice-row">
+          <input type="radio" name="participantMode" value="identity" checked>
+          <span><strong>Gunakan identitas</strong><br>
+            <span class="small muted">Nama dan email dicatat pada riwayat ujian.</span>
+          </span>
+        </label>
+        <label class="choice-row">
+          <input type="radio" name="participantMode" value="guest">
+          <span><strong>Masuk sebagai tamu</strong><br>
+            <span class="small muted">Nama dan email tidak wajib diisi dalam mode tamu.</span>
+          </span>
+        </label>
+
+        <div id="identityFields">
+          <div class="form-group">
+            <label class="field-label" for="participantName">Nama lengkap *</label>
+            <input class="field" id="participantName" maxlength="200"
+              autocomplete="name" placeholder="Masukkan nama lengkap">
+          </div>
+          <div class="form-group">
+            <label class="field-label" for="participantEmail">Email *</label>
+            <input class="field" id="participantEmail" type="email"
+              maxlength="200" autocomplete="email" placeholder="nama@email.com">
+          </div>
+          <div class="form-group">
+            <label class="field-label" for="participantId">NIM / ID peserta (opsional)</label>
+            <input class="field" id="participantId" maxlength="100"
+              placeholder="Masukkan nomor identitas peserta">
+          </div>
+        </div>
+
+        <div id="accessCodeWrap" class="form-group hidden">
+          <label class="field-label" for="participantAccessCode">Kode akses kuis *</label>
+          <input class="field" id="participantAccessCode" maxlength="80" autocomplete="off" placeholder="Masukkan kode akses dari pengajar">
+        </div>
+
+        <div class="notice warning">
+          Setelah ujian dimulai, timer akan berjalan. Jangan menutup halaman sebelum jawaban dikumpulkan. Jawaban sementara disimpan di browser perangkat ini.
+        </div>
+
+        <label class="choice-row" style="margin-top:14px">
+          <input type="checkbox" id="agreeRules">
+          <span>Saya telah membaca petunjuk dan siap mengerjakan ujian ini.</span>
+        </label>
+
+        <button id="startBtn" class="btn" type="button" style="width:100%;margin-top:7px">
+          Mulai Ujian
+        </button>
+        <div id="startError" class="form-hint" role="alert"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="examSection" class="hidden">
+    <div class="music-player panel" id="musicPlayer" aria-label="Pemutar musik ujian">
+      <div class="music-info">
+        <span class="music-kicker">MUSIK LATAR</span>
+        <strong id="musicTitle">Musik ujian</strong>
+        <span id="musicTrackCount" class="small muted">Pilih musik untuk menemani pengerjaan</span>
+      </div>
+      <audio id="examAudio" preload="none"></audio>
+      <div class="music-controls">
+        <button type="button" class="btn btn-light music-btn" id="musicPrev" aria-label="Musik sebelumnya" title="Sebelumnya">⏮</button>
+        <button type="button" class="btn music-btn" id="musicPlay" aria-label="Putar musik" title="Putar / jeda">▶</button>
+        <button type="button" class="btn btn-light music-btn" id="musicNext" aria-label="Musik berikutnya" title="Berikutnya">⏭</button>
+        <select id="musicSelect" class="field music-select" aria-label="Pilih musik">
+          <option value="">Pilih musik…</option>
+        </select>
+        <label class="music-volume" title="Volume musik">♫ <input id="musicVolume" type="range" min="0" max="1" step="0.05" value="0.35" aria-label="Volume musik"></label>
+      </div>
+    </div>
+    <div class="exam-layout">
+      <section class="panel question-panel">
+        <div class="panel-heading">Lembar Pengerjaan</div>
+        <div class="panel-body">
+          <div class="question-top">
+            <span id="questionIndex" class="question-index">Soal 1</span>
+            <span id="questionStatus" class="question-status">Belum dijawab</span>
+          </div>
+          <div id="questionTimerWrap" class="notice warning hidden" style="margin:0 0 14px">Sisa waktu soal: <strong id="questionTimer">--:--</strong></div>
+          <div id="questionText" class="question-text"></div>
+          <div id="options" class="options"></div>
+
+          <div class="question-actions">
+            <div class="action-group">
+              <button id="prevBtn" class="btn btn-secondary" type="button">← Sebelumnya</button>
+              <button id="nextBtn" class="btn" type="button">Berikutnya →</button>
+            </div>
+            <button id="flagBtn" class="btn btn-light" type="button">Tandai soal</button>
+          </div>
+          <div class="progress-line" aria-label="Progres pengerjaan">
+            <div id="progressFill" class="progress-fill"></div>
+          </div>
+          <div id="progressText" class="form-hint"></div>
+        </div>
+      </section>
+
+      <aside class="panel side-panel">
+        <div class="panel-heading">Navigasi Soal</div>
+        <div class="panel-body">
+          <div class="side-section">
+            <div class="side-label">Keterangan</div>
+            <div class="legend">
+              <div class="legend-item"><span class="legend-box current"></span>Sedang dibuka</div>
+              <div class="legend-item"><span class="legend-box answered"></span>Sudah dijawab</div>
+              <div class="legend-item"><span class="legend-box flagged"></span>Ditandai</div>
+              <div class="legend-item"><span class="legend-box"></span>Belum dijawab</div>
+            </div>
+          </div>
+          <hr style="border:0;border-top:1px solid var(--line);margin:15px 0">
+          <div class="side-section">
+            <div id="numberGrid" class="number-grid"></div>
+          </div>
+          <hr style="border:0;border-top:1px solid var(--line);margin:15px 0">
+          <div class="side-section side-summary">
+            Terjawab: <strong id="answeredCount">0</strong><br>
+            Belum dijawab: <strong id="unansweredCount">0</strong><br>
+            Ditandai: <strong id="flaggedCount">0</strong>
+          </div>
+          <div class="side-buttons">
+            <button id="submitBtn" class="btn btn-danger" type="button">Akhiri &amp; Kumpulkan</button>
+          </div>
+          <p class="form-hint">Periksa jawaban sebelum mengakhiri ujian.</p>
+        </div>
+      </aside>
+    </div>
+
+    <div class="mobile-bottom">
+      <div class="mobile-bottom-inner">
+        <button id="mobilePrevBtn" class="btn btn-secondary" type="button">← Sebelumnya</button>
+        <button id="mobileNextBtn" class="btn" type="button">Berikutnya →</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="resultSection" class="result-wrap hidden">
+    <div class="panel">
+      <div class="result-head">
+        <div class="result-symbol">✓</div>
+        <h1 id="resultTitle">Jawaban Berhasil Dikumpulkan</h1>
+        <div id="resultMessage" class="result-detail">
+          Jawaban kamu sudah dikirim ke sistem.
+        </div>
+        <div id="resultScore" class="result-score hidden"></div>
+        <div id="resultScoreLabel" class="result-detail hidden">Nilai ujian</div>
+      </div>
+      <div id="resultDetails" class="result-list"></div>
+      <div id="reviewSection" class="panel-body hidden">
+        <h3 style="color:var(--navy);font-size:14px">Pembahasan</h3>
+        <div id="reviewContent"></div>
+      </div>
+      <div class="result-foot">
+        <a class="btn btn-secondary" href="ruanguji.html" style="width:100%">Kembali ke Beranda</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  RUANG UJI · Computer Based Test<br>
+  Pastikan seluruh jawaban telah dikumpulkan sebelum meninggalkan halaman.
+</footer>
+
+<script>
+"use strict";
+
+/*
+ * Konfigurasi:
+ * localStorage key: QUIZ_API_URL
+ * API: Code.gs RUANG UJI
+ *
+ * Endpoint GET:
+ *   ?action=getQuiz&id=UJ-001
+ *   ?action=getQuestions&id=UJ-001
+ *
+ * Endpoint POST:
+ *   {"action":"submitAttempt", ...}
+ */
+
+const API_URL = localStorage.getItem("QUIZ_API_URL") || "https://script.google.com/macros/s/AKfycbzuznBNYprB6t4ztdY4qVXQFPJfPeFRf3D3xfJracFDkt4zbygJNEGyRhNgdJWbmMnUKA/exec";
+const params = new URLSearchParams(location.search);
+const quizId = params.get("id") || sessionStorage.getItem("selectedQuizId") || "";
+
+const $ = id => document.getElementById(id);
+
+let quiz = null;
+let questions = [];
+let answers = {};
+let optionOrders = {};
+let flagged = new Set();
+let currentIndex = 0;
+let startedAt = null;
+let deadline = null;
+let timerInterval = null;
+let questionTimerInterval = null;
+let questionDeadline = null;
+let activeQuestionTimerId = "";
+let started = false;
+let submitting = false;
+let attemptId = null;
+let participant = null;
+let currentStorageKey = "";
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;",
+    '"': "&quot;", "'": "&#39;"
+  })[c]);
+}
+
+async function apiGet(action, id, extra) {
+  if (!API_URL) throw new Error("URL Google Apps Script belum diatur.");
+
+  const url = new URL(API_URL);
+  url.searchParams.set("action", action);
+  if (id) url.searchParams.set("id", id);
+  if (extra) url.searchParams.set("code", extra);
+  url.searchParams.set("_", Date.now());
+
+  const response = await fetch(url.toString(), { method: "GET" });
+  if (!response.ok) throw new Error("Server gagal merespons (" + response.status + ").");
+  return response.json();
+}
+
+async function apiPost(payload) {
+  if (!API_URL) throw new Error("URL Google Apps Script belum diatur.");
+
+  // text/plain membantu menghindari preflight CORS pada banyak deployment Apps Script.
+  // Server tetap memproses isi request sebagai JSON.
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=UTF-8" },
+    body: JSON.stringify(payload),
+    redirect: "follow"
+  });
+
+  if (!response.ok) {
+    throw new Error("Server gagal memproses permintaan (" + response.status + ").");
+  }
+
+  return response.json();
+}
+
+function showOnly(id) {
+  ["loadingPanel", "errorPanel", "preexam", "examSection", "resultSection"]
+    .forEach(sectionId => $(sectionId).classList.add("hidden"));
+  $(id).classList.remove("hidden");
+}
+
+function showError(message) {
+  $("errorMessage").textContent = message;
+  showOnly("errorPanel");
+}
+
+// Tambahkan atau ganti URL audio pada daftar ini. Gunakan URL file audio langsung (MP3/OGG),
+ // bukan tautan halaman YouTube. Maksimal 4 lagu atau lebih sesuai kebutuhan.
+const MUSIC_TRACKS = [
+  { title: "Overnight-Kita", url: "https://www.ngl-yo.my.id/Overnight-Kita-SnapYT.App.mp3" },
+  { title: "Tulus-Hati Hati Dijalan", url: "https://www.ngl-yo.my.id/TULUS-Hati-Hati-SnapYT.App.mp3" },
+  { title: "Tulus-Jatuh Suka", url: "https://www.ngl-yo.my.id/TULUS-Jatuh-SnapYT.App.mp3" },
+  { title: "Tulus-Monokrom", url: "https://www.ngl-yo.my.id/TULUS-Monokrom-SnapYT.App.mp3" }
+].filter(track => track.url && /^https?:\/\//i.test(track.url));
+
+let musicIndex = -1;
+function setupMusicPlayer() {
+  const select = $("musicSelect");
+  const audio = $("examAudio");
+  if (!select || !audio) return;
+  select.innerHTML = '<option value="">Pilih musik…</option>' +
+    MUSIC_TRACKS.map((track, i) => `<option value="${i}">${escapeHTML(track.title)}</option>`).join("");
+  $("musicTrackCount").textContent = MUSIC_TRACKS.length
+    ? `${MUSIC_TRACKS.length} lagu tersedia`
+    : "Tambahkan URL lagu pada MUSIC_TRACKS di kode";
+  function loadTrack(index, autoplay) {
+    if (!MUSIC_TRACKS.length) return;
+    musicIndex = (index + MUSIC_TRACKS.length) % MUSIC_TRACKS.length;
+    const track = MUSIC_TRACKS[musicIndex];
+    audio.src = track.url;
+    $("musicSelect").value = String(musicIndex);
+    $("musicTitle").textContent = track.title;
+    if (autoplay) audio.play().then(() => $("musicPlay").textContent = "Ⅱ")
+      .catch(() => $("musicPlay").textContent = "▶");
+  }
+  $("musicSelect").addEventListener("change", () => {
+    const index = Number(select.value);
+    if (select.value !== "") loadTrack(index, true);
+  });
+  $("musicPrev").addEventListener("click", () => loadTrack(musicIndex <= 0 ? MUSIC_TRACKS.length - 1 : musicIndex - 1, true));
+  $("musicNext").addEventListener("click", () => loadTrack(musicIndex + 1, true));
+  $("musicPlay").addEventListener("click", () => {
+    if (!MUSIC_TRACKS.length) { $("musicTitle").textContent = "Tambahkan URL lagu pada MUSIC_TRACKS"; return; }
+    if (musicIndex < 0) loadTrack(0, false);
+    if (audio.paused) audio.play().then(() => $("musicPlay").textContent = "Ⅱ").catch(() => $("musicPlay").textContent = "▶");
+    else { audio.pause(); $("musicPlay").textContent = "▶"; }
+  });
+  audio.addEventListener("ended", () => loadTrack(musicIndex + 1, true));
+  audio.addEventListener("pause", () => $("musicPlay").textContent = "▶");
+  audio.addEventListener("play", () => $("musicPlay").textContent = "Ⅱ");
+  $("musicVolume").addEventListener("input", () => audio.volume = Number($("musicVolume").value));
+  audio.volume = 0.35;
+  if (!MUSIC_TRACKS.length) {
+    ["musicPrev","musicPlay","musicNext","musicSelect"].forEach(id => $(id).disabled = true);
+  }
+}
+setupMusicPlayer();
+
+function loadQuiz() {
+  if (!quizId) {
+    showError("ID ujian tidak ditemukan. Silakan kembali ke beranda dan pilih ujian.");
+    return;
+  }
+
+  if (!API_URL) {
+    showError(
+      "API Google Apps Script belum dikonfigurasi. Buka Console browser dan atur QUIZ_API_URL dengan URL Web App yang berakhiran /exec."
+    );
+    return;
+  }
+
+  apiGet("getQuiz", quizId).then(async quizResponse => {
+    if (!quizResponse.ok) throw new Error(quizResponse.message || "Ujian tidak tersedia.");
+    quiz = quizResponse.quiz;
+    if (!quiz) throw new Error("Ujian tidak tersedia.");
+    // Soal untuk kuis berkode baru diminta setelah kode berhasil diverifikasi server.
+    if (!quiz.requiresAccessCode) {
+      const questionResponse = await apiGet("getQuestions", quizId);
+      if (!questionResponse.ok) throw new Error(questionResponse.message || "Soal tidak dapat dimuat.");
+      questions = Array.isArray(questionResponse.questions) ? questionResponse.questions : [];
+      if (!questions.length) throw new Error("Ujian belum memiliki soal atau belum dipublikasikan.");
+      if (questions.some(q => !q.id || !q.question)) throw new Error("Terdapat soal dengan data tidak lengkap.");
+    } else {
+      questions = [];
+    }
+    renderPreexam();
+  }).catch(error => {
+    console.error(error);
+    showError(error.message || "Terjadi kesalahan saat memuat ujian.");
+  });
+}
+
+function readBoolean(value, fallback = false) {
+  if (value === true || value === 1) return true;
+  if (value === false || value === 0) return false;
+
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+
+    if (["true", "1", "yes", "ya"].includes(normalized)) return true;
+    if (["false", "0", "no", "tidak"].includes(normalized)) return false;
+    if (normalized === "") return fallback;
+  }
+
+  return fallback;
+}
+function renderPreexam() {
+  $("preTitle").textContent = quiz.title || "Persiapan Ujian";
+  $("preDescription").textContent =
+    quiz.description || "Baca petunjuk sebelum memulai ujian.";
+
+  $("metaDuration").textContent =
+    (Number(quiz.duration) || 60) + " menit";
+
+  $("metaQuestions").textContent = questions.length
+    ? questions.length + " soal"
+    : (Number(quiz.questionCount)
+        ? quiz.questionCount + " soal"
+        : "Dibuka setelah kode valid");
+
+  const navMode = String(quiz.navigationMode || "standard")
+    .trim()
+    .toLowerCase();
+
+  const navLabel = navMode === "sequential"
+    ? "Navigasi berurutan"
+    : navMode === "cat"
+      ? "CAT adaptif"
+      : "Navigasi bebas";
+
+  $("metaSystem").textContent =
+    (quiz.systemType || "CBT") + " · " + navLabel;
+
+  $("accessCodeWrap").classList.toggle(
+    "hidden",
+    !readBoolean(quiz.requiresAccessCode, false)
+  );
+
+  const guestRadio = document.querySelector(
+    'input[name="participantMode"][value="guest"]'
+  );
+  const identityRadio = document.querySelector(
+    'input[name="participantMode"][value="identity"]'
+  );
+
+  // Jika pengaturan allowGuest tidak dikirim server,
+  // gunakan default aktif agar opsi tamu tidak hilang.
+  const allowGuest = readBoolean(quiz.allowGuest, true);
+
+  if (guestRadio) {
+    guestRadio.disabled = !allowGuest;
+    guestRadio.closest("label").classList.toggle(
+      "hidden",
+      !allowGuest
+    );
+
+    if (!allowGuest && guestRadio.checked && identityRadio) {
+      identityRadio.checked = true;
+    }
+  }
+
+  $("identityFields").classList.toggle(
+    "hidden",
+    guestRadio && guestRadio.checked && allowGuest
+  );
+
+  $("barTitle").textContent = quiz.title || "Pengerjaan Ujian";
+  $("barSubtitle").textContent =
+    (questions.length || Number(quiz.questionCount) || 0) +
+    " soal · " + (Number(quiz.duration) || 60) + " menit";
+
+  showOnly("preexam");
+}
+
+document.querySelectorAll('input[name="participantMode"]').forEach(radio => {
+  radio.addEventListener("change", () => {
+    $("identityFields").classList.toggle(
+      "hidden",
+      document.querySelector('input[name="participantMode"]:checked').value === "guest"
+    );
+  });
+});
+
+$("startBtn").addEventListener("click", startExam);
+
+let startCountdownRunning = false;
+let accessCodeValidated = false;
+async function startExam() {
+  if (!startCountdownRunning) {
+    $("startError").textContent = "";
+  }
+
+  if (!$("agreeRules").checked) {
+    $("startError").textContent = "Centang persetujuan petunjuk terlebih dahulu.";
+    return;
+  }
+
+  const mode = document.querySelector('input[name="participantMode"]:checked').value;
+  const name = $("participantName").value.trim();
+  const email = $("participantEmail").value.trim();
+  const participantId = $("participantId").value.trim();
+
+  if (mode === "identity" && !name) {
+    $("startError").textContent = "Nama lengkap wajib diisi untuk mode identitas.";
+    $("participantName").focus();
+    return;
+  }
+
+  if (mode === "identity") {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      $("startError").textContent = "Masukkan alamat email yang valid.";
+      $("participantEmail").focus();
+      return;
+    }
+  }
+
+  if (quiz.requiresAccessCode && !accessCodeValidated) {
+    const code = $("participantAccessCode").value.trim();
+    if (!code) {
+      $("startError").textContent = "Masukkan kode akses kuis terlebih dahulu.";
+      $("participantAccessCode").focus();
+      return;
+    }
+    try {
+      const check = await apiGet("validateAccessCode", quizId, code);
+      if (!check.ok) {
+        $("startError").textContent = check.message || "Kode akses tidak valid.";
+        return;
+      }
+      accessCodeValidated = true;
+      if (!questions.length) {
+        const questionResponse = await apiGet("getQuestions", quizId, code);
+        if (!questionResponse.ok) {
+          accessCodeValidated = false;
+          $("startError").textContent = questionResponse.message || "Soal tidak dapat dimuat.";
+          return;
+        }
+        questions = Array.isArray(questionResponse.questions) ? questionResponse.questions : [];
+        if (!questions.length) {
+          accessCodeValidated = false;
+          $("startError").textContent = "Kuis belum memiliki soal.";
+          return;
+        }
+        $("metaQuestions").textContent = questions.length + " soal";
+      }
+    } catch (err) {
+      $("startError").textContent = "Kode akses gagal diverifikasi. Periksa koneksi server.";
+      return;
+    }
+  }
+
+  if (!startCountdownRunning) {
+    startCountdownRunning = true;
+    const button = $("startBtn");
+    let remaining = 5;
+    button.disabled = true;
+    button.textContent = `Ujian terbuka dalam ${remaining} detik…`;
+    const tick = () => {
+      remaining--;
+      if (remaining > 0) {
+        button.textContent = `Ujian terbuka dalam ${remaining} detik…`;
+        countdownTimer = setTimeout(tick, 1000);
+      } else {
+        button.textContent = "Memuat soal…";
+        startExam();
+      }
+    };
+    let countdownTimer = setTimeout(tick, 1000);
+    return;
+  }
+
+  participant = {
+    mode,
+    name: mode === "identity" ? name : (name || "Tamu"),
+    email: mode === "identity" ? email : "",
+    participantId: mode === "identity" ? participantId : ""
+  };
+
+  attemptId = crypto.randomUUID
+    ? crypto.randomUUID()
+    : "ATT-" + Date.now() + "-" + Math.random().toString(36).slice(2, 10);
+
+  currentStorageKey = "ruangUjiProgress:" + quizId + ":" + attemptId;
+  startedAt = Date.now();
+  deadline = startedAt + Math.max(1, Number(quiz.duration) || 60) * 60000;
+  currentIndex = 0;
+  answers = {};
+  flagged = new Set();
+  started = true;
+
+  // Penyimpanan progres lokal hanya untuk pemulihan di browser yang sama.
+  saveProgress();
+
+  document.body.classList.add("exam-active");
+  $("examBar").classList.remove("hidden");
+  showOnly("examSection");
+
+  renderQuestion();
+  renderNavigation();
+  startTimer();
+}
+
+function saveProgress() {
+  if (!currentStorageKey || !started || submitting) return;
+
+  try {
+    localStorage.setItem(currentStorageKey, JSON.stringify({
+      quizId,
+      attemptId,
+      answers,
+      flagged: Array.from(flagged),
+      currentIndex,
+      startedAt,
+      deadline,
+      participant
+    }));
+  } catch (error) {
+    console.warn("Progres lokal tidak dapat disimpan.", error);
+  }
+}
+
+function renderQuestion() {
+  const question = questions[currentIndex];
+  if (!question) return;
+
+  $("questionIndex").textContent =
+    "Soal " + (currentIndex + 1) + " dari " + questions.length;
+
+  $("questionText").textContent = question.question || "";
+  $("questionStatus").textContent = answers[question.id]
+    ? "Sudah dijawab"
+    : "Belum dijawab";
+
+  const optionKeys = ["A", "B", "C", "D", "E"];
+  let options = optionKeys
+    .map(key => ({ key, text: question["option" + key] }))
+    .filter(option => String(option.text || "").trim() !== "");
+  if (quiz.shuffleOptions) {
+    const qid = String(question.id);
+    if (!optionOrders[qid]) {
+      for (let i = options.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [options[i], options[j]] = [options[j], options[i]];
+      }
+      optionOrders[qid] = options.map(item => item.key);
+    } else {
+      const order = optionOrders[qid];
+      options.sort((a, b) => order.indexOf(a.key) - order.indexOf(b.key));
+    }
+  }
+
+  $("options").innerHTML = "";
+  if (question.type === "essay") {
+    const essay = document.createElement("textarea");
+    essay.className = "field";
+    essay.rows = 6;
+    essay.maxLength = 10000;
+    essay.placeholder = "Tuliskan jawaban uraian...";
+    essay.value = answers[question.id] || "";
+    essay.addEventListener("input", () => {
+      answers[question.id] = essay.value;
+      $("questionStatus").textContent = essay.value.trim() ? "Sudah dijawab" : "Belum dijawab";
+      renderNavigation();
+      saveProgress();
+    });
+    $("options").appendChild(essay);
+  } else {
+    options.forEach((option, displayIndex) => {
+      const label = document.createElement("label");
+      label.className = "option" + (answers[question.id] === option.key ? " selected" : "");
+
+      const radio = document.createElement("input");
+      radio.type = "radio";
+      radio.name = "answer";
+      radio.value = option.key;
+      radio.checked = answers[question.id] === option.key;
+      radio.setAttribute("aria-label", "Pilihan " + String.fromCharCode(65 + displayIndex));
+      radio.addEventListener("change", () => {
+        answers[question.id] = option.key;
+        renderQuestion();
+        renderNavigation();
+        saveProgress();
+      });
+
+      const letter = document.createElement("span");
+      letter.className = "option-letter";
+      letter.textContent = String.fromCharCode(65 + displayIndex);
+      const content = document.createElement("span");
+      content.className = "option-content";
+      content.textContent = option.text;
+      label.append(radio, letter, content);
+      $("options").appendChild(label);
+    });
+  }
+
+  const navMode = quiz.navigationMode || "standard";
+  const sequential = navMode === "sequential";
+  const catHasNext = navMode === "cat" && questions.some((q, i) => i !== currentIndex && !Object.prototype.hasOwnProperty.call(answers, String(q.id)));
+  $("prevBtn").disabled = currentIndex === 0 || sequential || navMode === "cat";
+  $("nextBtn").disabled = navMode === "cat" ? !catHasNext : currentIndex === questions.length - 1;
+  $("mobilePrevBtn").disabled = currentIndex === 0 || sequential || navMode === "cat";
+  $("mobileNextBtn").disabled = navMode === "cat" ? !catHasNext : currentIndex === questions.length - 1;
+  $("prevBtn").classList.toggle("hidden", sequential || navMode === "cat");
+  $("mobilePrevBtn").classList.toggle("hidden", sequential || navMode === "cat");
+
+  updateQuestionTimer();
+  const isFlagged = flagged.has(String(question.id));
+  $("flagBtn").classList.toggle("marked", isFlagged);
+  $("flagBtn").textContent = isFlagged ? "✓ Ditandai" : "Tandai soal";
+
+  const answered = Object.keys(answers).filter(id => answers[id]).length;
+  $("progressFill").style.width =
+    Math.round((answered / questions.length) * 100) + "%";
+  $("progressText").textContent =
+    answered + " dari " + questions.length + " soal telah dijawab.";
+}
+
+function renderNavigation() {
+  const grid = $("numberGrid");
+  grid.innerHTML = "";
+
+  questions.forEach((question, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "q-number";
+    button.textContent = index + 1;
+    button.setAttribute("aria-label", "Buka soal " + (index + 1));
+
+    const id = String(question.id);
+    if (answers[id]) button.classList.add("answered");
+    if (flagged.has(id)) button.classList.add("flagged");
+    if (index === currentIndex) {
+      button.classList.add("current");
+      button.setAttribute("aria-current", "step");
+    }
+
+    const navMode = quiz.navigationMode || "standard";
+    if ((navMode === "sequential" || navMode === "cat") && index !== currentIndex) {
+      button.disabled = true;
+      button.title = navMode === "sequential" ? "Navigasi berurutan: soal sebelumnya tidak dapat dibuka kembali." : "Mode CAT memilih soal berikutnya secara adaptif.";
+    } else {
+      button.addEventListener("click", () => goToQuestion(index));
+    }
+    grid.appendChild(button);
+  });
+
+  const answeredCount = Object.keys(answers)
+    .filter(id => answers[id]).length;
+
+  $("answeredCount").textContent = answeredCount;
+  $("unansweredCount").textContent = questions.length - answeredCount;
+  $("flaggedCount").textContent = flagged.size;
+}
+
+function goToQuestion(index) {
+  if (!started || index < 0 || index >= questions.length) return;
+  if ((quiz.navigationMode || "standard") === "sequential" && index < currentIndex) return;
+  currentIndex = index;
+  renderQuestion();
+  renderNavigation();
+  saveProgress();
+
+  if (window.innerWidth <= 650) {
+    $("questionIndex").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+function nextQuestion() {
+  if ((quiz.navigationMode || "standard") === "cat") {
+    const current = questions[currentIndex];
+    const currentPoints = Number(current && current.points) || 1;
+    const remaining = questions.map((q, i) => ({q, i})).filter(x => x.i !== currentIndex && !Object.prototype.hasOwnProperty.call(answers, String(x.q.id)));
+    if (remaining.length) {
+      // CAT ringan: pilih soal berikutnya dengan bobot terdekat/berikutnya berdasarkan poin.
+      // Implementasi CAT psikometrik sesungguhnya membutuhkan parameter kesulitan dan scoring server.
+      remaining.sort((a,b) => Math.abs((Number(a.q.points)||1)-currentPoints)-Math.abs((Number(b.q.points)||1)-currentPoints));
+      goToQuestion(remaining[0].i);
+      return;
+    }
+  }
+  if (currentIndex < questions.length - 1) goToQuestion(currentIndex + 1);
+}
+
+function previousQuestion() {
+  if (currentIndex > 0) goToQuestion(currentIndex - 1);
+}
+
+$("nextBtn").addEventListener("click", nextQuestion);
+$("mobileNextBtn").addEventListener("click", nextQuestion);
+$("prevBtn").addEventListener("click", previousQuestion);
+$("mobilePrevBtn").addEventListener("click", previousQuestion);
+
+$("flagBtn").addEventListener("click", () => {
+  const id = String(questions[currentIndex].id);
+  if (flagged.has(id)) flagged.delete(id);
+  else flagged.add(id);
+
+  renderQuestion();
+  renderNavigation();
+  saveProgress();
+});
+
+function updateQuestionTimer() {
+  clearInterval(questionTimerInterval);
+  questionTimerInterval = null;
+
+  const wrap = $("questionTimerWrap");
+
+  const navMode = String(quiz?.navigationMode || "standard")
+    .trim()
+    .toLowerCase();
+
+  const timerEnabled = readBoolean(quiz?.perQuestionTimer, false);
+  const sequentialMode = navMode === "sequential";
+  const question = questions[currentIndex];
+
+  // Timer tiap soal hanya berlaku untuk mode berurutan.
+  if (
+    !started ||
+    submitting ||
+    !timerEnabled ||
+    !sequentialMode ||
+    !question
+  ) {
+    wrap.classList.add("hidden");
+    wrap.classList.remove("danger");
+    questionDeadline = null;
+    activeQuestionTimerId = "";
+    return;
+  }
+
+  const questionId = String(question.id);
+
+  // Timer baru dibuat ketika berpindah ke soal yang berbeda.
+  if (
+    activeQuestionTimerId !== questionId ||
+    !questionDeadline
+  ) {
+    activeQuestionTimerId = questionId;
+
+    const configuredDuration =
+      Number(question.questionDuration) ||
+      Number(quiz.questionDuration) ||
+      60;
+
+    const durationSeconds = Math.max(1, configuredDuration);
+
+    questionDeadline = Date.now() + durationSeconds * 1000;
+  }
+
+  wrap.classList.remove("hidden");
+
+  const tick = () => {
+    if (!started || submitting) {
+      clearInterval(questionTimerInterval);
+      questionTimerInterval = null;
+      return;
+    }
+
+    const remaining = Math.max(
+      0,
+      Math.ceil((questionDeadline - Date.now()) / 1000)
+    );
+
+    $("questionTimer").textContent =
+      String(Math.floor(remaining / 60)).padStart(2, "0") +
+      ":" +
+      String(remaining % 60).padStart(2, "0");
+
+    wrap.classList.toggle("danger", remaining <= 10);
+
+    if (remaining <= 0) {
+      clearInterval(questionTimerInterval);
+      questionTimerInterval = null;
+
+      // Pastikan perpindahan hanya dilakukan sekali.
+      if (!started || submitting) return;
+
+      if (currentIndex < questions.length - 1) {
+        nextQuestion();
+      } else {
+        submitExam(true);
+      }
+    }
+  };
+
+  tick();
+  questionTimerInterval = setInterval(tick, 250);
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  updateTimer();
+  timerInterval = setInterval(updateTimer, 1000);
+}
+
+function updateTimer() {
+  if (!deadline || !started) return;
+
+  const remaining = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+  const minutes = Math.floor(remaining / 60);
+  const seconds = remaining % 60;
+
+  $("timer").textContent =
+    String(minutes).padStart(2, "0") + ":" +
+    String(seconds).padStart(2, "0");
+
+  $("timer").classList.toggle("warning", remaining <= 300 && remaining > 60);
+  $("timer").classList.toggle("danger", remaining <= 60);
+
+  if (remaining === 0 && !submitting) {
+    clearInterval(timerInterval);
+    submitExam(true);
+  }
+}
+
+$("submitBtn").addEventListener("click", () => submitExam(false));
+
+async function submitExam(autoSubmit) {
+  if (!started || submitting) return;
+
+  const unanswered = questions.filter(q => !answers[q.id]).length;
+
+  if (!autoSubmit) {
+    const message = unanswered > 0
+      ? "Masih ada " + unanswered + " soal yang belum dijawab.\n\nKumpulkan jawaban sekarang?"
+      : "Yakin ingin mengakhiri dan mengumpulkan ujian?";
+
+    if (!confirm(message)) return;
+  }
+
+  submitting = true;
+  clearInterval(timerInterval);
+  clearInterval(questionTimerInterval);
+  $("submitBtn").disabled = true;
+  $("submitBtn").textContent = "Mengirim jawaban...";
+  $("mobilePrevBtn").disabled = true;
+  $("mobileNextBtn").disabled = true;
+
+  try {
+    const response = await apiPost({
+      action: "submitAttempt",
+      attemptId,
+      quizId,
+      participantName: participant.name,
+      participantEmail: participant.email,
+      participantId: participant.participantId,
+      mode: participant.mode,
+      startedAt: new Date(startedAt).toISOString(),
+      answers
+    });
+
+    if (!response.ok) {
+      throw new Error(response.message || "Jawaban gagal dikumpulkan.");
+    }
+
+    started = false;
+    if (currentStorageKey) localStorage.removeItem(currentStorageKey);
+    document.body.classList.remove("exam-active");
+    try {
+      const history = JSON.parse(localStorage.getItem("ruanguji_attempt_history") || "[]");
+      const resultData = response.result || {};
+      history.push({
+        quizId, title: quiz.title || "Ujian",
+        name: participant.name || "Tamu",
+        email: participant.email || "",
+        mode: participant.mode || "guest",
+        score: Object.prototype.hasOwnProperty.call(resultData, "score") ? resultData.score : null,
+        date: new Date().toISOString(),
+        attemptId
+      });
+      localStorage.setItem("ruanguji_attempt_history", JSON.stringify(history.slice(-100)));
+    } catch (e) { console.warn("Riwayat lokal tidak dapat disimpan", e); }
+
+    showResult(response, autoSubmit);
+  } catch (error) {
+    console.error(error);
+    submitting = false;
+    $("submitBtn").disabled = false;
+    $("submitBtn").textContent = "Akhiri & Kumpulkan";
+    $("mobilePrevBtn").disabled = false;
+    $("mobileNextBtn").disabled = false;
+
+    alert(
+      "Jawaban belum dapat dikonfirmasi oleh server.\n\n" +
+      (error.message || "Periksa koneksi internet.") +
+      "\n\nJangan tutup halaman. Periksa koneksi lalu coba kumpulkan lagi."
+    );
+  }
+}
+
+function showResult(response, autoSubmit) {
+  $("examBar").classList.add("hidden");
+  showOnly("resultSection");
+
+  const result = response.result || {};
+
+  $("resultTitle").textContent = response.duplicate
+    ? "Pengerjaan Sudah Tercatat"
+    : "Jawaban Berhasil Dikumpulkan";
+
+  $("resultMessage").textContent = autoSubmit
+    ? "Waktu ujian telah berakhir. Sistem telah mengirim jawaban yang tersimpan."
+    : "Jawaban kamu telah dikirim ke sistem RUANG UJI.";
+
+  const scoreElement = $("resultScore");
+  const scoreLabel = $("resultScoreLabel");
+
+  // Nilai ditampilkan hanya jika diizinkan oleh pengaturan kuis
+  // dan server benar-benar mengembalikan nilai numerik yang valid.
+  const scoreAllowed = readBoolean(quiz?.showScore, false);
+
+  const hasScore =
+    Object.prototype.hasOwnProperty.call(result, "score") &&
+    result.score !== null &&
+    result.score !== undefined &&
+    result.score !== "" &&
+    Number.isFinite(Number(result.score));
+
+  if (scoreAllowed && hasScore) {
+    scoreElement.textContent = Number(result.score).toFixed(2);
+    scoreLabel.textContent = "Nilai ujian";
+  } else {
+    scoreElement.textContent = "N/A";
+    scoreLabel.textContent =
+      "Hubungi administrator untuk info nilai/skor.";
+  }
+
+  scoreElement.classList.remove("hidden");
+  scoreLabel.classList.remove("hidden");
+
+  const rows = [
+    ["Ujian", quiz.title || "-"],
+    ["Peserta", participant?.name || "Tamu"],
+    ["Jumlah soal", questions.length],
+    ["Status", "Terkumpul"]
+  ];
+
+  if (scoreAllowed && hasScore) {
+    rows.push(["Nilai", Number(result.score).toFixed(2)]);
+  } else {
+    rows.push(["Nilai", "N/A"]);
+  }
+
+  if (
+    scoreAllowed &&
+    Object.prototype.hasOwnProperty.call(result, "correctAnswers")
+  ) {
+    const totalScored = Math.max(
+      0,
+      Number(result.totalQuestions || questions.length) -
+      (Number(result.pendingEssayCount) || 0)
+    );
+
+    rows.push([
+      "Jawaban benar (pilihan ganda)",
+      Number(result.correctAnswers) + " dari " + totalScored
+    ]);
+  }
+
+  if (Number(result.pendingEssayCount) > 0) {
+    rows.push([
+      "Penilaian uraian",
+      Number(result.pendingEssayCount) +
+      " soal menunggu pemeriksaan manual"
+    ]);
+  }
+
+  $("resultDetails").innerHTML = rows.map(row =>
+    `<div class="result-row">
+      <span>${escapeHTML(row[0])}</span>
+      <strong>${escapeHTML(row[1])}</strong>
+    </div>`
+  ).join("");
+
+  if (result.scoreBasis && scoreAllowed && hasScore) {
+    $("resultDetails").insertAdjacentHTML(
+      "beforeend",
+      `<div class="result-row">
+        <span>Keterangan nilai</span>
+        <strong>${escapeHTML(result.scoreBasis)}</strong>
+      </div>`
+    );
+  }
+
+  // Pembahasan hanya muncul jika diizinkan oleh pengaturan kuis.
+  const correctionEnabled = readBoolean(
+    quiz?.showCorrection,
+    false
+  );
+
+  const correction = correctionEnabled &&
+    Array.isArray(result.correction)
+      ? result.correction
+      : [];
+
+  if (correction.length) {
+    $("reviewSection").classList.remove("hidden");
+
+    $("reviewContent").innerHTML = correction.map((item, index) => {
+      const status = item.type === "essay"
+        ? "Perlu diperiksa"
+        : item.isCorrect
+          ? "Benar"
+          : "Salah";
+
+      const color = item.type === "essay"
+        ? "#7b5a00"
+        : item.isCorrect
+          ? "#18794e"
+          : "#b42318";
+
+      return `
+        <article class="panel"
+          style="padding:14px;margin:10px 0;border:1px solid #e2e6ef">
+          <strong>
+            Soal ${index + 1} ·
+            <span style="color:${color}">
+              ${escapeHTML(status)}
+            </span>
+          </strong>
+
+          <p>${escapeHTML(item.question || "")}</p>
+
+          <div class="form-hint">
+            Jawaban kamu: ${escapeHTML(item.selectedText || "Tidak dijawab")}
+          </div>
+
+          <div class="form-hint">
+            Jawaban benar: ${escapeHTML(item.correctText || "Tidak tersedia")}
+          </div>
+
+          ${item.explanation
+            ? `<p><strong>Pembahasan:</strong> ${escapeHTML(item.explanation)}</p>`
+            : ""}
+        </article>
+      `;
+    }).join("");
+  } else {
+    $("reviewSection").classList.add("hidden");
+    $("reviewContent").innerHTML = "";
+  }
+}
+
+/*
+ * Jika browser ditutup atau dimuat ulang, jawaban yang sudah disimpan
+ * secara lokal tidak otomatis dikirim ke server.
+ * Halaman ini sengaja tidak melanjutkan sesi secara otomatis untuk
+ * mencegah timer dimulai ulang tanpa validasi server.
+ */
+window.addEventListener("beforeunload", event => {
+  if (started && !submitting) {
+    saveProgress();
+    event.preventDefault();
+    event.returnValue = "";
+  }
+});
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden" && started) {
+    saveProgress();
+  }
+});
+
+// Peringatan aktivitas: ketika tab ditinggalkan, layar ujian dikunci selama 10 detik.
+let suspiciousLockUntil = 0;
+let lockOverlay = null;
+function lockExamForTenSeconds() {
+  if (!started || submitting) return;
+  suspiciousLockUntil = Math.max(suspiciousLockUntil, Date.now() + 10000);
+  if (!lockOverlay) {
+    lockOverlay = document.createElement("div");
+    lockOverlay.id = "suspiciousLock";
+    lockOverlay.style.cssText = "position:fixed;inset:0;z-index:99999;background:rgba(8,8,111,.96);color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px";
+    document.body.appendChild(lockOverlay);
+  }
+  lockOverlay.style.display = "flex";
+  const update = () => {
+    const left = Math.max(0, Math.ceil((suspiciousLockUntil - Date.now()) / 1000));
+    lockOverlay.innerHTML = `<div><div style="font-size:24px;font-weight:800;margin-bottom:10px">Ujian dikunci sementara</div><p>Aktivitas berpindah tab terdeteksi. Silakan tetap di halaman ujian.</p><div style="font-size:42px;font-weight:800">${left}</div><p>Halaman akan terbuka kembali setelah hitung mundur selesai.</p></div>`;
+    if (left > 0) setTimeout(update, 250);
+    else lockOverlay.style.display = "none";
+  };
+  update();
+}
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) lockExamForTenSeconds();
+});
+
+loadQuiz();
+</script>
+<script>
+// Deterrent ringan untuk mengurangi penyalinan kasual; bukan pengamanan sumber kode.
+document.addEventListener("contextmenu", function(e) { e.preventDefault(); });
+document.addEventListener("copy", function(e) { e.preventDefault(); });
+document.addEventListener("cut", function(e) { e.preventDefault(); });
+document.addEventListener("keydown", function(e) {
+  const k = String(e.key || "").toLowerCase();
+  if ((e.ctrlKey || e.metaKey) && ["u", "s", "p"].includes(k)) { e.preventDefault(); }
+  if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ["i", "j", "c"].includes(k))) e.preventDefault();
+});
+</script>
+</body>
+</html>

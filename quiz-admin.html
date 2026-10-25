@@ -1,0 +1,1470 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#08086F">
+<title>Panel Pengelola — RUANG UJI</title>
+<link rel="icon" type="image/x-icon" href="assets/ruanguji1.png">
+<style>
+:root {
+  --navy:#08086F;
+  --navy2:#15158E;
+  --red:#FF0000;
+  --bg:#F2F4F8;
+  --white:#fff;
+  --ink:#202638;
+  --muted:#697487;
+  --line:#D5DBE5;
+  --green:#217346;
+  --green-bg:#E8F4EC;
+  --yellow:#946200;
+  --yellow-bg:#FFF3D2;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font:14px/1.55 Arial,Helvetica,sans-serif;
+}
+button,input,select,textarea { font:inherit; }
+button { cursor:pointer; }
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible {
+  outline:2px solid var(--red);
+  outline-offset:2px;
+}
+button:disabled { opacity:.6; cursor:not-allowed; }
+a { color:var(--navy); }
+.topline { height:5px; background:var(--red); }
+.topbar {
+  min-height:68px;
+  padding:10px 22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  background:white;
+  border-bottom:1px solid var(--line);
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+.brand img { display:block; max-width:210px; max-height:43px; object-fit:contain; }
+.top-actions { display:flex; align-items:center; gap:12px; }
+.top-actions a { text-decoration:none; font-size:12px; font-weight:bold; }
+.admin-label { color:var(--muted); font-size:11px; }
+.layout {
+  width:min(1400px,100%);
+  margin:22px auto;
+  padding:0 20px;
+  display:grid;
+  grid-template-columns:220px minmax(0,1fr);
+  gap:20px;
+  align-items:start;
+}
+.sidebar {
+  background:var(--navy);
+  color:white;
+  position:sticky;
+  top:88px;
+  padding:16px 10px;
+}
+.sidebar-heading {
+  padding:5px 10px 14px;
+  font-size:10px;
+  color:#C7C9F2;
+  font-weight:bold;
+  letter-spacing:1.2px;
+}
+.navitem {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  width:100%;
+  min-height:42px;
+  margin:3px 0;
+  padding:10px;
+  color:#E5E7FF;
+  border:0;
+  background:transparent;
+  text-align:left;
+  font-size:12px;
+}
+.navitem:hover,.navitem.active {
+  color:white;
+  background:#20208C;
+  border-left:3px solid var(--red);
+  padding-left:7px;
+}
+.content { min-width:0; }
+.page-heading {
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  margin-bottom:19px;
+}
+h1 { color:var(--navy); font-size:25px; margin:0; line-height:1.3; }
+.intro { color:var(--muted); font-size:12px; margin:7px 0 0; line-height:1.7; }
+.stats {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:17px;
+}
+.stat,.panel {
+  background:white;
+  border:1px solid var(--line);
+}
+.stat { padding:16px; }
+.stat-number { display:block; font-size:27px; font-weight:bold; color:var(--navy); }
+.stat-label { display:block; color:var(--muted); font-size:11px; margin-top:3px; }
+.panel { margin-bottom:16px; }
+.panel-head {
+  min-height:51px;
+  padding:12px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  background:#E9EDF5;
+  border-bottom:1px solid var(--line);
+}
+.panel-head h2 { margin:0; font-size:13px; color:var(--navy); }
+.panel-body { padding:17px; }
+.btn {
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  gap:6px;
+  min-height:39px;
+  padding:9px 13px;
+  border:1px solid var(--navy);
+  border-radius:2px;
+  background:var(--navy);
+  color:white;
+  font-size:12px;
+  font-weight:bold;
+  text-decoration:none;
+  text-align:center;
+}
+.btn:hover { background:var(--navy2); }
+.btn-red { background:var(--red); border-color:var(--red); }
+.btn-red:hover { background:#D90000; }
+.btn-outline { background:white; color:var(--navy); }
+.btn-outline:hover { background:var(--navy); color:white; }
+.btn-gray { background:#F0F2F6; color:#30394B; border-color:#CFD5E0; }
+.btn-gray:hover { background:#E2E6ED; color:var(--ink); }
+.btn-danger { background:#FFF0F0; border-color:#F0B9B9; color:#B42323; }
+.btn-danger:hover { background:#FCE1E1; color:#8C1717; }
+.btn-small { min-height:31px; padding:6px 8px; font-size:11px; }
+.field { min-width:0; margin-bottom:15px; }
+.field label {
+  display:block;
+  font-size:12px;
+  font-weight:bold;
+  color:#3C4960;
+  margin-bottom:6px;
+}
+.field input,.field textarea,.field select {
+  width:100%;
+  min-height:41px;
+  padding:10px;
+  border:1px solid #C8D0DD;
+  border-radius:2px;
+  background:white;
+  color:var(--ink);
+}
+.field textarea { min-height:84px; resize:vertical; }
+.field small { display:block; color:var(--muted); font-size:11px; margin-top:5px; }
+.grid2 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 14px; }
+.grid3 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0 12px; }
+.check-list { display:grid; gap:12px; }
+.check-row { display:flex; gap:9px; align-items:flex-start; font-size:12px; color:#3C4960; }
+.check-row input { margin-top:3px; accent-color:var(--navy); }
+.help {
+  padding:12px 14px;
+  background:#F5F7FB;
+  border:1px solid var(--line);
+  border-left:3px solid var(--navy);
+  color:#505B6E;
+  font-size:11px;
+  line-height:1.8;
+  margin:12px 0;
+}
+.help.warning { border-left-color:var(--red); }
+.hidden { display:none !important; }
+.badge {
+  display:inline-block;
+  padding:4px 7px;
+  font-size:10px;
+  font-weight:bold;
+  background:var(--green-bg);
+  color:var(--green);
+  white-space:nowrap;
+}
+.badge.draft { background:var(--yellow-bg); color:var(--yellow); }
+.badge.local { background:#E9EDF5; color:#536077; }
+.table-wrap { width:100%; overflow:auto; }
+table { width:100%; border-collapse:collapse; min-width:660px; }
+th,td { padding:12px 10px; text-align:left; border-bottom:1px solid #E6EAF0; vertical-align:top; }
+th { background:#F7F8FA; color:#697487; font-size:10px; letter-spacing:.5px; text-transform:uppercase; }
+td { font-size:12px; }
+td small { display:block; color:var(--muted); line-height:1.6; margin-top:3px; }
+.table-actions { display:flex; flex-wrap:wrap; gap:5px; }
+.empty { padding:25px 12px; text-align:center; color:var(--muted); font-size:12px; }
+.search-row { display:flex; gap:9px; margin-bottom:13px; }
+.search-row input { min-width:0; flex:1; padding:10px; border:1px solid var(--line); }
+.question-editor {
+  border:1px solid var(--line);
+  margin-bottom:13px;
+  background:white;
+}
+.question-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:10px 13px;
+  background:#F7F8FB;
+  border-bottom:1px solid var(--line);
+}
+.question-head strong { color:var(--navy); font-size:12px; }
+.question-body { padding:13px; }
+.option-editor {
+  display:grid;
+  grid-template-columns:35px minmax(0,1fr);
+  gap:8px;
+  align-items:center;
+  margin-bottom:8px;
+}
+.option-editor .letter {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:38px;
+  background:#F0F2F7;
+  color:var(--navy);
+  font-weight:bold;
+  border:1px solid var(--line);
+}
+.option-editor input[type="text"] {
+  min-width:0;
+  width:100%;
+  height:38px;
+  padding:8px;
+  border:1px solid var(--line);
+}
+.answer-select { margin-top:12px; }
+.form-actions { display:flex; flex-wrap:wrap; gap:9px; margin:17px 0 30px; }
+.toast {
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:20;
+  max-width:calc(100% - 36px);
+  padding:12px 16px;
+  background:#202638;
+  color:white;
+  font-size:12px;
+  display:none;
+}
+.toast.show { display:block; }
+.api-status { font-size:12px; margin-top:12px; line-height:1.7; }
+.api-status.ok { color:var(--green); }
+.api-status.error { color:#B42323; }
+.footer { text-align:center; padding:15px; font-size:10px; color:var(--muted); }
+@media(max-width:850px) {
+  .layout { grid-template-columns:1fr; margin:13px auto; gap:14px; }
+  .sidebar { position:static; display:flex; gap:4px; overflow-x:auto; padding:7px; }
+  .sidebar-heading { display:none; }
+  .navitem { width:auto; min-width:max-content; margin:0; padding:10px; }
+  .navitem.active,.navitem:hover { padding-left:7px; }
+}
+@media(max-width:560px) {
+  .topbar { min-height:56px; padding:9px 12px; }
+  .brand img { max-width:145px; max-height:34px; }
+  .admin-label { display:none; }
+  .top-actions a { font-size:11px; }
+  .layout { padding:0 11px; }
+  .sidebar { gap:2px; }
+  .navitem { font-size:11px; padding:10px 9px; }
+  .page-heading { flex-direction:column; }
+  h1 { font-size:22px; }
+  .stats { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+  .stat { padding:12px; }
+  .stat-number { font-size:22px; }
+  .grid2,.grid3 { grid-template-columns:1fr; }
+  .panel-body { padding:13px; }
+  .panel-head { padding:11px 12px; }
+  .search-row { flex-direction:column; }
+  .form-actions .btn { flex:1; }
+}
+</style>
+</head>
+<body>
+<div class="topline"></div>
+
+<header class="topbar">
+  <a class="brand" href="ruanguji.html" aria-label="Beranda RUANG UJI">
+    <img src="assets/ruanguji.png" alt="RUANG UJI">
+  </a>
+  <div class="top-actions">
+    <span class="admin-label">PANEL PENGELOLA</span>
+    <a href="ruanguji.html">Lihat halaman peserta ↗</a>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar" aria-label="Navigasi pengelola">
+    <div class="sidebar-heading">PENGELOLAAN UJIAN</div>
+    <button class="navitem active" data-tab="dashboard">▦ Ringkasan</button>
+    <button class="navitem" data-tab="quizzes">▤ Bank kuis</button>
+    <button class="navitem" data-tab="builder">＋ Buat kuis</button>
+    <button class="navitem" data-tab="settings">⚙ Koneksi API</button>
+  </aside>
+
+  <main class="content">
+    <section id="dashboardTab">
+      <div class="page-heading">
+        <div>
+          <h1>Ringkasan</h1>
+          <p class="intro">Pengelolaan ujian dan bank soal RUANG UJI.</p>
+        </div>
+        <button class="btn" onclick="newQuiz()">＋ Buat kuis</button>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><span id="statQuizzes" class="stat-number">0</span><span class="stat-label">Total kuis</span></div>
+        <div class="stat"><span id="statPublished" class="stat-number">0</span><span class="stat-label">Dipublikasikan</span></div>
+        <div class="stat"><span id="statQuestions" class="stat-number">0</span><span class="stat-label">Total soal</span></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Kuis terbaru</h2>
+          <button class="btn btn-outline btn-small" onclick="tab('quizzes')">Lihat semua</button>
+        </div>
+        <div class="panel-body" id="recent"></div>
+      </div>
+
+      <div class="help">
+        <strong>Catatan:</strong> data lokal hanya tersimpan pada browser ini. Untuk bank soal bersama, simpan data melalui Google Apps Script yang terhubung dengan spreadsheet.
+      </div>
+    </section>
+
+    <section id="quizzesTab" class="hidden">
+      <div class="page-heading">
+        <div>
+          <h1>Bank kuis</h1>
+          <p class="intro">Lihat, sunting, publikasikan, atau hapus kuis.</p>
+        </div>
+        <button class="btn" onclick="newQuiz()">＋ Kuis baru</button>
+      </div>
+      <div class="panel">
+        <div class="panel-body">
+          <div class="search-row">
+            <input id="quizSearch" type="search" placeholder="Cari nama kuis atau kategori...">
+            <button class="btn btn-outline" onclick="loadQuizzes()">Muat ulang</button>
+          </div>
+          <div id="quizTable" class="table-wrap"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="builderTab" class="hidden">
+      <div class="page-heading">
+        <div>
+          <h1 id="builderTitle">Buat kuis baru</h1>
+          <p class="intro">Atur informasi ujian dan susun pertanyaan.</p>
+        </div>
+      </div>
+
+      <form id="quizForm">
+        <input type="hidden" id="editId">
+
+        <div class="panel">
+          <div class="panel-head"><h2>Informasi kuis</h2></div>
+          <div class="panel-body">
+            <div class="grid2">
+              <div class="field">
+                <label for="title">Nama kuis *</label>
+                <input id="title" required maxlength="180" placeholder="Contoh: Ujian Tengah Semester">
+              </div>
+              <div class="field">
+                <label for="category">Kategori</label>
+                <input id="category" maxlength="100" placeholder="Contoh: Psikologi Umum">
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="description">Deskripsi dan petunjuk</label>
+              <textarea id="description" maxlength="2000" placeholder="Petunjuk singkat bagi peserta ujian"></textarea>
+            </div>
+
+            <div class="grid2">
+              <div class="field">
+                <label for="system">Sistem pengerjaan</label>
+                <select id="system">
+                  <option value="exam">Ujian berbatas waktu</option>
+                  <option value="practice">Latihan mandiri</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="duration">Durasi (menit) *</label>
+                <input id="duration" type="number" min="1" max="600" value="30" required>
+              </div>
+              <div class="field">
+                <label for="status">Status publikasi</label>
+                <select id="status">
+                  <option value="draft">Draf — tidak ditampilkan</option>
+                  <option value="published">Terbit — tampil untuk peserta</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="shuffle">Acak urutan soal</label>
+                <select id="shuffle">
+                  <option value="false">Tidak</option>
+                  <option value="true">Ya</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid2">
+              <div class="field">
+                <label for="navigationMode">Navigasi pengerjaan</label>
+                <select id="navigationMode">
+                  <option value="standard">Bebas — bisa kembali ke soal sebelumnya</option>
+                  <option value="sequential">Navigation Block / Sequential — tidak bisa kembali</option>
+                  <option value="cat">Computer Adaptive Testing (CAT) — adaptif</option>
+                </select>
+                <small>Mode CAT memilih soal berdasarkan bobot poin yang ditetapkan per soal; CAT psikometrik penuh memerlukan bank soal terkalibrasi.</small>
+              </div>
+              <div class="field">
+                <label for="questionDuration">Durasi tiap soal (detik)</label>
+                <input id="questionDuration" type="number" min="5" max="600" value="60">
+                <small>Dipakai jika timer per soal diaktifkan.</small>
+              </div>
+              <div class="field">
+                <label for="accessCode">Kode akses (opsional)</label>
+                <input id="accessCode" maxlength="80" autocomplete="off" placeholder="Kosongkan jika kuis terbuka">
+                <small>Peserta harus memasukkan kode ini sebelum memulai.</small>
+              </div>
+              <div class="field">
+                <label for="startAt">Jadwal mulai</label>
+                <input id="startAt" type="datetime-local">
+              </div>
+              <div class="field">
+                <label for="endAt">Jadwal berakhir</label>
+                <input id="endAt" type="datetime-local">
+              </div>
+            </div>
+
+            <div class="check-list">
+              <label class="check-row"><input id="showScore" type="checkbox" checked> <span>Tampilkan nilai setelah jawaban dikumpulkan.</span></label>
+              <label class="check-row"><input id="showCorrection" type="checkbox"> <span>Tampilkan jawaban benar dan pembahasan setelah ujian.</span></label>
+              <label class="check-row"><input id="perQuestionTimer" type="checkbox"> <span>Aktifkan timer untuk setiap soal.</span></label>
+              <label class="check-row"><input id="shuffleOptions" type="checkbox" checked> <span>Acak urutan pilihan jawaban untuk setiap peserta.</span></label>
+              <label class="check-row"><input id="allowGuest" type="checkbox" checked> <span>Izinkan peserta menggunakan mode tamu.</span></label>
+            </div>
+
+            <div class="help warning">
+              Pengaturan tampilan nilai dan pembahasan harus diberlakukan juga di sisi server. Menyembunyikan nilai pada HTML saja tidak cukup untuk menjaga kunci jawaban.
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Bank soal</h2>
+            <button type="button" class="btn btn-outline btn-small" onclick="addQuestion()">＋ Tambah soal</button>
+          </div>
+          <div class="panel-body">
+            <div class="help">
+              Pilihan ganda minimal dua opsi terisi; opsi C, D, dan E boleh dikosongkan. Atur poin tiap soal. Uraian disimpan dan memerlukan pemeriksaan manual oleh pengajar.
+            </div>
+            <div id="questionsEditor"></div>
+            <div class="form-actions">
+              <button type="button" class="btn btn-gray" onclick="importQuestions()">Impor JSON</button>
+              <button type="button" class="btn btn-gray" onclick="exportQuestions()">Ekspor JSON</button>
+              <button type="button" class="btn btn-outline" onclick="addQuestion()">＋ Tambah soal</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button id="saveBtn" class="btn" type="submit">Simpan kuis</button>
+          <button class="btn btn-gray" type="button" onclick="tab('quizzes')">Batal</button>
+        </div>
+      </form>
+    </section>
+
+    <section id="settingsTab" class="hidden">
+      <div class="page-heading">
+        <div>
+          <h1>Koneksi API</h1>
+          <p class="intro">Pengaturan koneksi Google Spreadsheet melalui Apps Script.</p>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Google Apps Script Web App</h2></div>
+        <div class="panel-body">
+          <div class="field">
+            <label for="apiUrl">URL Web App</label>
+            <input id="apiUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec">
+            <small>Gunakan URL deployment Web App yang berakhiran /exec.</small>
+          </div>
+          <div class="field">
+            <label for="adminKey">Kunci admin (jika diwajibkan API)</label>
+            <input id="adminKey" type="password" autocomplete="off" placeholder="Masukkan kunci admin">
+            <small>Jika server tidak menggunakan kunci admin, biarkan kosong. Hindari menyimpan rahasia penting pada halaman publik.</small>
+          </div>
+          <div class="form-actions">
+            <button class="btn" onclick="saveSettings()" type="button">Simpan koneksi</button>
+            <button class="btn btn-outline" onclick="testApi()" type="button">Tes koneksi</button>
+          </div>
+          <div id="apiStatus" class="api-status" role="status"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Langkah pemasangan</h2></div>
+        <div class="panel-body">
+          <ol style="padding-left:20px;line-height:1.9">
+            <li>Buat Google Spreadsheet sebagai database.</li>
+            <li>Buka <strong>Ekstensi → Apps Script</strong>, lalu pasang kode server.</li>
+            <li>Jalankan fungsi inisialisasi spreadsheet sesuai nama yang ada di kode server.</li>
+            <li>Deploy sebagai Web App dan salin URL deployment.</li>
+            <li>Simpan URL tersebut pada halaman ini dan halaman peserta.</li>
+          </ol>
+          <div class="help warning">
+            Halaman admin statis tidak memiliki autentikasi yang kuat dengan sendirinya. Validasi akses admin, kunci jawaban, durasi, publikasi, dan pengumpulan nilai harus diperiksa oleh Apps Script di server.
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer class="footer">RUANG UJI · Panel Pengelola Ujian</footer>
+<div id="toast" class="toast" role="status"></div>
+
+<script>
+"use strict";
+
+/* API URL disimpan di localStorage browser ini. */
+const CONFIG = {
+  API_URL: localStorage.getItem("ruanguji_api_url") || "https://script.google.com/macros/s/AKfycbzuznBNYprB6t4ztdY4qVXQFPJfPeFRf3D3xfJracFDkt4zbygJNEGyRhNgdJWbmMnUKA/exec",
+  ADMIN_KEY: localStorage.getItem("ruanguji_admin_key") || "RUANGUJI-ADMIN-2026-7xQ9mK4vP2"
+};
+
+let quizzes = [];
+let bank = {};
+let storageMode = "local";
+let saving = false;
+
+const $ = id => document.getElementById(id);
+
+function esc(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  })[c]);
+}
+
+function toast(message) {
+  const el = $("toast");
+  el.textContent = message;
+  el.classList.add("show");
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => el.classList.remove("show"), 3000);
+}
+
+function tab(name) {
+  ["dashboard","quizzes","builder","settings"].forEach(key => {
+    $(key + "Tab").classList.toggle("hidden", key !== name);
+  });
+
+  document.querySelectorAll(".navitem").forEach(button => {
+    button.classList.toggle("active", button.dataset.tab === name);
+  });
+
+  if (name === "dashboard" || name === "quizzes") renderAll();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+document.querySelectorAll(".navitem").forEach(button => {
+  button.addEventListener("click", () => tab(button.dataset.tab));
+});
+
+function readLocal() {
+  try {
+    quizzes = JSON.parse(localStorage.getItem("ruanguji_quizzes") || "[]");
+    bank = JSON.parse(localStorage.getItem("ruanguji_questions") || "{}");
+    if (!Array.isArray(quizzes)) quizzes = [];
+    if (!bank || typeof bank !== "object") bank = {};
+  } catch {
+    quizzes = [];
+    bank = {};
+  }
+}
+
+function persistLocal() {
+  localStorage.setItem("ruanguji_quizzes", JSON.stringify(quizzes));
+  localStorage.setItem("ruanguji_questions", JSON.stringify(bank));
+}
+
+async function apiGet(action, id) {
+  if (!CONFIG.API_URL) {
+    throw new Error("URL API belum diatur.");
+  }
+
+  const url = new URL(CONFIG.API_URL);
+  url.searchParams.set("action", action);
+
+  // Endpoint admin harus menyertakan kunci admin.
+  if (action.startsWith("admin")) {
+    if (!CONFIG.ADMIN_KEY) {
+      throw new Error("Kunci admin belum diatur.");
+    }
+    url.searchParams.set("key", CONFIG.ADMIN_KEY);
+  }
+
+  // Endpoint daftar soal admin menggunakan parameter quizId.
+  if (id) {
+    if (action === "adminListQuestions") {
+      url.searchParams.set("quizId", id);
+    } else {
+      url.searchParams.set("id", id);
+    }
+  }
+
+  url.searchParams.set("_", Date.now());
+
+  const response = await fetch(url.toString(), {
+    method: "GET",
+    cache: "no-store"
+  });
+
+  if (!response.ok) {
+    throw new Error("HTTP " + response.status);
+  }
+
+  const result = await response.json();
+
+  if (result && result.ok === false) {
+    throw new Error(result.message || "Permintaan API gagal.");
+  }
+
+  return result;
+}
+
+
+async function apiPost(payload) {
+  if (!CONFIG.API_URL) {
+    throw new Error("URL API belum diatur.");
+  }
+
+  const body = { ...payload };
+
+  if (CONFIG.ADMIN_KEY) {
+    body.key = CONFIG.ADMIN_KEY;
+  }
+
+  const response = await fetch(CONFIG.API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain;charset=UTF-8"
+    },
+    body: JSON.stringify(body),
+    redirect: "follow"
+  });
+
+  if (!response.ok) {
+    throw new Error("HTTP " + response.status);
+  }
+
+  const text = await response.text();
+
+  let result;
+  try {
+    result = JSON.parse(text);
+  } catch {
+    throw new Error(
+      "Server tidak mengembalikan JSON. Periksa URL deployment Apps Script."
+    );
+  }
+
+  return result;
+}
+
+function toBool(value, fallback = false) {
+  if (value === true || value === 1) return true;
+  if (value === false || value === 0) return false;
+
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+
+    if (["true", "1", "yes", "ya"].includes(normalized)) {
+      return true;
+    }
+
+    if (["false", "0", "no", "tidak"].includes(normalized)) {
+      return false;
+    }
+
+    if (normalized === "") return fallback;
+  }
+
+  return fallback;
+}
+
+function normalizeQuiz(raw = {}) {
+  return {
+    id: String(raw.id ?? raw.quizId ?? ""),
+    title: String(raw.title ?? raw.name ?? ""),
+    category: String(raw.category ?? "Umum"),
+    description: String(raw.description ?? ""),
+    duration: Number(raw.duration ?? 30),
+    system: String(raw.system ?? raw.systemType ?? "exam"),
+    status: String(raw.status ?? "draft"),
+
+    shuffle: toBool(raw.shuffle, false),
+    showScore: toBool(raw.showScore, false),
+    showCorrection: toBool(raw.showCorrection, false),
+
+    // Mode tamu hanya default aktif jika datanya memang belum tersedia.
+    allowGuest: toBool(raw.allowGuest, true),
+
+    navigationMode: String(raw.navigationMode || "standard"),
+    accessCode: String(raw.accessCode ?? ""),
+    perQuestionTimer: toBool(raw.perQuestionTimer, false),
+    questionDuration: Number(raw.questionDuration || 60),
+    shuffleOptions: toBool(raw.shuffleOptions, true),
+    startAt: String(raw.startAt || ""),
+    endAt: String(raw.endAt || "")
+  };
+}
+
+/* Konversi struktur soal admin ke format quiz-on.html:
+   id, question, optionA..optionE, correctAnswer, explanation. */
+function normalizeQuestion(raw, index) {
+  const options = Array.isArray(raw.options) ? raw.options : [
+    raw.optionA ?? "", raw.optionB ?? "", raw.optionC ?? "",
+    raw.optionD ?? "", raw.optionE ?? ""
+  ];
+
+  let answer = raw.answer;
+  if (typeof answer === "string" && /^[A-E]$/i.test(answer)) {
+    answer = answer.toUpperCase().charCodeAt(0) - 65;
+  }
+
+  const q = {
+    id:String(raw.id ?? raw.questionId ?? ("Q" + (index + 1))),
+    question:String(raw.question ?? raw.text ?? ""),
+    type:raw.type === "essay" ? "essay" : "mcq",
+    optionA:String(options[0] ?? ""),
+    optionB:String(options[1] ?? ""),
+    optionC:String(options[2] ?? ""),
+    optionD:String(options[3] ?? ""),
+    optionE:String(options[4] ?? ""),
+    correctAnswer:answer !== null && answer !== undefined && answer !== "" && Number.isInteger(Number(answer)) ? Number(answer) : null,
+    points:Number(raw.points ?? 1),
+    questionDuration:Number(raw.questionDuration || 60),
+    explanation:String(raw.explanation ?? "")
+  };
+
+  return q;
+}
+
+function editorQuestion(raw) {
+  const q = normalizeQuestion(raw, 0);
+  return {
+    type:q.type,
+    text:q.question,
+    options:[q.optionA,q.optionB,q.optionC,q.optionD,q.optionE],
+    answer:q.correctAnswer,
+    points:q.points || 1,
+    questionDuration:q.questionDuration || 60,
+    explanation:q.explanation
+  };
+}
+
+async function loadQuizzes() {
+  if (!CONFIG.API_URL) {
+    readLocal();
+    storageMode = "local";
+    renderAll();
+    return;
+  }
+
+  try {
+    const response = await apiGet("adminListQuizzes");
+
+    if (!response.ok || !Array.isArray(response.quizzes)) {
+      throw new Error(
+        response.message || "Daftar kuis admin tidak berhasil dimuat."
+      );
+    }
+
+    const loadedQuizzes = response.quizzes.map(normalizeQuiz);
+    const loadedBank = {};
+
+    // Ambil soal lengkap beserta kunci jawabannya untuk setiap kuis.
+    for (const quiz of loadedQuizzes) {
+      const questionResponse = await apiGet(
+        "adminListQuestions",
+        quiz.id
+      );
+
+      if (
+        !questionResponse.ok ||
+        !Array.isArray(questionResponse.questions)
+      ) {
+        throw new Error(
+          "Soal kuis \"" + quiz.title + "\" gagal dimuat."
+        );
+      }
+
+      loadedBank[quiz.id] =
+        questionResponse.questions.map(editorQuestion);
+    }
+
+    // Data baru diterapkan setelah seluruh data berhasil dimuat.
+    quizzes = loadedQuizzes;
+    bank = loadedBank;
+    storageMode = "server";
+
+    renderAll();
+  } catch (error) {
+    console.error("Gagal memuat data admin:", error);
+    storageMode = "local";
+    readLocal();
+    renderAll();
+
+    toast(
+      "Data server gagal dimuat: " + error.message +
+      ". Data lokal ditampilkan; jangan menyimpan perubahan sebelum koneksi diperbaiki."
+    );
+  }
+}
+
+function renderAll() {
+  $("statQuizzes").textContent = quizzes.length;
+  $("statPublished").textContent = quizzes.filter(q => q.status === "published").length;
+  $("statQuestions").textContent = Object.values(bank).reduce(
+    (sum, list) => sum + (Array.isArray(list) ? list.length : 0), 0
+  );
+
+  const latest = [...quizzes].slice(-4).reverse();
+  $("recent").innerHTML = latest.length ? latest.map(q => `
+    <div style="display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #E6EAF0">
+      <div><strong>${esc(q.title)}</strong>
+        <small>${esc(q.category || "Umum")} · ${(bank[q.id] || []).length} soal</small>
+      </div>
+      <span class="badge ${q.status === "draft" ? "draft" : ""}">${q.status === "published" ? "Terbit" : "Draf"}</span>
+    </div>`).join("") : `<div class="empty">Belum ada kuis. Buat kuis pertama untuk memulai.</div>`;
+
+  const search = ($("quizSearch").value || "").trim().toLowerCase();
+  const visible = quizzes.filter(q =>
+    (q.title + " " + q.category).toLowerCase().includes(search)
+  );
+
+  $("quizTable").innerHTML = visible.length ? `
+    <table>
+      <thead><tr>
+        <th>Nama kuis</th><th>Durasi</th><th>Jumlah soal</th><th>Status</th><th>Aksi</th>
+      </tr></thead>
+      <tbody>
+      ${visible.map(q => `
+        <tr>
+          <td><strong>${esc(q.title)}</strong><small>${esc(q.category || "Umum")}</small></td>
+          <td>${Number(q.duration) || 0} menit</td>
+          <td>${(bank[q.id] || []).length}</td>
+          <td><span class="badge ${q.status === "draft" ? "draft" : ""}">${q.status === "published" ? "Terbit" : "Draf"}</span></td>
+          <td><div class="table-actions">
+            <button class="btn btn-outline btn-small" onclick="editQuiz('${esc(q.id)}')">Edit</button>
+            <button class="btn btn-gray btn-small" onclick="duplicateQuiz('${esc(q.id)}')">Salin</button>
+            <button class="btn btn-danger btn-small" onclick="deleteQuiz('${esc(q.id)}')">Hapus</button>
+          </div></td>
+        </tr>`).join("")}
+      </tbody>
+    </table>` : `<div class="empty">Tidak ada kuis yang cocok dengan pencarian.</div>`;
+}
+
+$("quizSearch").addEventListener("input", renderAll);
+
+function resetForm() {
+  $("quizForm").reset();
+  $("editId").value = "";
+  $("builderTitle").textContent = "Buat kuis baru";
+  $("duration").value = 30;
+  $("status").value = "draft";
+  $("system").value = "exam";
+  $("shuffle").value = "false";
+  $("showScore").checked = true;
+  $("showCorrection").checked = false;
+  $("allowGuest").checked = true;
+  $("navigationMode").value = "standard";
+  $("accessCode").value = "";
+  $("perQuestionTimer").checked = false;
+  $("questionDuration").value = 60;
+  $("shuffleOptions").checked = true;
+  $("startAt").value = "";
+  $("endAt").value = "";
+  $("questionsEditor").innerHTML = "";
+  addQuestion();
+  addQuestion();
+}
+
+function newQuiz() {
+  resetForm();
+  tab("builder");
+}
+
+function addQuestion(q = {}) {
+  const type = q.type === "essay" ? "essay" : "mcq";
+  const options = Array.isArray(q.options) ? q.options : ["","","","",""];
+  const answer =
+  q.answer !== null &&
+  q.answer !== undefined &&
+  q.answer !== "" &&
+  Number.isInteger(Number(q.answer)) &&
+  Number(q.answer) >= 0 &&
+  Number(q.answer) <= 4
+    ? Number(q.answer)
+    : null;
+  const card = document.createElement("article");
+  card.className = "question-editor";
+
+  card.innerHTML = `
+    <div class="question-head">
+      <strong class="question-title">Soal</strong>
+      <button type="button" class="btn btn-danger btn-small remove-question">Hapus soal</button>
+    </div>
+    <div class="question-body">
+      <div class="field">
+        <label>Tipe soal</label>
+        <select class="qtype">
+          <option value="mcq" ${type === "mcq" ? "selected" : ""}>Pilihan ganda</option>
+          <option value="essay" ${type === "essay" ? "selected" : ""}>Uraian</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Pertanyaan *</label>
+        <textarea class="qtext" required maxlength="10000" placeholder="Tuliskan pertanyaan...">${esc(q.text ?? q.question ?? "")}</textarea>
+      </div>
+      <div class="mcq-fields ${type === "essay" ? "hidden" : ""}">
+        ${["A","B","C","D","E"].map((letter,i) => `
+          <div class="option-editor">
+            <span class="letter">${letter}</span>
+            <input type="text" class="opt" maxlength="3000" value="${esc(options[i] ?? "")}" placeholder="Isi pilihan ${letter}">
+          </div>`).join("")}
+        <div class="field answer-select">
+          <label>Jawaban benar</label>
+          <select class="answerIndex" required>
+  <option value="" ${answer === null ? "selected" : ""}>
+    Pilih kunci jawaban
+  </option>
+  ${["A","B","C","D","E"].map((letter, i) =>
+    `<option value="${i}" ${answer === i ? "selected" : ""}>
+      Pilihan ${letter}
+    </option>`
+  ).join("")}
+</select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Poin maksimum soal</label>
+        <input type="number" class="qpoints" min="0" max="1000" step="0.5" value="${esc(q.points ?? 1)}">
+        <small>Untuk uraian, ini menjadi nilai maksimum yang dapat diberikan saat penilaian manual.</small>
+      </div>
+      <div class="field">
+        <label>Pembahasan / umpan balik</label>
+        <textarea class="explanation" maxlength="5000" placeholder="Opsional">${esc(q.explanation || "")}</textarea>
+      </div>
+    </div>`;
+
+  card.querySelector(".remove-question").addEventListener("click", () => {
+    if (!confirm("Hapus soal ini dari formulir?")) return;
+    card.remove();
+    renumber();
+  });
+
+  card.querySelector(".qtype").addEventListener("change", event => {
+    card.querySelector(".mcq-fields").classList.toggle("hidden", event.target.value === "essay");
+  });
+
+  $("questionsEditor").appendChild(card);
+  renumber();
+}
+
+function renumber() {
+  [...$("questionsEditor").children].forEach((card,index) => {
+    card.querySelector(".question-title").textContent = "Soal " + (index + 1);
+  });
+}
+
+function readQuestions() {
+  return [...$("questionsEditor").children].map((card, index) => {
+    const type = card.querySelector(".qtype").value;
+
+    const options = [...card.querySelectorAll(".opt")]
+      .map(input => input.value.trim());
+
+    const answerValue = type === "essay"
+      ? null
+      : card.querySelector(".answerIndex").value;
+
+    return {
+      id: "Q" + (index + 1),
+      type,
+      text: card.querySelector(".qtext").value.trim(),
+      options: type === "essay" ? [] : options,
+      answer: answerValue === null || answerValue === ""
+        ? null
+        : Number(answerValue),
+      points: Math.max(
+        0,
+        Number(card.querySelector(".qpoints").value) || 0
+      ),
+      questionDuration: Number($("questionDuration").value) || 60,
+      explanation: card.querySelector(".explanation").value.trim()
+    };
+  });
+}
+
+function validateQuestions(questions) {
+  if (!questions.length) {
+    alert("Tambahkan minimal satu soal.");
+    return false;
+  }
+
+  for (let i = 0; i < questions.length; i++) {
+    const q = questions[i];
+    const nomor = i + 1;
+
+    if (!q.text) {
+      alert("Pertanyaan pada soal " + nomor + " belum diisi.");
+      return false;
+    }
+
+    if (!Number.isFinite(q.points) || q.points < 0) {
+      alert("Poin soal " + nomor + " tidak valid.");
+      return false;
+    }
+
+    if (q.type === "mcq") {
+      const usedOptions = q.options.filter(Boolean);
+
+      if (usedOptions.length < 2) {
+        alert(
+          "Soal " + nomor +
+          " harus memiliki minimal dua pilihan jawaban."
+        );
+        return false;
+      }
+
+      if (
+        q.answer === null ||
+        !Number.isInteger(q.answer) ||
+        q.answer < 0 ||
+        q.answer > 4 ||
+        !q.options[q.answer]
+      ) {
+        alert(
+          "Pilih kunci jawaban yang valid untuk soal " + nomor + "."
+        );
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+function buildQuiz(id, questionCount) {
+  return {
+    id,
+    title:$("title").value.trim(),
+    category:$("category").value.trim() || "Umum",
+    description:$("description").value.trim(),
+    system:$("system").value,
+    duration:Number($("duration").value),
+    status:$("status").value,
+    shuffle:$("shuffle").value === "true",
+    showScore:$("showScore").checked,
+    showCorrection:$("showCorrection").checked,
+    allowGuest:$("allowGuest").checked,
+    shuffleOptions:$("shuffleOptions").checked,
+    perQuestionTimer:$("perQuestionTimer").checked,
+    questionDuration:Math.max(5, Math.min(600, Number($("questionDuration").value) || 60)),
+    navigationMode:$("navigationMode").value,
+    accessCode:$("accessCode").value.trim(),
+    startAt:$("startAt").value ? new Date($("startAt").value).toISOString() : "",
+    endAt:$("endAt").value ? new Date($("endAt").value).toISOString() : "",
+    questionCount
+  };
+}
+function serverQuestion(q,index) {
+  const answerLetter = q.type === "essay" || q.answer === null
+    ? ""
+    : String.fromCharCode(65 + Number(q.answer));
+
+  return {
+    id:q.id || ("Q" + (index + 1)),
+    question:q.text,
+    type:q.type,
+    optionA:q.options[0] || "",
+    optionB:q.options[1] || "",
+    optionC:q.options[2] || "",
+    optionD:q.options[3] || "",
+    optionE:q.options[4] || "",
+    correctAnswer:answerLetter,
+    points:q.points,
+    questionDuration:q.questionDuration,
+    explanation:q.explanation
+  };
+}
+
+$("quizForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  if (saving) return;
+
+  const questions = readQuestions();
+  if (!validateQuestions(questions)) return;
+
+  const duration = Number($("duration").value);
+  if (!Number.isFinite(duration) || duration < 1 || duration > 600) {
+    alert("Durasi harus antara 1 dan 600 menit.");
+    return;
+  }
+
+  const id = $("editId").value || "q-" + Date.now().toString(36);
+  const quiz = buildQuiz(id, questions.length);
+
+  saving = true;
+  $("saveBtn").disabled = true;
+  $("saveBtn").textContent = "Menyimpan...";
+
+  try {
+    if (CONFIG.API_URL) {
+
+const payload = {
+  action: "saveQuiz",
+  quiz: {
+    ...quiz,
+    systemType: quiz.system,
+    shuffleQuestions: quiz.shuffle,
+    navigationMode: quiz.navigationMode,
+    accessCode: quiz.accessCode,
+    perQuestionTimer:quiz.perQuestionTimer,
+    questionDuration:quiz.questionDuration,
+    shuffleOptions:quiz.shuffleOptions,
+    allowGuest:quiz.allowGuest,
+    startAt: quiz.startAt,
+    endAt: quiz.endAt
+  },
+  questions: questions.map(serverQuestion)
+};
+
+      const response = await apiPost(payload);
+      if (!response.ok) throw new Error(response.message || "Server gagal menyimpan kuis.");
+
+      toast("Kuis berhasil disimpan ke server.");
+      await loadQuizzes();
+    } else {
+      const index = quizzes.findIndex(item => item.id === id);
+      if (index >= 0) quizzes[index] = quiz;
+      else quizzes.push(quiz);
+
+      bank[id] = questions;
+      persistLocal();
+      renderAll();
+      toast("Kuis disimpan di browser ini saja.");
+    }
+
+    tab("quizzes");
+  } catch (error) {
+    console.error(error);
+    alert("Kuis gagal disimpan ke server.\n\n" + error.message +
+      "\n\nPeriksa URL API dan kecocokan action di Code.gs. Data belum dianggap tersimpan di server.");
+  } finally {
+    saving = false;
+    $("saveBtn").disabled = false;
+    $("saveBtn").textContent = "Simpan kuis";
+  }
+});
+
+async function editQuiz(id) {
+  let quiz = null;
+  let questions = [];
+
+  if (CONFIG.API_URL) {
+    try {
+      const quizResponse = await apiGet("adminListQuizzes");
+
+      if (
+        !quizResponse.ok ||
+        !Array.isArray(quizResponse.quizzes)
+      ) {
+        throw new Error("Daftar kuis admin tidak valid.");
+      }
+
+      const rawQuiz = quizResponse.quizzes.find(
+        item => String(item.id ?? item.quizId ?? "") === String(id)
+      );
+
+      if (!rawQuiz) {
+        throw new Error("Kuis tidak ditemukan di server.");
+      }
+
+      quiz = normalizeQuiz(rawQuiz);
+
+      const questionResponse = await apiGet(
+        "adminListQuestions",
+        id
+      );
+
+      if (
+        !questionResponse.ok ||
+        !Array.isArray(questionResponse.questions)
+      ) {
+        throw new Error("Daftar soal kuis tidak valid.");
+      }
+
+      questions = questionResponse.questions.map(editorQuestion);
+
+    } catch (error) {
+      console.error("Gagal membuka editor:", error);
+
+      alert(
+        "Data kuis gagal dimuat dari server.\n\n" +
+        error.message +
+        "\n\nEditor tidak dibuka agar data lama tidak tertimpa."
+      );
+
+      return;
+    }
+  } else {
+    quiz = quizzes.find(q => String(q.id) === String(id));
+
+    if (!quiz) {
+      alert("Kuis tidak ditemukan.");
+      return;
+    }
+
+    questions = Array.isArray(bank[id])
+      ? JSON.parse(JSON.stringify(bank[id]))
+      : [];
+  }
+
+  resetForm();
+
+  $("editId").value = id;
+  $("builderTitle").textContent = "Edit kuis";
+
+  $("title").value = quiz.title || "";
+  $("category").value = quiz.category || "";
+  $("description").value = quiz.description || "";
+  $("system").value = quiz.system || "exam";
+  $("duration").value = quiz.duration || 30;
+  $("status").value = quiz.status || "draft";
+  $("shuffle").value = String(!!quiz.shuffle);
+
+  $("showScore").checked = !!quiz.showScore;
+  $("showCorrection").checked = !!quiz.showCorrection;
+  $("allowGuest").checked = quiz.allowGuest !== false;
+
+  $("navigationMode").value = quiz.navigationMode || "standard";
+  $("accessCode").value = quiz.accessCode || "";
+  $("perQuestionTimer").checked = !!quiz.perQuestionTimer;
+  $("questionDuration").value = quiz.questionDuration || 60;
+  $("shuffleOptions").checked = quiz.shuffleOptions !== false;
+
+  // Hindari error jika tanggal dari server tidak valid.
+  function toDateTimeLocal(value) {
+    if (!value) return "";
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "";
+
+    const localDate = new Date(
+      date.getTime() - date.getTimezoneOffset() * 60000
+    );
+
+    return localDate.toISOString().slice(0, 16);
+  }
+
+  $("startAt").value = toDateTimeLocal(quiz.startAt);
+  $("endAt").value = toDateTimeLocal(quiz.endAt);
+
+  $("questionsEditor").innerHTML = "";
+
+  questions.forEach(question => addQuestion(question));
+
+  if (!questions.length) {
+    addQuestion();
+  }
+
+  tab("builder");
+}
+
+function duplicateQuiz(id) {
+  const quiz = quizzes.find(q => q.id === id);
+  if (!quiz) return;
+
+  const newId = "q-" + Date.now().toString(36);
+  const copy = {...quiz, id:newId, title:quiz.title + " (salinan)", status:"draft"};
+  const questions = JSON.parse(JSON.stringify(bank[id] || []));
+
+  if (CONFIG.API_URL) {
+    alert("Untuk menyalin kuis di server, endpoint Code.gs perlu mendukung pembuatan kuis baru dan menyimpan ulang seluruh soalnya. Buka kuis ini lalu buat salinan melalui fitur yang tersedia di server.");
+    return;
+  }
+
+  quizzes.push(copy);
+  bank[newId] = questions;
+  persistLocal();
+  renderAll();
+  toast("Salinan dibuat dalam penyimpanan lokal.");
+}
+
+async function deleteQuiz(id) {
+  const quiz = quizzes.find(q => q.id === id);
+  if (!quiz || !confirm('Hapus kuis "' + quiz.title + '"?')) return;
+
+  if (CONFIG.API_URL) {
+    try {
+      const response = await apiPost({action:"deleteQuiz", id});
+      if (!response.ok) throw new Error(response.message || "Server menolak penghapusan.");
+      await loadQuizzes();
+      toast("Kuis dihapus dari server.");
+    } catch (error) {
+      console.error(error);
+      alert("Kuis belum terhapus dari server: " + error.message);
+    }
+    return;
+  }
+
+  quizzes = quizzes.filter(q => q.id !== id);
+  delete bank[id];
+  persistLocal();
+  renderAll();
+  toast("Kuis dihapus dari browser ini.");
+}
+
+function importQuestions() {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".json,application/json";
+  input.addEventListener("change", async () => {
+    const file = input.files && input.files[0];
+    if (!file) return;
+
+    try {
+      const data = JSON.parse(await file.text());
+      if (!Array.isArray(data)) throw new Error("Format harus berupa array JSON.");
+      $("questionsEditor").innerHTML = "";
+      data.forEach(q => addQuestion(editorQuestion(q)));
+      if (!data.length) addQuestion();
+      toast("Soal berhasil diimpor. Simpan kuis untuk menerapkan perubahan.");
+    } catch (error) {
+      alert("File JSON tidak valid: " + error.message);
+    }
+  });
+  input.click();
+}
+
+function exportQuestions() {
+  const data = JSON.stringify(readQuestions(), null, 2);
+  const url = URL.createObjectURL(new Blob([data], {type:"application/json"}));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "bank-soal-ruang-uji.json";
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function saveSettings() {
+  const url = $("apiUrl").value.trim();
+  if (url && !/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(url)) {
+    alert("Gunakan URL Web App Google Apps Script yang berakhiran /exec.");
+    return;
+  }
+
+  CONFIG.API_URL = url;
+  CONFIG.ADMIN_KEY = $("adminKey").value;
+  localStorage.setItem("ruanguji_api_url", CONFIG.API_URL);
+  localStorage.setItem("ruanguji_admin_key", CONFIG.ADMIN_KEY);
+  toast("Pengaturan API disimpan pada browser ini.");
+}
+
+async function testApi() {
+  saveSettings();
+
+  const status = $("apiStatus");
+
+  if (!CONFIG.API_URL) {
+    status.className = "api-status error";
+    status.textContent = "Masukkan URL API terlebih dahulu.";
+    return;
+  }
+
+  if (!CONFIG.ADMIN_KEY) {
+    status.className = "api-status error";
+    status.textContent = "Masukkan kunci admin terlebih dahulu.";
+    return;
+  }
+
+  status.className = "api-status";
+  status.textContent = "Menguji koneksi...";
+
+  try {
+    const result = await apiGet("adminListQuizzes");
+
+    if (!result.ok || !Array.isArray(result.quizzes)) {
+      throw new Error(
+        result.message || "Respons API tidak valid."
+      );
+    }
+
+    status.className = "api-status ok";
+    status.textContent =
+      "Koneksi berhasil. " +
+      result.quizzes.length +
+      " kuis berhasil dibaca dari server.";
+
+    await loadQuizzes();
+
+  } catch (error) {
+    console.error("Tes API gagal:", error);
+
+    status.className = "api-status error";
+    status.textContent =
+      "Tes gagal: " + error.message +
+      ". Periksa URL deployment, kunci admin, izin akses, dan Code.gs.";
+  }
+}
+
+$("apiUrl").value = CONFIG.API_URL;
+$("adminKey").value = CONFIG.ADMIN_KEY;
+
+resetForm();
+loadQuizzes();
+</script>
+<script>
+// Deterrent ringan untuk mengurangi penyalinan kasual; bukan pengamanan sumber kode.
+document.addEventListener("contextmenu", function(e) { e.preventDefault(); });
+document.addEventListener("copy", function(e) { e.preventDefault(); });
+document.addEventListener("cut", function(e) { e.preventDefault(); });
+document.addEventListener("keydown", function(e) {
+  const k = String(e.key || "").toLowerCase();
+  if ((e.ctrlKey || e.metaKey) && ["u", "s", "p"].includes(k)) { e.preventDefault(); }
+  if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ["i", "j", "c"].includes(k))) e.preventDefault();
+});
+</script>
+</body>
+</html>

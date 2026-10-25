@@ -1,0 +1,2536 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#08086F">
+<title>RUANG UJI — Portal Ujian</title>
+<link rel="icon" type="image/x-icon" href="assets/ruanguji1.png">
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<style>
+:root {
+  --navy: #08086F;
+  --red: #FF0000;
+  --white: #FFFFFF;
+  --bg: #F2F4F8;
+  --line: #D6DCE6;
+  --text: #202638;
+  --muted: #657084;
+  --green: #217346;
+  --green-bg: #EAF5ED;
+  --yellow: #8B6200;
+  --yellow-bg: #FFF4D5;
+  --gray-bg: #EBEEF3;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+}
+button, input, select { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; }
+button:focus-visible, a:focus-visible,
+input:focus-visible, select:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+.top-strip {
+  height: 5px;
+  background: var(--red);
+}
+.header {
+  background: var(--white);
+  border-bottom: 1px solid var(--line);
+}
+.header-inner {
+  min-height: 78px;
+  max-width: 1180px;
+  padding: 12px 22px;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+.logo-link { display: inline-flex; align-items: center; }
+.logo {
+  display: block;
+  width: min(100%, 290px);
+  max-height: 54px;
+  object-fit: contain;
+  object-position: left center;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.header-label {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: right;
+  line-height: 1.5;
+}
+.admin-link {
+  display: inline-block;
+  border: 1px solid var(--navy);
+  color: var(--navy);
+  padding: 10px 13px;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.admin-link:hover {
+  color: white;
+  background: var(--navy);
+}
+.navbar {
+  background: var(--navy);
+  color: white;
+}
+.navbar-inner {
+  max-width: 1180px;
+  padding: 0 22px;
+  margin: auto;
+  min-height: 41px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+.nav-current {
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: .4px;
+}
+.breadcrumb {
+  color: #D9DDFB;
+  font-size: 12px;
+}
+main {
+  max-width: 1180px;
+  margin: auto;
+  padding: 24px 22px 45px;
+}
+.page-heading {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 17px;
+  margin-bottom: 19px;
+}
+.page-heading h1 {
+  color: var(--navy);
+  font-size: 23px;
+  line-height: 1.3;
+  margin: 0 0 7px;
+  font-weight: 700;
+}
+.page-heading p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+  font-size: 13px;
+}
+.notice {
+  background: #FFFFFF;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--navy);
+  padding: 13px 15px;
+  margin-bottom: 20px;
+  line-height: 1.6;
+  color: #424D60;
+  font-size: 12px;
+}
+.notice strong { color: var(--navy); }
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--line);
+  background: white;
+  margin-bottom: 22px;
+}
+.summary-item {
+  padding: 15px 18px;
+  border-right: 1px solid var(--line);
+}
+.summary-item:last-child { border-right: 0; }
+.summary-label {
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.summary-value {
+  color: var(--navy);
+  font-size: 23px;
+  font-weight: bold;
+}
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 13px;
+}
+.section-title h2 {
+  margin: 0;
+  font-size: 17px;
+  color: var(--navy);
+}
+.result-count {
+  color: var(--muted);
+  font-size: 12px;
+}
+.filters {
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) 220px auto;
+  gap: 9px;
+  margin-bottom: 14px;
+}
+.field {
+  min-width: 0;
+  width: 100%;
+  height: 39px;
+  border: 1px solid #C9D1DE;
+  border-radius: 2px;
+  background: white;
+  color: var(--text);
+  padding: 0 11px;
+}
+.field::placeholder { color: #8992A2; }
+.btn {
+  min-height: 39px;
+  padding: 0 15px;
+  border: 1px solid var(--navy);
+  border-radius: 2px;
+  background: var(--navy);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+.btn:hover { background: #15158E; }
+.btn-outline {
+  color: var(--navy);
+  background: white;
+}
+.btn-outline:hover {
+  color: white;
+  background: var(--navy);
+}
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  background: white;
+}
+table {
+  width: 100%;
+  min-width: 790px;
+  border-collapse: collapse;
+  text-align: left;
+}
+thead { background: #E9EDF5; }
+th {
+  color: #303A50;
+  font-size: 11px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: .35px;
+  padding: 13px 12px;
+  border-bottom: 1px solid #CFD6E2;
+  white-space: nowrap;
+}
+td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #E4E8EF;
+  vertical-align: middle;
+  font-size: 12px;
+  line-height: 1.55;
+}
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr:hover { background: #F8FAFD; }
+.number {
+  width: 38px;
+  color: var(--muted);
+  text-align: center;
+}
+.exam-name {
+  color: var(--navy);
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+.exam-desc {
+  max-width: 350px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.category { color: #4E5A70; }
+.status {
+  display: inline-block;
+  padding: 5px 8px;
+  font-size: 10px;
+  line-height: 1.3;
+  font-weight: bold;
+  white-space: nowrap;
+  border-radius: 2px;
+}
+.status.available { background: var(--green-bg); color: var(--green); }
+.status.upcoming { background: var(--yellow-bg); color: var(--yellow); }
+.status.closed { background: var(--gray-bg); color: #606A7B; }
+.start-btn {
+  display: inline-block;
+  background: var(--navy);
+  color: white;
+  border: 1px solid var(--navy);
+  padding: 8px 11px;
+  font-size: 11px;
+  font-weight: bold;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+.start-btn:hover { background: #15158E; }
+.start-btn.disabled {
+  background: #E6E9EF;
+  color: #788193;
+  border-color: #D8DDE6;
+  pointer-events: none;
+}
+.empty {
+  background: white;
+  border: 1px solid var(--line);
+  padding: 38px 18px;
+  text-align: center;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.empty strong {
+  display: block;
+  color: var(--navy);
+  margin-bottom: 6px;
+  font-size: 14px;
+}
+.table-foot {
+  border: 1px solid var(--line);
+  border-top: 0;
+  padding: 11px 13px;
+  background: #FAFBFD;
+  color: var(--muted);
+  font-size: 11px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.footer {
+  background: white;
+  border-top: 1px solid var(--line);
+  border-bottom: 4px solid var(--navy);
+}
+.footer-inner {
+  max-width: 1180px;
+  margin: auto;
+  padding: 18px 22px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+.footer strong { color: var(--navy); }
+@media (max-width: 760px) {
+  .header-inner { padding: 12px 15px; min-height: 67px; }
+  .logo { max-width: 205px; max-height: 45px; }
+  .header-label { display: none; }
+  .admin-link { padding: 9px; }
+  .navbar-inner { padding: 0 15px; }
+  main { padding: 20px 15px 35px; }
+  .filters { grid-template-columns: 1fr 1fr; }
+  .filters input { grid-column: 1 / -1; }
+}
+
+/* RESPONSIVE — RUANG UJI */
+@media (max-width: 760px) {
+  .header-inner {
+    min-height: 64px;
+    padding: 10px 14px;
+    gap: 10px;
+  }
+
+  .logo {
+    width: auto;
+    max-width: 155px;
+    max-height: 38px;
+  }
+
+  .header-right {
+    gap: 0;
+  }
+
+  .header-label {
+    display: none;
+  }
+
+  .admin-link {
+    padding: 10px 11px;
+    font-size: 11px;
+    text-align: center;
+  }
+
+  .navbar-inner {
+    min-height: 38px;
+    padding: 0 14px;
+  }
+
+  .breadcrumb {
+    font-size: 11px;
+  }
+
+  main {
+    padding: 19px 14px 32px;
+  }
+
+  .page-heading h1 {
+    font-size: 21px;
+  }
+
+  .summary-item {
+    padding: 13px 10px;
+  }
+
+  .summary-label {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  .summary-value {
+    font-size: 21px;
+  }
+
+  .filters {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .field,
+  .filters .btn {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .filters input {
+    order: 0;
+  }
+
+  .filters select {
+    order: 1;
+  }
+
+  .filters button {
+    order: 2;
+  }
+
+  /* Tabel diubah menjadi daftar ujian yang mudah dibaca */
+  .table-wrap {
+    overflow: visible;
+    border: 0;
+    background: transparent;
+  }
+
+  .table-wrap table,
+  .table-wrap tbody {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .table-wrap thead {
+    display: none;
+  }
+
+  .table-wrap tbody {
+    display: grid;
+    gap: 12px;
+  }
+
+  .table-wrap tbody tr {
+    display: block;
+    background: #FFFFFF;
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--navy);
+    border-radius: 3px;
+    padding: 13px;
+  }
+
+  .table-wrap tbody tr:hover {
+    background: #FFFFFF;
+  }
+
+  .table-wrap tbody td {
+    display: block;
+    width: 100%;
+    padding: 5px 0;
+    border: 0;
+    text-align: left;
+    white-space: normal;
+  }
+
+  .table-wrap tbody td.number {
+    display: none;
+  }
+
+  .table-wrap tbody td:nth-child(2) {
+    padding-bottom: 10px;
+  }
+
+  .table-wrap tbody td:nth-child(3)::before {
+    content: "Kategori: ";
+    color: var(--muted);
+  }
+
+  .table-wrap tbody td:nth-child(4)::before {
+    content: "Durasi: ";
+    color: var(--muted);
+  }
+
+  .table-wrap tbody td:nth-child(5)::before {
+    content: "Jumlah soal: ";
+    color: var(--muted);
+  }
+
+  .table-wrap tbody td:nth-child(6)::before {
+    content: "Jadwal: ";
+    color: var(--muted);
+  }
+
+  .table-wrap tbody td:nth-child(7) {
+    padding-top: 9px;
+  }
+
+  .table-wrap tbody td:nth-child(8) {
+    padding-top: 12px;
+  }
+
+  .start-btn {
+    display: flex;
+    width: 100%;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+  }
+
+  .start-btn.disabled {
+    width: 100%;
+    text-align: center;
+  }
+
+  .table-foot {
+    margin-top: 12px;
+    line-height: 1.6;
+  }
+
+  .footer-inner {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 380px) {
+  .logo {
+    max-width: 125px;
+    max-height: 34px;
+  }
+
+  .admin-link {
+    padding: 9px 8px;
+    font-size: 10px;
+  }
+
+  .breadcrumb {
+    font-size: 10px;
+  }
+
+  .summary-item {
+    padding: 11px 7px;
+  }
+
+  .summary-label {
+    font-size: 10px;
+  }
+
+  .summary-value {
+    font-size: 19px;
+  }
+}
+
+
+/* FLOATING MENU — RUANG UJI */
+.ru-float-tools {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 11px;
+}
+
+.ru-float-btn {
+  width: 48px;
+  height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #D6DCE6;
+  border-radius: 50%;
+  background: #FFFFFF;
+  color: #08086F;
+  box-shadow: 0 3px 12px rgba(8, 8, 111, .13);
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+
+.ru-float-btn:hover {
+  background: #F0F2FF;
+}
+
+.ru-float-btn svg {
+  width: 21px;
+  height: 21px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ru-main-fab {
+  width: 54px;
+  height: 54px;
+  background: #08086F;
+  color: #FFFFFF;
+  border: 1px solid #08086F;
+}
+
+.ru-main-fab:hover {
+  background: #15158E;
+  color: #FFFFFF;
+}
+
+.ru-main-fab svg {
+  width: 25px;
+  height: 25px;
+  transition: transform .2s;
+}
+
+.ru-main-fab[aria-expanded="true"] svg {
+  transform: rotate(45deg);
+}
+
+.ru-quick-menu {
+  position: absolute;
+  right: 0;
+  bottom: 122px;
+  width: 218px;
+  padding: 7px;
+  background: #FFFFFF;
+  border: 1px solid #D6DCE6;
+  box-shadow: 0 5px 24px rgba(22, 32, 65, .15);
+}
+
+.ru-quick-menu[hidden] {
+  display: none;
+}
+
+.ru-menu-heading {
+  padding: 10px 11px;
+  color: #657084;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: .7px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #E8EBF1;
+  margin-bottom: 5px;
+}
+
+.ru-menu-item {
+  width: 100%;
+  min-height: 43px;
+  padding: 10px 11px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  border: 0;
+  background: #FFFFFF;
+  color: #202638;
+  text-align: left;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.ru-menu-item:hover {
+  background: #F2F4F8;
+  color: #08086F;
+}
+
+.ru-menu-item svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ru-menu-item span {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ru-menu-item small {
+  color: #657084;
+  font-size: 10px;
+}
+
+/* MODAL */
+.ru-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(15, 21, 42, .52);
+}
+
+.ru-modal[hidden] {
+  display: none;
+}
+
+.ru-modal-card {
+  width: 100%;
+  max-width: 480px;
+  max-height: calc(100dvh - 36px);
+  overflow-y: auto;
+  background: #FFFFFF;
+  border: 1px solid #D6DCE6;
+  border-top: 4px solid #08086F;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .18);
+}
+
+.ru-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 20px 22px 15px;
+  border-bottom: 1px solid #E4E8EF;
+}
+
+.ru-modal-header h2 {
+  margin: 0 0 6px;
+  color: #08086F;
+  font-size: 19px;
+}
+
+.ru-modal-header p {
+  margin: 0;
+  color: #657084;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.ru-modal-close {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border: 1px solid #D6DCE6;
+  background: #FFFFFF;
+  color: #202638;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.ru-modal-close:hover {
+  background: #F2F4F8;
+}
+
+.ru-complaint-form {
+  padding: 19px 22px 22px;
+}
+
+.ru-form-group {
+  margin-bottom: 16px;
+}
+
+.ru-form-group label {
+  display: block;
+  margin-bottom: 7px;
+  color: #303A50;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.ru-form-group input,
+.ru-form-group textarea {
+  display: block;
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #C9D1DE;
+  border-radius: 2px;
+  background: #FFFFFF;
+  color: #202638;
+  font: inherit;
+  font-size: 13px;
+}
+
+.ru-form-group input {
+  min-height: 42px;
+}
+
+.ru-form-group textarea {
+  min-height: 125px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.ru-form-group input:focus,
+.ru-form-group textarea:focus {
+  outline: 2px solid #08086F;
+  outline-offset: 1px;
+}
+
+.ru-form-note {
+  margin: 0 0 16px;
+  color: #657084;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.ru-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+}
+
+.ru-form-actions button {
+  min-height: 40px;
+  padding: 0 15px;
+}
+
+.ru-access-panel {
+  position: fixed;
+  right: 22px;
+  bottom: 155px;
+  z-index: 999;
+  width: min(290px, calc(100vw - 30px));
+  padding: 16px;
+  background: #FFFFFF;
+  border: 1px solid #D6DCE6;
+  border-top: 3px solid #08086F;
+  box-shadow: 0 5px 24px rgba(22, 32, 65, .15);
+}
+
+.ru-access-panel[hidden] {
+  display: none;
+}
+
+.ru-access-panel h2 {
+  margin: 0 0 13px;
+  color: #08086F;
+  font-size: 16px;
+}
+
+.ru-access-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 0;
+  border-bottom: 1px solid #E8EBF1;
+  font-size: 12px;
+}
+
+.ru-access-row button {
+  min-width: 34px;
+  min-height: 32px;
+  border: 1px solid #C9D1DE;
+  background: #FFFFFF;
+  color: #08086F;
+  font-weight: bold;
+}
+
+.ru-access-row button:disabled {
+  color: #A0A7B5;
+  cursor: not-allowed;
+}
+
+.ru-access-reset {
+  width: 100%;
+  margin-top: 13px;
+}
+
+/* AKSESIBILITAS — RUANG UJI */
+.ru-float-btn i {
+  font-size: 25px;
+  line-height: 1;
+}
+
+.ru-access-panel {
+  position: fixed;
+  right: 22px;
+  bottom: 145px;
+  z-index: 999;
+  width: min(350px, calc(100vw - 30px));
+  padding: 0;
+  overflow: hidden;
+  background: #FFFFFF;
+  color: #202638;
+  border: 1px solid #D6DCE6;
+  border-top: 3px solid #08086F;
+  box-shadow: 0 8px 30px rgba(18, 28, 65, .16);
+}
+
+.ru-access-panel[hidden] {
+  display: none;
+}
+
+.ru-access-header {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 17px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E4E8EF;
+}
+
+.ru-access-heading-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 43px;
+  height: 43px;
+  flex-shrink: 0;
+  background: #F0F1FF;
+  color: #08086F;
+  border: 1px solid #E0E2FF;
+}
+
+.ru-access-heading-icon i {
+  font-size: 27px;
+}
+
+.ru-access-heading-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.ru-access-heading-text h2 {
+  margin: 0 0 5px;
+  color: #08086F;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.ru-access-heading-text p {
+  margin: 0;
+  color: #657084;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.ru-access-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 33px;
+  height: 33px;
+  flex-shrink: 0;
+  border: 1px solid #D6DCE6;
+  background: #FFFFFF;
+  color: #657084;
+  cursor: pointer;
+}
+
+.ru-access-close:hover {
+  color: #08086F;
+  background: #F2F4F8;
+}
+
+.ru-access-close i {
+  font-size: 21px;
+}
+
+.ru-access-content {
+  padding: 3px 17px 0;
+}
+
+.ru-access-section {
+  padding: 15px 0;
+  border-bottom: 1px solid #E8EBF1;
+}
+
+.ru-access-section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 13px;
+  color: #657084;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .65px;
+  text-transform: uppercase;
+}
+
+.ru-access-section-title i {
+  font-size: 17px;
+  color: #08086F;
+}
+
+.ru-access-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ru-access-setting-info {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.ru-access-setting-info strong {
+  color: #202638;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.ru-access-setting-info small {
+  color: #657084;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.ru-text-stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ru-text-stepper button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 33px;
+  height: 33px;
+  border: 1px solid #C9D1DE;
+  background: #FFFFFF;
+  color: #08086F;
+  cursor: pointer;
+}
+
+.ru-text-stepper button i {
+  font-size: 18px;
+}
+
+.ru-text-stepper button:hover:not(:disabled) {
+  background: #F0F1FF;
+  border-color: #08086F;
+}
+
+.ru-text-stepper button:disabled {
+  color: #AAB1BE;
+  background: #F5F6F8;
+  cursor: not-allowed;
+}
+
+.ru-text-stepper > span {
+  min-width: 43px;
+  color: #08086F;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Switch */
+.ru-access-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  width: 42px;
+  height: 24px;
+  flex-shrink: 0;
+  padding: 3px;
+  border: 1px solid #BAC3D1;
+  border-radius: 20px;
+  background: #E6E9EF;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+
+.ru-access-switch span {
+  display: block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: 1px solid #C9D1DE;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .12);
+  transition: transform .15s;
+}
+
+.ru-access-switch[aria-checked="true"] {
+  background: #08086F;
+  border-color: #08086F;
+}
+
+.ru-access-switch[aria-checked="true"] span {
+  transform: translateX(17px);
+  border-color: #FFFFFF;
+}
+
+.ru-access-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 13px 0 15px;
+}
+
+.ru-access-footer > span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #657084;
+  font-size: 10px;
+}
+
+.ru-access-footer > span i {
+  font-size: 15px;
+}
+
+.ru-access-footer button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 33px;
+  padding: 0 10px;
+  border: 1px solid #D6DCE6;
+  background: #FFFFFF;
+  color: #08086F;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ru-access-footer button:hover {
+  background: #F0F1FF;
+  border-color: #08086F;
+}
+
+.ru-access-footer button i {
+  font-size: 16px;
+}
+
+/* Kontras tinggi */
+body.ru-high-contrast {
+  --bg: #FFFFFF;
+  --text: #000000;
+  --muted: #222222;
+  --line: #555555;
+}
+
+body.ru-high-contrast .ru-access-panel {
+  border: 2px solid #000000;
+}
+
+body.ru-high-contrast .ru-access-setting-info strong,
+body.ru-high-contrast .ru-access-setting-info small,
+body.ru-high-contrast .ru-access-section-title,
+body.ru-high-contrast .ru-access-heading-text p {
+  color: #000000;
+}
+
+body.ru-high-contrast .ru-access-heading-icon {
+  background: #FFFFFF;
+  border: 2px solid #000000;
+  color: #000000;
+}
+
+/* Kurangi animasi */
+body.ru-reduce-motion *,
+body.ru-reduce-motion *::before,
+body.ru-reduce-motion *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
+.ru-access-panel button:focus-visible,
+.ru-float-tools button:focus-visible {
+  outline: 3px solid #FF0000;
+  outline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+  .ru-access-panel {
+    right: 15px;
+    bottom: 137px;
+    width: min(350px, calc(100vw - 30px));
+  }
+
+  .ru-access-header {
+    padding: 15px;
+  }
+
+  .ru-access-content {
+    padding-right: 15px;
+    padding-left: 15px;
+  }
+}
+
+/* Ikon Boxicons pada tombol dan menu melayang */
+.ru-float-btn i {
+  display: block;
+  font-size: 25px;
+  line-height: 1;
+}
+
+.ru-main-fab i {
+  font-size: 28px;
+  transition: transform .2s ease;
+}
+
+.ru-main-fab[aria-expanded="true"] i {
+  transform: rotate(45deg);
+}
+
+.ru-menu-item {
+  text-decoration: none;
+}
+
+.ru-menu-item i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  font-size: 21px;
+  line-height: 1;
+}
+
+.ru-float-btn,
+.ru-text-stepper button,
+.ru-access-switch {
+  transition: background .15s ease, color .15s ease,
+    border-color .15s ease;
+}
+
+/* Pastikan elemen interaktif tidak terpotong */
+.ru-access-panel {
+  max-height: min(80vh, 600px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.ru-float-tools {
+  z-index: 1000;
+}
+
+@media (max-width: 760px) {
+  .ru-float-tools {
+    right: 15px;
+    bottom: 15px;
+  }
+}
+
+
+/* Floating tools: kanan bawah, tersusun vertikal */
+.ru-float-tools {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  left: auto;
+  top: auto;
+  z-index: 1000;
+
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+/* Ukuran tombol floating */
+.ru-float-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  flex: 0 0 54px;
+  border-radius: 50%;
+}
+
+/* Ikon Boxicons */
+.ru-float-btn i {
+  display: block;
+  font-size: 26px;
+  line-height: 1;
+}
+
+/* Tombol utama (+) */
+.ru-main-fab {
+  order: 1;
+}
+
+/* Tombol aksesibilitas berada di atas tombol (+) */
+#ruAccessBtn {
+  order: 2;
+}
+
+/* Tampilan HP */
+@media (max-width: 760px) {
+  .ru-float-tools {
+    right: 16px;
+    bottom: 16px;
+    left: auto;
+    gap: 10px;
+  }
+
+  .ru-float-btn {
+    width: 48px;
+    height: 48px;
+    flex-basis: 48px;
+  }
+}
+
+
+/* ======================================
+   FLOATING TOOLS — FIXED KANAN BAWAH
+   ====================================== */
+
+.ru-float-tools {
+  position: fixed !important;
+  right: 24px !important;
+  bottom: 24px !important;
+  left: auto !important;
+  top: auto !important;
+
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+
+  width: 54px;
+  height: auto;
+  margin: 0;
+  padding: 0;
+}
+
+/* Tombol bulat */
+.ru-float-tools > .ru-float-btn {
+  position: relative;
+  inset: auto;
+  flex: 0 0 48px;
+  width: 48px;
+  height: 48px;
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #D6DCE6;
+  border-radius: 50%;
+  background: #FFFFFF;
+  color: #08086F;
+  box-shadow: 0 3px 12px rgba(8, 8, 111, .16);
+}
+
+.ru-float-tools > .ru-float-btn i {
+  font-size: 25px;
+  line-height: 1;
+}
+
+.ru-float-tools > .ru-float-btn:hover {
+  background: #F0F2FF;
+}
+
+/* Tombol bantuan (+) */
+.ru-float-tools > .ru-main-fab {
+  flex-basis: 54px;
+  width: 54px;
+  height: 54px;
+  background: #08086F;
+  color: #FFFFFF;
+  border-color: #08086F;
+}
+
+.ru-float-tools > .ru-main-fab:hover {
+  background: #15158E;
+}
+
+.ru-float-tools > .ru-main-fab i {
+  font-size: 28px;
+  transition: transform .2s ease;
+}
+
+.ru-float-tools > .ru-main-fab[aria-expanded="true"] i {
+  transform: rotate(45deg);
+}
+
+/* Menu bantuan mengambang di atas tombol + */
+.ru-float-tools > .ru-quick-menu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 12px);
+  left: auto;
+  top: auto;
+
+  width: 240px;
+  max-width: calc(100vw - 32px);
+  margin: 0;
+  padding: 7px;
+
+  background: #FFFFFF;
+  border: 1px solid #D6DCE6;
+  box-shadow: 0 5px 24px rgba(22, 32, 65, .18);
+}
+
+.ru-quick-menu[hidden] {
+  display: none !important;
+}
+
+.ru-menu-heading {
+  padding: 10px 11px;
+  color: #657084;
+  font-size: 10px;
+  font-weight: bold;
+  letter-spacing: .7px;
+  text-transform: uppercase;
+  border-bottom: 1px solid #E8EBF1;
+  margin-bottom: 5px;
+}
+
+.ru-menu-item {
+  width: 100%;
+  min-height: 43px;
+  padding: 10px 11px;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  border: 0;
+  background: #FFFFFF;
+  color: #202638;
+  text-align: left;
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.ru-menu-item:hover {
+  background: #F2F4F8;
+  color: #08086F;
+}
+
+.ru-menu-item > i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 20px;
+  font-size: 21px;
+}
+
+.ru-menu-item span {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ru-menu-item small {
+  color: #657084;
+  font-size: 10px;
+}
+
+/* Panel aksesibilitas juga tetap di kanan layar */
+.ru-access-panel {
+  position: fixed;
+  right: 24px;
+  left: auto;
+  bottom: 155px;
+  z-index: 999;
+  max-height: min(80vh, 600px);
+  overflow-y: auto;
+}
+
+.ru-access-panel[hidden] {
+  display: none !important;
+}
+
+/* Tampilan ponsel */
+@media (max-width: 760px) {
+  .ru-float-tools {
+    right: 16px !important;
+    bottom: 16px !important;
+    left: auto !important;
+    gap: 10px;
+  }
+
+  .ru-access-panel {
+    right: 16px;
+    left: auto;
+    bottom: 145px;
+    width: min(350px, calc(100vw - 32px));
+  }
+}
+
+</style>
+</head>
+<body>
+<div class="top-strip"></div>
+
+<header class="header">
+  <div class="header-inner">
+    <a class="logo-link" href="quiz-home.html" aria-label="Beranda RUANG UJI">
+      <img class="logo" src="assets/ruanguji.png" alt="RUANG UJI"
+        onerror="this.alt='Logo RUANG UJI belum tersedia'">
+    </a>
+    <div class="header-right">
+      <div class="header-label">
+        PORTAL UJIAN ONLINE<br>
+        Sistem evaluasi berbasis komputer
+      </div>
+      <!--<a class="admin-link" href="quiz-admin.html">ADMINISTRATOR</a>-->
+    </div>
+  </div>
+</header>
+
+<nav class="navbar" aria-label="Navigasi halaman">
+  <div class="navbar-inner">
+    <span class="nav-current">PORTAL PESERTA</span>
+    <span class="breadcrumb">Beranda / Daftar Ujian</span>
+  </div>
+</nav>
+
+<main>
+  <section class="page-heading">
+    <h1>Daftar Ujian</h1>
+    <p>Silakan pilih ujian yang tersedia. Pastikan jadwal, durasi, dan ketentuan ujian telah dibaca sebelum memulai.</p>
+  </section>
+
+  <div class="notice">
+    <strong>Perhatian:</strong> Pastikan perangkat dan koneksi internet dalam kondisi baik. Setelah ujian dimulai, perhatikan sisa waktu yang tersedia dan pastikan jawaban dikumpulkan sebelum waktu berakhir.
+  </div>
+
+  <section class="summary" aria-label="Ringkasan portal">
+    <div class="summary-item">
+      <div class="summary-label">Ujian tersedia</div>
+      <div class="summary-value" id="availableCount">0</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-label">Total ujian</div>
+      <div class="summary-value" id="totalCount">0</div>
+    </div>
+    <div class="summary-item">
+      <div class="summary-label">Kategori ujian</div>
+      <div class="summary-value" id="categoryCount">0</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-title">
+      <h2>Ujian yang tersedia</h2>
+      <span class="result-count" id="resultCount">Memuat data...</span>
+    </div>
+
+    <div class="filters">
+      <input id="search" class="field" type="search"
+        placeholder="Cari nama ujian atau mata ujian..."
+        aria-label="Cari ujian">
+      <select id="category" class="field" aria-label="Pilih kategori">
+        <option value="">Semua kategori</option>
+      </select>
+      <button class="btn btn-outline" id="resetBtn" type="button">Reset Filter</button>
+    </div>
+
+    <section class="history-section" style="margin:22px 0 26px;padding:0 0 24px;border-bottom:3px solid #D6DCE6;border-top:1px solid #D6DCE6;padding-top:20px"><h2 style="font-size:18px;margin-top:0">Riwayat pengerjaan</h2><p style="color:#657084;margin:0 0 11px">Riwayat tersimpan di browser ini.</p><div id="attemptHistory"></div></section>
+    <div id="tableArea" class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th class="number">No.</th>
+            <th>Nama ujian</th>
+            <th>Kategori</th>
+            <th>Durasi</th>
+            <th>Jumlah soal</th>
+            <th>Jadwal</th>
+            <th>Status</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="examRows"></tbody>
+      </table>
+    </div>
+
+    <div class="table-foot">
+      <span id="dataSource">Sumber data: contoh lokal</span>
+      <span>RUANG UJI · Computer Based Test</span>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <span><strong>RUANG UJI</strong> — Portal Ujian Online</span>
+    <span>by <strong>Network Gateway Link</strong></span>
+  </div>
+</footer>
+
+
+<!-- FLOATING TOOLS — RUANG UJI -->
+<div class="ru-float-tools">
+
+  <!-- Menu bantuan -->
+  <div class="ru-quick-menu" id="ruQuickMenu" hidden>
+    <div class="ru-menu-heading">Pusat bantuan</div>
+
+    <button type="button" class="ru-menu-item" data-ru-action="complaint">
+      <i class="bx bx-message-square-dots" aria-hidden="true"></i>
+      <span>Aduan<small>Kirim masukan atau laporan</small></span>
+    </button>
+
+    <a class="ru-menu-item" id="ruEmailLink"
+       href="mailto:aryoyulioo@gmail.com">
+      <i class="bx bx-envelope" aria-hidden="true"></i>
+      <span>Email<small>Hubungi melalui email</small></span>
+    </a>
+
+    <a class="ru-menu-item" id="ruWaLink"
+       href="https://wa.me/6282136065407"
+       target="_blank" rel="noopener noreferrer">
+      <i class="bx bxl-whatsapp" aria-hidden="true"></i>
+      <span>WhatsApp<small>Hubungi melalui WhatsApp</small></span>
+    </a>
+
+    <button type="button" class="ru-menu-item" data-ru-action="developer">
+      <i class="bx bx-code-alt" aria-hidden="true"></i>
+      <span>Developer<small>Informasi pengembang</small></span>
+    </button>
+  </div>
+
+  <!-- Tombol aksesibilitas: di atas -->
+  <button type="button" class="ru-float-btn"
+    id="ruAccessBtn"
+    aria-label="Buka pengaturan aksesibilitas"
+    aria-expanded="false"
+    aria-controls="ruAccessPanel"
+    title="Aksesibilitas">
+    <i class="bx bx-universal-access" aria-hidden="true"></i>
+  </button>
+
+  <!-- Tombol bantuan: paling bawah -->
+  <button type="button" class="ru-float-btn ru-main-fab"
+    id="ruFabBtn"
+    aria-label="Buka menu bantuan"
+    aria-expanded="false"
+    aria-controls="ruQuickMenu"
+    title="Menu bantuan">
+    <i class="bx bx-plus" aria-hidden="true"></i>
+  </button>
+
+</div>
+
+<!-- PANEL AKSESIBILITAS PROFESIONAL -->
+<aside class="ru-access-panel" id="ruAccessPanel"
+  aria-label="Pengaturan aksesibilitas" hidden>
+
+  <div class="ru-access-header">
+    <div class="ru-access-heading-icon">
+      <i class="bx bx-universal-access" aria-hidden="true"></i>
+    </div>
+
+    <div class="ru-access-heading-text">
+      <h2>Aksesibilitas</h2>
+      <p>Sesuaikan pengalaman penggunaanmu.</p>
+    </div>
+
+    <button type="button" class="ru-access-close"
+      id="ruAccessClose" aria-label="Tutup aksesibilitas">
+      <i class="bx bx-x" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <div class="ru-access-content">
+
+    <section class="ru-access-section">
+      <div class="ru-access-section-title">
+        <i class="bx bx-font-size" aria-hidden="true"></i>
+        <span>Tampilan teks</span>
+      </div>
+
+      <div class="ru-access-setting">
+        <div class="ru-access-setting-info">
+          <strong>Ukuran teks</strong>
+          <small id="ruTextDescription">Ukuran standar</small>
+        </div>
+
+        <div class="ru-text-stepper" aria-label="Atur ukuran teks">
+          <button type="button" id="ruTextDown"
+            aria-label="Perkecil teks" title="Perkecil teks">
+            <i class="bx bx-minus" aria-hidden="true"></i>
+          </button>
+
+          <span id="ruTextValue" aria-live="polite">100%</span>
+
+          <button type="button" id="ruTextUp"
+            aria-label="Perbesar teks" title="Perbesar teks">
+            <i class="bx bx-plus" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="ru-access-section">
+      <div class="ru-access-section-title">
+        <i class="bx bx-low-vision" aria-hidden="true"></i>
+        <span>Keterbacaan</span>
+      </div>
+
+      <div class="ru-access-setting">
+        <div class="ru-access-setting-info">
+          <strong>Kontras tinggi</strong>
+          <small>Tingkatkan kontras warna teks</small>
+        </div>
+
+        <button type="button" class="ru-access-switch"
+          id="ruContrastBtn" role="switch"
+          aria-checked="false" aria-label="Kontras tinggi">
+          <span></span>
+        </button>
+      </div>
+    </section>
+
+    <section class="ru-access-section">
+      <div class="ru-access-section-title">
+        <i class="bx bx-move" aria-hidden="true"></i>
+        <span>Kenyamanan</span>
+      </div>
+
+      <div class="ru-access-setting">
+        <div class="ru-access-setting-info">
+          <strong>Kurangi animasi</strong>
+          <small>Minimalkan gerakan antarmuka</small>
+        </div>
+
+        <button type="button" class="ru-access-switch"
+          id="ruMotionBtn" role="switch"
+          aria-checked="false" aria-label="Kurangi animasi">
+          <span></span>
+        </button>
+      </div>
+    </section>
+
+    <div class="ru-access-footer">
+      <span><i class="bx bx-info-circle" aria-hidden="true"></i> Preferensi tampilan</span>
+
+      <button type="button" id="ruAccessReset">
+        <i class="bx bx-reset" aria-hidden="true"></i>
+        Atur ulang
+      </button>
+    </div>
+  </div>
+</aside>
+
+<!-- MODAL ADUAN -->
+<div class="ru-modal" id="ruComplaintModal"
+  role="dialog" aria-modal="true"
+  aria-labelledby="ruComplaintTitle"
+  aria-describedby="ruComplaintDescription" hidden>
+  <div class="ru-modal-card">
+    <div class="ru-modal-header">
+      <div>
+        <h2 id="ruComplaintTitle">Kirim Aduan</h2>
+        <p id="ruComplaintDescription">
+          Sampaikan kendala, laporan, atau saran untuk RUANG UJI.
+        </p>
+      </div>
+      <button type="button" class="ru-modal-close"
+        data-ru-close aria-label="Tutup modal">×</button>
+    </div>
+
+    <form class="ru-complaint-form" id="ruComplaintForm">
+      <div class="ru-form-group">
+        <label for="ruComplaintName">Nama</label>
+        <input id="ruComplaintName" name="name"
+          type="text" maxlength="100"
+          placeholder="Masukkan nama kamu" required>
+      </div>
+
+      <div class="ru-form-group">
+        <label for="ruComplaintSubject">Subject</label>
+        <input id="ruComplaintSubject" name="subject"
+          type="text" maxlength="150"
+          placeholder="Contoh: Kendala saat mengerjakan ujian"
+          required>
+      </div>
+
+      <div class="ru-form-group">
+        <label for="ruComplaintMessage">Isi aduan</label>
+        <textarea id="ruComplaintMessage" name="message"
+          maxlength="5000"
+          placeholder="Jelaskan kendala atau saran kamu secara lengkap..."
+          required></textarea>
+      </div>
+
+      <p class="ru-form-note">
+        Setelah menekan Kirim, aplikasi email akan dibuka untuk
+        mengirimkan aduan kepada pengelola.
+      </p>
+
+      <div class="ru-form-actions">
+        <button type="button" class="btn btn-outline"
+          data-ru-close>Batal</button>
+        <button type="submit" class="btn">Kirim Aduan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL DEVELOPER -->
+<div class="ru-modal" id="ruDeveloperModal"
+  role="dialog" aria-modal="true"
+  aria-labelledby="ruDeveloperTitle" hidden>
+  <div class="ru-modal-card">
+    <div class="ru-modal-header">
+      <div>
+        <h2 id="ruDeveloperTitle">Tentang Developer</h2>
+        <p>Informasi pengembang portal RUANG UJI.</p>
+      </div>
+      <button type="button" class="ru-modal-close"
+        data-ru-close aria-label="Tutup modal">×</button>
+    </div>
+
+    <div style="padding:22px">
+      <p style="margin-top:0;line-height:1.8;color:#424D60">
+        <strong style="color:#08086F">RUANG UJI</strong><br>
+        Portal ujian online berbasis komputer untuk mendukung
+        pelaksanaan evaluasi pembelajaran.
+      </p>
+
+      <div style="padding:14px;background:#F2F4F8;border:1px solid #D6DCE6;line-height:1.9">
+        <strong>Pengembang</strong><br>
+        Network Gateway Link
+        <br><br>
+        <strong>Platform</strong><br>
+        RUANG UJI — Computer Based Test
+      </div>
+
+      <button type="button" class="btn"
+        data-ru-close style="margin-top:18px">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/*
+  Integrasi Google Apps Script:
+  Simpan URL deployment Web App di localStorage dengan key QUIZ_API_URL.
+  API daftar ujian diharapkan mengembalikan:
+  { "ok": true, "quizzes": [...] }
+
+  Contoh format data:
+  {
+    id: "UJ-001",
+    title: "Ujian Tengah Semester",
+    category: "Psikologi",
+    description: "Evaluasi materi perkuliahan",
+    duration: 60,
+    questionCount: 40,
+    status: "published",
+    startAt: "2026-10-25T08:00:00+07:00",
+    endAt: "2026-10-25T10:00:00+07:00"
+  }
+*/
+
+const API_URL = localStorage.getItem("QUIZ_API_URL") || "https://script.google.com/macros/s/AKfycbzuznBNYprB6t4ztdY4qVXQFPJfPeFRf3D3xfJracFDkt4zbygJNEGyRhNgdJWbmMnUKA/exec";
+
+const SAMPLE_EXAMS = [
+  {
+    id: "DEMO-001",
+    title: "Contoh Ujian Akademik",
+    category: "Ujian Umum",
+    description: "Contoh tampilan daftar ujian RUANG UJI.",
+    duration: 60,
+    questionCount: 40,
+    status: "published",
+    startAt: "",
+    endAt: ""
+  },
+  {
+    id: "DEMO-002",
+    title: "Contoh Ujian Latihan",
+    category: "Latihan",
+    description: "Contoh ujian untuk menguji tampilan portal.",
+    duration: 30,
+    questionCount: 20,
+    status: "published",
+    startAt: "",
+    endAt: ""
+  }
+];
+
+let exams = [];
+let usingSample = true;
+let currentPage = 1;
+const PAGE_SIZE = 4;
+
+const $ = id => document.getElementById(id);
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[char]);
+}
+
+function validDate(value) {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function formatDate(value) {
+  const date = validDate(value);
+  if (!date) return "Sesuai ketentuan";
+  return date.toLocaleString("id-ID", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+function examStatus(exam) {
+  if (String(exam.status).toLowerCase() !== "published") {
+    return { key: "closed", label: "Tidak tersedia" };
+  }
+
+  const now = Date.now();
+  const start = validDate(exam.startAt);
+  const end = validDate(exam.endAt);
+
+  if (start && now < start.getTime()) {
+    return { key: "upcoming", label: "Belum dimulai" };
+  }
+
+  if (end && now > end.getTime()) {
+    return { key: "closed", label: "Berakhir" };
+  }
+
+  return { key: "available", label: "Tersedia" };
+}
+
+function populateCategories() {
+  const select = $("category");
+  const previous = select.value;
+  const categories = [...new Set(
+    exams.map(exam => String(exam.category || "").trim()).filter(Boolean)
+  )].sort((a, b) => a.localeCompare(b, "id"));
+
+  select.innerHTML = '<option value="">Semua kategori</option>' +
+    categories.map(category =>
+      `<option value="${escapeHTML(category)}">${escapeHTML(category)}</option>`
+    ).join("");
+
+  if (categories.includes(previous)) select.value = previous;
+}
+
+function render() {
+  populateCategories();
+
+  const search = $("search").value.trim().toLocaleLowerCase("id");
+  const category = $("category").value;
+
+  const available = exams.filter(exam => examStatus(exam).key === "available");
+  const filtered = exams.filter(exam => {
+    const searchable = [
+      exam.title, exam.description, exam.category
+    ].join(" ").toLocaleLowerCase("id");
+
+    return searchable.includes(search) &&
+      (!category || String(exam.category || "") === category);
+  });
+
+  $("availableCount").textContent = available.length;
+  $("totalCount").textContent = exams.length;
+  $("categoryCount").textContent = new Set(
+    exams.map(exam => exam.category).filter(Boolean)
+  ).size;
+  $("resultCount").textContent = `${filtered.length} ujian ditampilkan`;
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  currentPage = Math.min(currentPage, totalPages);
+  const pageItems = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+
+  const area = $("tableArea");
+
+  if (!filtered.length) {
+    area.className = "";
+    area.innerHTML = `
+      <div class="empty">
+        <strong>Tidak ada ujian yang sesuai</strong>
+        Coba kata kunci atau kategori lainnya.
+      </div>`;
+    return;
+  }
+
+  area.className = "table-wrap";
+  area.innerHTML = `
+    <table>
+      <thead>
+        <tr>
+          <th class="number">No.</th>
+          <th>Nama ujian</th>
+          <th>Kategori</th>
+          <th>Durasi</th>
+          <th>Jumlah soal</th>
+          <th>Jadwal</th>
+          <th>Status</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${pageItems.map((exam, index) => {
+          const status = examStatus(exam);
+          const duration = Number(exam.duration) || 0;
+          const questions = Number(exam.questionCount) || 0;
+
+          return `
+            <tr>
+              <td class="number">${(currentPage - 1) * PAGE_SIZE + index + 1}</td>
+              <td>
+                <div class="exam-name">${escapeHTML(exam.title || "Ujian tanpa nama")}</div>
+                <div class="exam-desc">${escapeHTML(exam.description || "")}</div>
+              </td>
+              <td class="category">${escapeHTML(exam.category || "Umum")}</td>
+              <td>${duration} menit</td>
+              <td>${questions} soal</td>
+              <td>${escapeHTML(formatDate(exam.startAt))}</td>
+              <td><span class="status ${status.key}">${status.label}</span></td>
+              <td>
+                ${status.key === "available"
+                  ? `<a class="start-btn" href="quiz-on.html?id=${encodeURIComponent(exam.id)}"
+                       onclick="return chooseExam(event, '${escapeHTML(exam.id)}')">Mulai ujian</a>`
+                  : `<span class="start-btn disabled">${status.key === "upcoming" ? "Belum mulai" : "Tidak tersedia"}</span>`
+                }
+              </td>
+            </tr>`;
+        }).join("")}
+      </tbody>
+    </table>
+    ${totalPages > 1 ? `<div class="pagination" style="display:flex;gap:8px;justify-content:flex-end;align-items:center;padding:14px 0;flex-wrap:wrap">
+      <button class="btn btn-outline" type="button" id="pagePrev" ${currentPage === 1 ? "disabled" : ""}>Sebelumnya</button>
+      <span class="small muted">Halaman ${currentPage} dari ${totalPages}</span>
+      <button class="btn btn-outline" type="button" id="pageNext" ${currentPage === totalPages ? "disabled" : ""}>Berikutnya</button>
+    </div>` : ""}`;
+  if (totalPages > 1) {
+    $("pagePrev").addEventListener("click", () => { currentPage--; render(); });
+    $("pageNext").addEventListener("click", () => { currentPage++; render(); });
+  }
+  renderHistory();
+}
+
+let historyPage = 1;
+const HISTORY_PAGE_SIZE = 2;
+function renderHistory() {
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem("ruanguji_attempt_history") || "[]"); } catch {}
+  const old = document.getElementById("attemptHistory");
+  if (!old) return;
+  if (!history.length) {
+    old.innerHTML = '<div class="empty"><strong>Belum ada riwayat pengerjaan</strong>Riwayat pada perangkat ini akan muncul setelah kamu menyelesaikan kuis.</div>';
+    return;
+  }
+  const ordered = history.slice().reverse();
+  const pageCount = Math.max(1, Math.ceil(ordered.length / HISTORY_PAGE_SIZE));
+  historyPage = Math.min(Math.max(1, historyPage), pageCount);
+  const pageItems = ordered.slice((historyPage - 1) * HISTORY_PAGE_SIZE, historyPage * HISTORY_PAGE_SIZE);
+  old.innerHTML = `<div class="table-wrap"><table><thead><tr><th>Ujian</th><th>Nama</th><th>Nilai</th><th>Tanggal pengerjaan</th><th>Aksi</th></tr></thead><tbody>${pageItems.map(item => {
+    const exam = exams.find(e => String(e.id) === String(item.quizId));
+    const originalIndex = history.findIndex(x => String(x.attemptId || "") === String(item.attemptId || "") && String(x.date || "") === String(item.date || ""));
+    return `<tr><td>${escapeHTML(item.title || exam?.title || "Ujian")}</td><td>${escapeHTML(item.name || "Tamu")}</td><td>${item.score == null ? "Tidak ditampilkan" : escapeHTML(item.score)}</td><td>${escapeHTML(formatDate(item.date))}</td><td><a class="start-btn" href="quiz-on.html?id=${encodeURIComponent(item.quizId)}" onclick="return chooseExam(event, '${escapeHTML(item.quizId)}')">Coba lagi</a> <button type="button" class="start-btn" style="background:#fff;color:#b42318;border:1px solid #e4b9b9;margin-top:5px" onclick="deleteAttemptHistory(${originalIndex})">Hapus</button></td></tr>`;
+  }).join("")}</tbody></table></div>${pageCount > 1 ? `<div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:14px"><button class="start-btn" ${historyPage===1?'disabled':''} onclick="changeHistoryPage(-1)">Sebelumnya</button><span>Halaman ${historyPage} dari ${pageCount}</span><button class="start-btn" ${historyPage===pageCount?'disabled':''} onclick="changeHistoryPage(1)">Berikutnya</button></div>` : ""}<div style="margin-top:12px;text-align:right"><button class="start-btn" style="background:#fff;color:#b42318;border:1px solid #e4b9b9" onclick="clearAttemptHistory()">Hapus riwayat saya</button></div>`;
+}
+function changeHistoryPage(delta) { historyPage += delta; renderHistory(); }
+function deleteAttemptHistory(index) {
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem("ruanguji_attempt_history") || "[]"); } catch {}
+  if (index < 0 || index >= history.length) return;
+  if (!confirm("Hapus riwayat pengerjaan ini dari browser/perangkat ini?")) return;
+  history.splice(index, 1);
+  localStorage.setItem("ruanguji_attempt_history", JSON.stringify(history));
+  historyPage = Math.min(historyPage, Math.max(1, Math.ceil(history.length / HISTORY_PAGE_SIZE)));
+  renderHistory();
+}
+function clearAttemptHistory() {
+  let history = [];
+  try { history = JSON.parse(localStorage.getItem("ruanguji_attempt_history") || "[]"); } catch {}
+  if (!history.length) return;
+  if (!confirm("Hapus seluruh riwayat pengerjaan dari browser/perangkat ini? Tindakan ini tidak menghapus catatan pada spreadsheet server.")) return;
+  localStorage.setItem("ruanguji_attempt_history", "[]");
+  historyPage = 1;
+  renderHistory();
+}
+async function loadExams() {
+  $("dataSource").textContent = "Memuat data ujian...";
+  $("resultCount").textContent = "Memuat data...";
+
+  if (API_URL) {
+    try {
+      const response = await fetch(
+        `${API_URL}?action=listQuizzes&_=${Date.now()}`
+      );
+      if (!response.ok) throw new Error("Respons server tidak berhasil.");
+
+      const data = await response.json();
+      if (!data.ok || !Array.isArray(data.quizzes)) {
+        throw new Error(data.message || "Format data ujian tidak sesuai.");
+      }
+
+      exams = data.quizzes;
+      usingSample = false;
+      $("dataSource").textContent = "Sumber data: Ruang Uji Database System";
+      render();
+      return;
+    } catch (error) {
+      console.error("Gagal memuat data ujian:", error);
+      $("dataSource").textContent =
+        "Koneksi spreadsheet gagal — menampilkan data contoh.";
+    }
+  }
+
+  const local = localStorage.getItem("quizLocalData");
+  if (local) {
+    try {
+      const data = JSON.parse(local);
+      if (Array.isArray(data.quizzes)) {
+        exams = data.quizzes;
+        usingSample = false;
+        if (!API_URL) {
+          $("dataSource").textContent = "Sumber data: penyimpanan lokal browser";
+        }
+        render();
+        return;
+      }
+    } catch (error) {
+      console.warn("Data lokal tidak dapat dibaca:", error);
+    }
+  }
+
+  exams = SAMPLE_EXAMS;
+  usingSample = true;
+  if (!API_URL) {
+    $("dataSource").textContent = "Sumber data: contoh lokal — belum terhubung";
+  }
+  render();
+}
+
+$("search").addEventListener("input", () => { currentPage = 1; render(); });
+$("category").addEventListener("change", () => { currentPage = 1; render(); });
+$("resetBtn").addEventListener("click", () => {
+  $("search").value = "";
+  $("category").value = "";
+  render();
+});
+
+loadExams();
+</script>
+<script>
+// Deterrent ringan untuk mengurangi penyalinan kasual; bukan pengamanan sumber kode.
+document.addEventListener("contextmenu", function(e) { e.preventDefault(); });
+document.addEventListener("copy", function(e) { e.preventDefault(); });
+document.addEventListener("cut", function(e) { e.preventDefault(); });
+document.addEventListener("keydown", function(e) {
+  const k = String(e.key || "").toLowerCase();
+  if ((e.ctrlKey || e.metaKey) && ["u", "s", "p"].includes(k)) { e.preventDefault(); }
+  if (e.key === "F12" || (e.ctrlKey && e.shiftKey && ["i", "j", "c"].includes(k))) e.preventDefault();
+});
+
+
+(() => {
+  "use strict";
+
+  // GANTI dengan email pengelola RUANG UJI.
+  const DEVELOPER_EMAIL = "aryoyulioo@gmail.com";
+
+  const $ru = id => document.getElementById(id);
+
+  const fab = $ru("ruFabBtn");
+  const menu = $ru("ruQuickMenu");
+  const accessBtn = $ru("ruAccessBtn");
+  const accessPanel = $ru("ruAccessPanel");
+  const complaintModal = $ru("ruComplaintModal");
+  const developerModal = $ru("ruDeveloperModal");
+  const complaintForm = $ru("ruComplaintForm");
+
+  let lastFocus = null;
+  let textScale = 0;
+  let activeModal = null;
+
+  // Sinkronkan alamat email dari satu konfigurasi.
+  $ru("ruEmailLink").href = "mailto:" + DEVELOPER_EMAIL;
+
+  function toggleMenu(force) {
+    const open = typeof force === "boolean"
+      ? force
+      : menu.hidden;
+
+    menu.hidden = !open;
+    fab.setAttribute("aria-expanded", String(open));
+
+    if (open) {
+      accessPanel.hidden = true;
+      accessBtn.setAttribute("aria-expanded", "false");
+    }
+  }
+
+  function toggleAccessibility(force) {
+    const open = typeof force === "boolean"
+      ? force
+      : accessPanel.hidden;
+
+    accessPanel.hidden = !open;
+    accessBtn.setAttribute("aria-expanded", String(open));
+
+    if (open) toggleMenu(false);
+  }
+
+  function openModal(modal) {
+    lastFocus = document.activeElement;
+    activeModal = modal;
+    toggleMenu(false);
+    toggleAccessibility(false);
+
+    modal.hidden = false;
+    document.body.style.overflow = "hidden";
+
+    const firstInput = modal.querySelector(
+      "input:not([type=hidden]), textarea, button"
+    );
+
+    if (firstInput) firstInput.focus();
+  }
+
+  function closeModal(modal) {
+    if (modal.hidden) return;
+
+    modal.hidden = true;
+
+    if (activeModal === modal) {
+      activeModal = null;
+      document.body.style.overflow = "";
+
+      if (lastFocus && typeof lastFocus.focus === "function") {
+        lastFocus.focus();
+      }
+    }
+  }
+
+  fab.addEventListener("click", () => toggleMenu());
+  accessBtn.addEventListener("click", () => toggleAccessibility());
+
+  document.querySelectorAll("[data-ru-action]").forEach(button => {
+    button.addEventListener("click", () => {
+      const action = button.dataset.ruAction;
+
+      if (action === "complaint") {
+        openModal(complaintModal);
+      }
+
+      if (action === "developer") {
+        openModal(developerModal);
+      }
+    });
+  });
+
+  document.querySelectorAll("[data-ru-close]").forEach(button => {
+    button.addEventListener("click", () => {
+      const modal = button.closest(".ru-modal");
+      if (modal) closeModal(modal);
+    });
+  });
+
+  [complaintModal, developerModal].forEach(modal => {
+    modal.addEventListener("click", event => {
+      if (event.target === modal) closeModal(modal);
+    });
+  });
+
+  // Escape menutup modal/panel; Tab tetap berada di dalam modal.
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+      if (activeModal) {
+        closeModal(activeModal);
+      } else if (!menu.hidden) {
+        toggleMenu(false);
+        fab.focus();
+      } else if (!accessPanel.hidden) {
+        toggleAccessibility(false);
+        accessBtn.focus();
+      }
+      return;
+    }
+
+    if (event.key !== "Tab" || !activeModal) return;
+
+    const focusable = [
+      ...activeModal.querySelectorAll(
+        'button:not(:disabled), input:not(:disabled), textarea:not(:disabled), a[href]'
+      )
+    ].filter(element => element.getClientRects().length > 0);
+
+    if (!focusable.length) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+
+  // Klik di luar menu menutup menu.
+  document.addEventListener("click", event => {
+    if (
+      !menu.hidden &&
+      !menu.contains(event.target) &&
+      !fab.contains(event.target)
+    ) {
+      toggleMenu(false);
+    }
+
+    if (
+      !accessPanel.hidden &&
+      !accessPanel.contains(event.target) &&
+      !accessBtn.contains(event.target)
+    ) {
+      toggleAccessibility(false);
+    }
+  });
+
+  // Pengiriman aduan melalui aplikasi email.
+  complaintForm.addEventListener("submit", event => {
+    event.preventDefault();
+
+    if (!complaintForm.reportValidity()) return;
+
+    const name = $ru("ruComplaintName").value.trim();
+    const subject = $ru("ruComplaintSubject").value.trim();
+    const message = $ru("ruComplaintMessage").value.trim();
+
+    if (!name || !subject || !message) return;
+
+    const body = [
+      "Aduan RUANG UJI",
+      "",
+      "Nama: " + name,
+      "Subject: " + subject,
+      "",
+      "Isi aduan:",
+      message,
+      "",
+      "Dikirim melalui portal RUANG UJI."
+    ].join("\n");
+
+    const mailto = "mailto:" + DEVELOPER_EMAIL
+      + "?subject=" + encodeURIComponent("[RUANG UJI] " + subject)
+      + "&body=" + encodeURIComponent(body);
+
+if (
+  !DEVELOPER_EMAIL ||
+  !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(DEVELOPER_EMAIL)
+) {
+  alert("Email pengelola belum dikonfigurasi dengan benar.");
+  return;
+}
+    window.location.href = mailto;
+  });
+
+  // Tutup panel aksesibilitas.
+  $ru("ruAccessClose").addEventListener("click", () => {
+    toggleAccessibility(false);
+    accessBtn.focus();
+  });
+
+
+  // Pengaturan skala teks: 100%, 110%, 120%.
+  let textElementsObserver;
+
+  function applyTextScaleToElement(element) {
+    if (!(element instanceof HTMLElement)) return;
+
+    // Jangan mengubah ikon, elemen nonteks, atau panel aksesibilitas.
+    if (
+      element.closest(".ru-access-panel") ||
+      element.closest("svg") ||
+      element.matches(
+        "script, style, link, meta, input, textarea, select, option"
+      ) ||
+      element.classList.contains("bx")
+    ) {
+      return;
+    }
+
+    if (!element.dataset.ruBaseFontSize) {
+      const computed = window.getComputedStyle(element).fontSize;
+      const baseSize = parseFloat(computed);
+
+      if (!Number.isFinite(baseSize)) return;
+
+      element.dataset.ruBaseFontSize = String(baseSize);
+    }
+
+    const baseSize = Number(element.dataset.ruBaseFontSize);
+    const scale = [1, 1.1, 1.2][textScale];
+
+    element.style.setProperty(
+      "font-size",
+      `${baseSize * scale}px`,
+      "important"
+    );
+  }
+
+  function updateTextScale() {
+    const sizes = [100, 110, 120];
+
+    document.querySelectorAll("body *").forEach(element => {
+      applyTextScaleToElement(element);
+    });
+
+    document.documentElement.style.fontSize = "";
+
+    const value = document.getElementById("ruTextValue");
+    const description = document.getElementById("ruTextDescription");
+    const down = document.getElementById("ruTextDown");
+    const up = document.getElementById("ruTextUp");
+
+    value.textContent = sizes[textScale] + "%";
+
+    description.textContent = [
+      "Ukuran standar",
+      "Teks sedikit lebih besar",
+      "Teks lebih besar"
+    ][textScale];
+
+    down.disabled = textScale === 0;
+    up.disabled = textScale === 2;
+  }
+
+  // Pantau elemen baru yang dibuat saat daftar ujian dirender ulang.
+  textElementsObserver = new MutationObserver(records => {
+    for (const record of records) {
+      for (const node of record.addedNodes) {
+        if (!(node instanceof HTMLElement)) continue;
+
+        applyTextScaleToElement(node);
+        node.querySelectorAll("*").forEach(applyTextScaleToElement);
+      }
+    }
+  });
+
+  textElementsObserver.observe(document.body, {
+    childList: true,
+    subtree: true
+  });
+
+  document.getElementById("ruTextDown").addEventListener("click", () => {
+    textScale = Math.max(0, textScale - 1);
+    updateTextScale();
+  });
+
+  document.getElementById("ruTextUp").addEventListener("click", () => {
+    textScale = Math.min(2, textScale + 1);
+    updateTextScale();
+  });
+
+
+  // Switch kontras tinggi.
+  $ru("ruContrastBtn").addEventListener("click", () => {
+    const enabled = document.body.classList.toggle(
+      "ru-high-contrast"
+    );
+
+    $ru("ruContrastBtn").setAttribute(
+      "aria-checked", String(enabled)
+    );
+  });
+
+  // Switch pengurangan animasi.
+  $ru("ruMotionBtn").addEventListener("click", () => {
+    const enabled = document.body.classList.toggle(
+      "ru-reduce-motion"
+    );
+
+    $ru("ruMotionBtn").setAttribute(
+      "aria-checked", String(enabled)
+    );
+  });
+
+$ru("ruAccessReset").addEventListener("click", () => {
+  textScale = 0;
+
+  document.body.classList.remove(
+    "ru-high-contrast",
+    "ru-reduce-motion"
+  );
+
+  $ru("ruContrastBtn").setAttribute("aria-checked", "false");
+  $ru("ruMotionBtn").setAttribute("aria-checked", "false");
+
+  // Kembalikan ukuran teks ke ukuran awal.
+  document.querySelectorAll("[data-ru-base-font-size]").forEach(() => {});
+
+  document.querySelectorAll("body *").forEach(element => {
+    if (element.dataset.ruBaseFontSize) {
+      element.style.removeProperty("font-size");
+      delete element.dataset.ruBaseFontSize;
+    }
+  });
+
+  updateTextScale();
+});
+
+  updateTextScale();
+
+})();
+</script>
+</body>
+</html>
