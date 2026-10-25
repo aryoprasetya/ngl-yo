@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -625,7 +624,7 @@ main { max-width: 1400px; margin: auto; padding: 20px; }
  *   {"action":"submitAttempt", ...}
  */
 
-const API_URL = localStorage.getItem("QUIZ_API_URL") || "https://script.google.com/macros/s/AKfycbzuznBNYprB6t4ztdY4qVXQFPJfPeFRf3D3xfJracFDkt4zbygJNEGyRhNgdJWbmMnUKA/exec";
+const API_URL = localStorage.getItem("QUIZ_API_URL") || "https://script.google.com/macros/s/AKfycby2oCX_Y6tcxoPdguTofUwyQu1yiSvX2aLJJmTODzodUZdyldt9ISpKhxkftqIb9Pps/exec";
 const params = new URLSearchParams(location.search);
 const quizId = params.get("id") || sessionStorage.getItem("selectedQuizId") || "";
 
@@ -1479,16 +1478,18 @@ function showResult(response, autoSubmit) {
     );
   }
 
-  // Pembahasan hanya muncul jika diizinkan oleh pengaturan kuis.
-  const correctionEnabled = readBoolean(
-    quiz?.showCorrection,
-    false
-  );
+const correctionEnabled = readBoolean(
+  quiz?.showCorrection,
+  false
+);
 
-  const correction = correctionEnabled &&
-    Array.isArray(result.correction)
-      ? result.correction
-      : [];
+const correctionData = Array.isArray(result.correction)
+  ? result.correction
+  : Array.isArray(response.correction)
+    ? response.correction
+    : [];
+
+const correction = correctionEnabled ? correctionData : [];
 
   if (correction.length) {
     $("reviewSection").classList.remove("hidden");
