@@ -413,6 +413,83 @@ async function fetchSpreadsheetData() {
   return result.data;
 }
 
+function getActivities() {
+  const ss = SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
+  const sheet = ss.getSheetByName(CONFIG.SHEET_NAME);
+
+  if (!sheet || sheet.getLastRow() <= 1) {
+    return { ok: true, data: [] };
+  }
+
+  const values = sheet.getRange(
+    2, 1, sheet.getLastRow() - 1, HEADERS.length
+  ).getValues();
+
+  const timezone = Session.getScriptTimeZone();
+
+  const result = values
+    .filter(row => row[0] !== '' && row[0] !== null)
+    .map(row => {
+      const formatDate = value => {
+        if (!value) return '';
+
+        if (value instanceof Date && !isNaN(value)) {
+          return Utilities.formatDate(
+            value, timezone, 'yyyy-MM-dd'
+          );
+        }
+
+        return String(value).trim();
+      };
+
+      const formatTimestamp = value => {
+        if (!value) return '';
+
+        const date = value instanceof Date
+          ? value
+          : new Date(value);
+
+        return isNaN(date.getTime())
+          ? ''
+          : date.toISOString();
+      };
+
+      const attachmentUrl = String(row[8] || '');
+      const attachmentName = String(row[7] || '');
+
+      let attachment = null;
+
+      if (attachmentUrl || attachmentName) {
+        attachment = {
+          name: attachmentName || 'Lampiran',
+          type: /^https?:\/\//i.test(attachmentUrl)
+            ? 'link'
+            : 'application/octet-stream',
+          url: attachmentUrl,
+          data: attachmentUrl,
+          size: 0
+        };
+      }
+
+      return {
+        id: String(row[0] || ''),
+        timestamp: formatTimestamp(row[1]),
+        date: formatDate(row[2]),
+        name: String(row[3] || ''),
+        category: String(row[4] || 'Lainnya'),
+        status: String(row[5] || 'Terlaksana'),
+        note: String(row[6] || ''),
+        attachment: attachment,
+        device: String(row[9] || ''),
+        updatedAt: formatTimestamp(row[10])
+      };
+    });
+
+  return {
+    ok: true,
+    data: result
+  };
+}
 // Menyamakan data lokal dengan spreadsheet.
 // Data yang masih memiliki antrean lokal tidak ditimpa.
 async function refreshFromSpreadsheet() {
