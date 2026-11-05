@@ -1264,26 +1264,22 @@ function pdfTableHeader(doc,y){
  doc.setDrawColor(210,214,220);let xx=15;for(const w of widths){xx+=w;doc.line(xx,y-5,xx,y+6)}
  return y+12;
 }
-async function exportDetailedPDF(rows = state.activities){
+async function exportDetailedPDF(dataRows = state.activities) {
 
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF('p','mm','a4');
+  const doc = new jsPDF('p', 'mm', 'a4');
 
-  const rows = [...state.activities]
-    .sort((a,b)=>{
+  // Gunakan data yang dikirim dari exportPDF()
+  const rows = [...dataRows].sort((a, b) => {
+    const dateA = new Date(a.date || '1900-01-01');
+    const dateB = new Date(b.date || '1900-01-01');
 
-      const dateA = new Date(a.date || '1900-01-01');
-      const dateB = new Date(b.date || '1900-01-01');
+    return dateA - dateB;
+  });
 
-      return dateA - dateB;
-
-    });
-
-  if(!rows.length){
-
+  if (!rows.length) {
     toast('Belum ada kegiatan untuk diekspor.');
     return;
-
   }
 
   /* =========================================================
@@ -1987,7 +1983,44 @@ async function exportPDF(elementId = 'reportPrintable', name = 'laporan-monitori
 
   await exportDetailedPDF(rows);
 }
-function renderQueue(q){$('#queueList').innerHTML=q.length?`<div class="table-wrap"><table><thead><tr><th>ID</th><th>Kegiatan</th><th>Tanggal</th><th>Status</th></tr></thead><tbody>${q.map(x=>`<tr><td>${esc(x.id)}</td><td>${esc(x.payload.name)}</td><td>${fmtDate(x.payload.date)}</td><td><span class="status pending"><i class='bx bx-cloud-upload'></i>Menunggu upload</span></td></tr>`).join('')}</tbody></table></div>`:`<div class="empty"><i class='bx bx-cloud-check'></i>Antrean kosong. Semua data sudah tersinkron atau belum ada data baru.</div>`}
+function renderQueue(q) {
+  $('#queueList').innerHTML = q.length
+    ? `<div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Kegiatan</th>
+              <th>Tanggal</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${q.map(x => {
+              const isDelete = x.action === 'delete';
+
+              return `
+                <tr>
+                  <td>${esc(x.id)}</td>
+                  <td>${esc(isDelete ? 'Penghapusan kegiatan' : (x.payload?.name || '-'))}</td>
+                  <td>${isDelete ? '-' : fmtDate(x.payload?.date)}</td>
+                  <td>
+                    <span class="status pending">
+                      <i class='bx bx-cloud-upload'></i>
+                      ${isDelete ? 'Menunggu penghapusan' : 'Menunggu upload'}
+                    </span>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>`
+    : `<div class="empty">
+        <i class='bx bx-cloud-check'></i>
+        Antrean kosong. Semua data sudah tersinkron atau belum ada data baru.
+      </div>`;
+}
 
 function navigate(page){
  $$('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
