@@ -232,7 +232,6 @@ td{font-size:12px;line-height:1.5}tbody tr:hover{background:#fcfdff}
 <section class="page" id="page-settings">
   <div class="card settings">
     <div style="padding:20px;border-bottom:1px solid var(--line)"><h2 style="font-size:16px;margin:0 0 4px">Pengaturan</h2><p style="font-size:12px;color:#667085;margin:0">Konfigurasi aplikasi dan penyimpanan.</p></div>
-    <div class="setting-row"><div><h3>URL Google Apps Script</h3><p>Masukkan URL Web App Apps Script yang menerima data kegiatan.</p></div><div style="width:min(420px,50%)"><input id="apiUrl" placeholder="https://script.google.com/macros/s/AKfycbx13-f3y0K7bqWtWqBAlQ2uHxqx3BKiBfhbJS4n-UrxOmzbygdkFMchMWlSM8r0OJpa3w/exec"></div></div>
     <div class="setting-row"><div><h3>Nama pemilik</h3><p>Ditampilkan pada laporan.</p></div><div style="width:min(300px,50%)"><input id="ownerName" placeholder="Nama Anda"></div></div>
     <div class="setting-row"><div><h3>Notifikasi sinkronisasi</h3><p>Tampilkan pesan ketika data otomatis tersinkronisasi.</p></div><label class="toggle"><input id="syncNotice" type="checkbox" checked><span></span></label></div>
     <div class="setting-row"><div><h3>Data lokal</h3><p>Hapus seluruh catatan dan antrean yang tersimpan di browser ini.</p></div><button class="btn btn-danger" id="clearData"><i class='bx bx-trash'></i> Hapus data lokal</button></div>
@@ -313,12 +312,15 @@ td{font-size:12px;line-height:1.5}tbody tr:hover{background:#fcfdff}
 ========================================================== */
 
 const CONFIG = {
-  DB_NAME:'DailyMonitorDB',
-  STORE:'activities',
-  QUEUE:'syncQueue',
-  SETTINGS:'settings',
-  API_URL:'',
-  MAX_FILE_MB:8
+  DB_NAME: 'DailyMonitorDB',
+  STORE: 'activities',
+  QUEUE: 'syncQueue',
+  SETTINGS: 'settings',
+
+  // URL Apps Script yang sudah diberikan
+  API_URL: 'https://script.google.com/macros/s/AKfycbzktYr8rSgHeYR-bm5CGvVC78PlGE2TsjUtzmzmZq9-dCEpPSOo43sFfLJE5YZpfFuDKg/exec',
+
+  MAX_FILE_MB: 8
 };
 
 const state={activities:[],editing:null,online:navigator.onLine,settings:{},filters:{search:'',date:'',status:'',category:''}};
@@ -349,31 +351,169 @@ async function dbPut(store,value){const db=await openDB();return new Promise((re
 async function dbDelete(store,id){const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction(store,'readwrite');tx.objectStore(store).delete(id);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error)})}
 async function dbAll(store){const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction(store,'readonly'),r=tx.objectStore(store).getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 async function dbClear(store){const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction(store,'readwrite');tx.objectStore(store).clear();tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error)})}
+let syncRunning = false;
 
-async function loadSettings(){
- const rows=await dbAll(CONFIG.SETTINGS); state.settings={...CONFIG};
- rows.forEach(x=>state.settings[x.key]=x.value);
- $('#apiUrl').value=state.settings.API_URL||'';
- $('#ownerName').value=state.settings.ownerName||'';
- $('#syncNotice').checked=state.settings.syncNotice!==false;
+async function apiGet(action) {
+  const url = new URL(CONFIG.API_URL);
+  url.searchParams.set('action', action);
+
+  const response = await fetch(url.toString(), {
+    method: 'GET',
+    cache: 'no-store',
+    redirect: 'follow'
+  });
+
+  if (!response.ok) {
+    throw new Error('HTTP_' + response.status);
+  }
+
+  const result = await response.json();
+
+  if (!result || result.ok !== true) {
+    throw new Error(result?.error || 'API_RESPONSE_ERROR');
+  }
+
+  return result;
+}
+
+async function apiPost(action, data = {}) {
+  const response = await fetch(CONFIG.API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'text/plain;charset=utf-8'
+    },
+    body: JSON.stringify({
+      action,
+      ...data
+    }),
+    redirect: 'follow'
+  });
+
+  if (!response.ok) {
+    throw new Error('HTTP_' + response.status);
+  }
+
+  const result = await response.json();
+
+  if (!result || result.ok !== true) {
+    throw new Error(result?.error || 'API_REQUEST_FAILED');
+  }
+
+  return result;
+}
+
+// Mengambil data terbaru dari Google Spreadsheet.
+async function fetchSpreadsheetData() {
+  const result = await apiGet('getActivities');
+
+  if (!Array.isArray(result.data)) {
+    throw new Error('INVALID_SPREADSHEET_DATA');
+  }
+
+  return result.data;
+}
+
+// Menyamakan data lokal dengan spreadsheet.
+// Data yang masih memiliki antrean lokal tidak ditimpa.
+async function refreshFromSpreadsheet() {
+  if (!navigator.onLine) return;
+
+  const [remote, local, queue] = await Promise.all([
+    fetchSpreadsheetData(),
+    dbAll(CONFIG.STORE),
+    dbAll(CONFIG.QUEUE)
+  ]);
+
+  const pendingIds = new Set(queue.map(item => item.id));
+  const merged = new Map();
+
+  remote.forEach(item => {
+    if (item.id) {
+      merged.set(String(item.id), item);
+    }
+  });
+
+  // Data lokal yang masih menunggu sinkronisasi dipertahankan.
+  local.forEach(item => {
+    if (pendingIds.has(item.id)) {
+      merged.set(String(item.id), item);
+    }
+  });
+
+  // Antrean hapus tidak boleh membuat data muncul kembali.
+  queue.forEach(item => {
+    if (item.action === 'delete') {
+      merged.delete(String(item.id));
+    }
+  });
+
+  const finalData = [...merged.values()];
+
+  await dbClear(CONFIG.STORE);
+
+  for (const item of finalData) {
+    await dbPut(CONFIG.STORE, item);
+  }
+
+  state.activities = finalData.sort((a, b) =>
+    String(b.date || '').localeCompare(String(a.date || '')) ||
+    Number(b.createdAt || 0) - Number(a.createdAt || 0)
+  );
+
+  renderAll();
+  updateNetwork();
+}
+async function loadSettings() {
+  const rows = await dbAll(CONFIG.SETTINGS);
+
+  state.settings = { ...CONFIG };
+
+  rows.forEach(item => {
+    state.settings[item.key] = item.value;
+  });
+
+  $('#ownerName').value = state.settings.ownerName || '';
+  $('#syncNotice').checked = state.settings.syncNotice !== false;
 }
 async function saveSetting(key,value){await dbPut(CONFIG.SETTINGS,{key,value});state.settings[key]=value}
 
-async function init(){
- await loadSettings();
- state.activities=await dbAll(CONFIG.STORE);
- state.activities.sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt-a.createdAt);
- updateNetwork();
- populateCategoryFilter();
- renderAll();
- $('#activityDate').value=todayISO();
- $('#monthPicker').value=todayISO().slice(0,7);
- $('#reportFrom').value=todayISO().slice(0,8)+'01';
- $('#reportTo').value=todayISO();
- if(state.online) syncQueue();
-}
-init();
+async function init() {
+  try {
+    await loadSettings();
 
+    // Tampilkan cache lokal terlebih dahulu.
+    state.activities = await dbAll(CONFIG.STORE);
+
+    state.activities.sort((a, b) =>
+      String(b.date || '').localeCompare(String(a.date || '')) ||
+      Number(b.createdAt || 0) - Number(a.createdAt || 0)
+    );
+
+    updateNetwork();
+    renderAll();
+
+    $('#activityDate').value = todayISO();
+    $('#monthPicker').value = todayISO().slice(0, 7);
+    $('#reportFrom').value = todayISO().slice(0, 8) + '01';
+    $('#reportTo').value = todayISO();
+
+    // Ambil data spreadsheet saat aplikasi dibuka.
+    if (navigator.onLine) {
+      try {
+        await syncQueue();
+        await refreshFromSpreadsheet();
+      } catch (error) {
+        console.error('Sinkronisasi awal gagal:', error);
+        toast('Data lokal ditampilkan. Spreadsheet belum dapat diakses.');
+      }
+    }
+  } catch (error) {
+    console.error('Inisialisasi gagal:', error);
+    toast('Gagal membuka database lokal.');
+  }
+}
+
+init();
 function updateNetwork(){
  const dot=$('#networkDot'),txt=$('#networkText');
  dot.className='dot '+(navigator.onLine?'online':'');
@@ -388,32 +528,112 @@ async function addLocal(activity){
  state.activities.unshift(activity);
  state.activities.sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt-a.createdAt);
 }
-async function queueUpload(activity){
- await dbPut(CONFIG.QUEUE,{id:activity.id,createdAt:Date.now(),payload:activity});
- updateNetwork();
+async function queueUpload(activity) {
+  await dbPut(CONFIG.QUEUE, {
+    id: activity.id,
+    action: 'save',
+    createdAt: Date.now(),
+    payload: activity
+  });
+
+  updateNetwork();
 }
-async function syncQueue(){
- const api=state.settings.API_URL||'';
- if(!navigator.onLine||!api) return;
- const queue=await dbAll(CONFIG.QUEUE);
- if(!queue.length){updateNetwork();return}
- let success=0;
- for(const item of queue){
-  try{
-   const res=await fetch(api,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action:'saveActivity',data:item.payload})});
-   const json=await res.json().catch(()=>({ok:res.ok}));
-   if(json.ok!==false){await dbDelete(CONFIG.QUEUE,item.id);success++}
-  }catch(e){break}
- }
- updateNetwork();renderAll();
- if(success && state.settings.syncNotice!==false) toast(success+' kegiatan berhasil disinkronkan ke spreadsheet.');
+
+async function queueDelete(id) {
+  await dbPut(CONFIG.QUEUE, {
+    id,
+    action: 'delete',
+    createdAt: Date.now()
+  });
+
+  updateNetwork();
 }
-async function deleteActivity(id){
- if(!confirm('Hapus kegiatan ini?')) return;
- await dbDelete(CONFIG.STORE,id); await dbDelete(CONFIG.QUEUE,id);
- state.activities=state.activities.filter(x=>x.id!==id);renderAll();updateNetwork();toast('Kegiatan dihapus.');
+
+async function syncQueue() {
+  if (syncRunning || !navigator.onLine) return;
+
+  syncRunning = true;
+
+  try {
+    const queue = await dbAll(CONFIG.QUEUE);
+
+    if (!queue.length) {
+      await refreshFromSpreadsheet();
+      return;
+    }
+
+    let success = 0;
+
+    for (const item of queue) {
+      try {
+        if (item.action === 'delete') {
+          await apiPost('deleteActivity', {
+            id: item.id
+          });
+        } else {
+          await apiPost('saveActivity', {
+            data: item.payload
+          });
+        }
+
+        await dbDelete(CONFIG.QUEUE, item.id);
+        success++;
+
+      } catch (error) {
+        console.error('Gagal sinkron:', item.id, error);
+        break;
+      }
+    }
+
+    updateNetwork();
+
+    if (success > 0) {
+      if (state.settings.syncNotice !== false) {
+        toast(success + ' perubahan berhasil disinkronkan.');
+      }
+
+      await refreshFromSpreadsheet();
+    }
+
+  } catch (error) {
+    console.error('Sinkronisasi gagal:', error);
+    toast('Sinkronisasi gagal. Data tetap berada di antrean lokal.');
+  } finally {
+    syncRunning = false;
+    updateNetwork();
+  }
 }
-function editActivity(id){
+async function deleteActivity(id) {
+  if (!confirm('Hapus kegiatan ini?')) return;
+
+  try {
+    await dbDelete(CONFIG.STORE, id);
+
+    state.activities = state.activities.filter(
+      item => item.id !== id
+    );
+
+    await queueDelete(id);
+
+    renderAll();
+    updateNetwork();
+
+    toast(
+      navigator.onLine
+        ? 'Penghapusan dimasukkan ke antrean sinkronisasi.'
+        : 'Data dihapus dari perangkat dan menunggu koneksi.'
+    );
+
+    if (navigator.onLine) {
+      syncQueue();
+    }
+
+  } catch (error) {
+    console.error(error);
+    toast('Gagal menghapus kegiatan.');
+  }
+}
+ function editActivity(id){
  const a=state.activities.find(x=>x.id===id);if(!a)return;
  state.editing=a;
  $('#modalTitle').textContent='Edit Kegiatan';
@@ -769,38 +989,116 @@ async function compressImageFile(file){
 
 }
 
-$('#activityForm').addEventListener('submit',async e=>{
- e.preventDefault();
-const file=await fileToData($('#activityFile').files[0]);
-const link=$('#activityLink').value.trim();
-const old=state.editing;
+$('#activityForm').addEventListener('submit', async e => {
+  e.preventDefault();
 
-let attachment=file;
+  const form = $('#activityForm');
+  const submitButton = form.querySelector('[type="submit"]');
 
-if(!attachment && link){
-  attachment={
-    name:'Link dokumentasi',
-    type:'link',
-    size:0,
-    data:link,
-    url:link
-  };
-}
+  if (submitButton.disabled) return;
 
-if(!attachment && old?.attachment){
-  attachment=old.attachment;
-}
- const a={
-  id:$('#editId').value||uid(),createdAt:old?.createdAt||Date.now(),updatedAt:Date.now(),
-  date:$('#activityDate').value,name:$('#activityName').value.trim(),category:$('#activityCategory').value,
-  status:$('#activityStatus').value,note:$('#activityNote').value.trim(),
-  attachment:attachment||null,device:navigator.userAgent.slice(0,80)
- };
- if(old){await dbPut(CONFIG.STORE,a);state.activities=state.activities.map(x=>x.id===a.id?a:x)}
- else{await addLocal(a)}
- await queueUpload(a);
- closeModal();renderAll();toast('Kegiatan tersimpan. '+(navigator.onLine?'Menunggu sinkronisasi.':'Disimpan offline.'));
- if(navigator.onLine)syncQueue();
+  if (!form.reportValidity()) return;
+
+  submitButton.disabled = true;
+  submitButton.innerHTML = "<i class='bx bx-loader-alt bx-spin'></i> Menyimpan...";
+
+  try {
+    const selectedFile = $('#activityFile').files[0];
+    const link = $('#activityLink').value.trim();
+    const old = state.editing;
+
+    let attachment = null;
+
+    if (selectedFile) {
+      attachment = await fileToData(selectedFile);
+
+      // Jangan menyimpan kegiatan jika file gagal diproses.
+      if (!attachment) {
+        throw new Error('FILE_PROCESS_FAILED');
+      }
+    } else if (link) {
+      const parsedUrl = new URL(link);
+
+      if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+        throw new Error('INVALID_ATTACHMENT_URL');
+      }
+
+      attachment = {
+        name: 'Link dokumentasi',
+        type: 'link',
+        size: 0,
+        data: parsedUrl.href,
+        url: parsedUrl.href
+      };
+    } else if (old?.attachment) {
+      attachment = old.attachment;
+    }
+
+    const activity = {
+      id: $('#editId').value || uid(),
+      createdAt: old?.createdAt || Date.now(),
+      updatedAt: Date.now(),
+      date: $('#activityDate').value,
+      name: $('#activityName').value.trim(),
+      category: $('#activityCategory').value,
+      status: $('#activityStatus').value,
+      note: $('#activityNote').value.trim(),
+      attachment,
+      device: navigator.userAgent.slice(0, 80)
+    };
+
+    if (!activity.date || !activity.name) {
+      throw new Error('REQUIRED_FIELDS_EMPTY');
+    }
+
+    // Simpan cache lokal terlebih dahulu.
+    await dbPut(CONFIG.STORE, activity);
+
+    state.activities = state.activities.filter(
+      item => item.id !== activity.id
+    );
+
+    state.activities.push(activity);
+
+    state.activities.sort((a, b) =>
+      String(b.date || '').localeCompare(String(a.date || '')) ||
+      Number(b.createdAt || 0) - Number(a.createdAt || 0)
+    );
+
+    // Masukkan ke antrean agar tidak hilang saat offline.
+    await queueUpload(activity);
+
+    state.editing = null;
+
+    closeModal();
+    renderAll();
+    updateNetwork();
+
+    toast(
+      navigator.onLine
+        ? 'Kegiatan tersimpan. Sinkronisasi dimulai.'
+        : 'Kegiatan tersimpan secara offline.'
+    );
+
+    if (navigator.onLine) {
+      syncQueue();
+    }
+
+  } catch (error) {
+    console.error('Submit kegiatan gagal:', error);
+
+    const messages = {
+      FILE_PROCESS_FAILED: 'File gagal diproses. Silakan periksa file.',
+      INVALID_ATTACHMENT_URL: 'Link lampiran tidak valid.',
+      REQUIRED_FIELDS_EMPTY: 'Tanggal dan jenis kegiatan wajib diisi.'
+    };
+
+    toast(messages[error.message] || 'Gagal menyimpan kegiatan. Silakan coba lagi.');
+
+  } finally {
+    submitButton.disabled = false;
+    submitButton.innerHTML = "<i class='bx bx-save'></i> Simpan kegiatan";
+  }
 });
 
 function populateCategoryFilter(){
@@ -966,7 +1264,7 @@ function pdfTableHeader(doc,y){
  doc.setDrawColor(210,214,220);let xx=15;for(const w of widths){xx+=w;doc.line(xx,y-5,xx,y+6)}
  return y+12;
 }
-async function exportDetailedPDF(){
+async function exportDetailedPDF(rows = state.activities){
 
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF('p','mm','a4');
@@ -1671,9 +1969,23 @@ const maxH = 42;
   );
 
 }
-async function exportPDF(elementId='reportPrintable',name='laporan-monitoring'){
- const rows=elementId==='page-activities'?filtered():state.activities.filter(a=>{const f=$('#reportFrom').value,t=$('#reportTo').value;return(!f||a.date>=f)&&(!t||a.date<=t)});
- await exportDetailedPDF(rows,name);
+async function exportPDF(elementId = 'reportPrintable', name = 'laporan-monitoring') {
+  const rows = elementId === 'page-activities'
+    ? filtered()
+    : state.activities.filter(a => {
+        const from = $('#reportFrom').value;
+        const to = $('#reportTo').value;
+
+        return (!from || a.date >= from) &&
+               (!to || a.date <= to);
+      });
+
+  if (!rows.length) {
+    toast('Tidak ada kegiatan pada periode yang dipilih.');
+    return;
+  }
+
+  await exportDetailedPDF(rows);
 }
 function renderQueue(q){$('#queueList').innerHTML=q.length?`<div class="table-wrap"><table><thead><tr><th>ID</th><th>Kegiatan</th><th>Tanggal</th><th>Status</th></tr></thead><tbody>${q.map(x=>`<tr><td>${esc(x.id)}</td><td>${esc(x.payload.name)}</td><td>${fmtDate(x.payload.date)}</td><td><span class="status pending"><i class='bx bx-cloud-upload'></i>Menunggu upload</span></td></tr>`).join('')}</tbody></table></div>`:`<div class="empty"><i class='bx bx-cloud-check'></i>Antrean kosong. Semua data sudah tersinkron atau belum ada data baru.</div>`}
 
@@ -1697,7 +2009,16 @@ $('#filterDate').onchange=e=>{state.filters.date=e.target.value;renderActivityTa
 $('#filterStatus').onchange=e=>{state.filters.status=e.target.value;renderActivityTable()};
 $('#filterCategory').onchange=e=>{state.filters.category=e.target.value;renderActivityTable()};
 $('#clearFilters').onclick=()=>{$('#searchInput').value='';$('#filterDate').value='';$('#filterStatus').value='';$('#filterCategory').value='';state.filters={search:'',date:'',status:'',category:''};renderActivityTable()};
-$('#saveSettings').onclick=async()=>{await saveSetting('API_URL',$('#apiUrl').value.trim());await saveSetting('ownerName',$('#ownerName').value.trim());await saveSetting('syncNotice',$('#syncNotice').checked);toast('Pengaturan tersimpan.');if(navigator.onLine)syncQueue()};
+$('#saveSettings').onclick = async () => {
+  await saveSetting('ownerName', $('#ownerName').value.trim());
+  await saveSetting('syncNotice', $('#syncNotice').checked);
+
+  toast('Pengaturan tersimpan.');
+
+  if (navigator.onLine) {
+    syncQueue();
+  }
+};
 $('#clearData').onclick=async()=>{if(!confirm('Hapus semua data lokal? Data yang belum tersinkron juga akan hilang.'))return;await dbClear(CONFIG.STORE);await dbClear(CONFIG.QUEUE);state.activities=[];renderAll();updateNetwork();toast('Data lokal dihapus.')};
 </script>
 </body>
