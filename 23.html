@@ -318,7 +318,7 @@ const CONFIG = {
   SETTINGS: 'settings',
 
   // URL Apps Script yang sudah diberikan
-  API_URL: 'https://script.google.com/macros/s/AKfycbyt3LgglS8hBNhTs2cpXvD2q3fV9I0bTBgg6sJIaP_MvxKKL7qYj5wXr3fSuvRlenzjmg/exec',
+  API_URL: 'https://script.google.com/macros/s/AKfycbxe54OUFLqPMgqGpiVTnH8xPwrNDrjLb-3iWaeCufFzfJibfqZhXBgd9956og5yR5lJ4Q/exec',
 
   MAX_FILE_MB: 8
 };
@@ -2096,6 +2096,27 @@ $('#saveSettings').onclick = async () => {
   }
 };
 $('#clearData').onclick=async()=>{if(!confirm('Hapus semua data lokal? Data yang belum tersinkron juga akan hilang.'))return;await dbClear(CONFIG.STORE);await dbClear(CONFIG.QUEUE);state.activities=[];renderAll();updateNetwork();toast('Data lokal dihapus.')};
+function normalizeDateInput(value) {
+  if (!value) return '';
+
+  const str = String(value).trim();
+
+  // Sudah dalam format yyyy-MM-dd
+  const iso = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+
+  if (iso) {
+    return `${iso[1]}-${String(iso[2]).padStart(2, '0')}-${String(iso[3]).padStart(2, '0')}`;
+  }
+
+  // Format dd/MM/yyyy
+  const dmy = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+
+  if (dmy) {
+    return `${dmy[3]}-${String(dmy[2]).padStart(2, '0')}-${String(dmy[1]).padStart(2, '0')}`;
+  }
+
+  return '';
+}
 </script>
 </body>
 </html>
