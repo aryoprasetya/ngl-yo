@@ -328,11 +328,99 @@ const state={activities:[],editing:null,online:navigator.onLine,settings:{},filt
 const $=s=>document.querySelector(s);
 const $$=s=>document.querySelectorAll(s);
 const uid=()=>Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
-const todayISO=()=>new Date().toISOString().slice(0,10);
 const fmtDate=d=>d?new Date(d+'T00:00:00').toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}):'-';
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 const fileIcon=n=>/\.pdf$/i.test(n)?'bxs-file-pdf':/docx?$/i.test(n)?'bxs-file-doc':'bx-image';
 
+ function todayISO() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
+function normalizeDateInput(value) {
+  if (value === null || value === undefined || value === '') {
+    return '';
+  }
+
+  // Jika nilainya berupa objek Date.
+  if (value instanceof Date && !isNaN(value.getTime())) {
+    const y = value.getFullYear();
+    const m = String(value.getMonth() + 1).padStart(2, '0');
+    const d = String(value.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+
+  // Jika nilainya berupa angka serial tanggal Google Sheets.
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    let date;
+
+    if (value > 100000000000) {
+      date = new Date(value);
+    } else if (value > 10000 && value < 100000) {
+      date = new Date(Date.UTC(1899, 11, 30) + value * 86400000);
+    }
+
+    if (date && !isNaN(date.getTime())) {
+      return [
+        date.getUTCFullYear(),
+        String(date.getUTCMonth() + 1).padStart(2, '0'),
+        String(date.getUTCDate()).padStart(2, '0')
+      ].join('-');
+    }
+  }
+
+  const str = String(value).trim();
+
+  // yyyy-MM-dd atau yyyy-MM-ddTHH:mm:ss
+  let match = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+
+  if (match) {
+    const [, y, m, d] = match;
+    return validDateParts(y, m, d);
+  }
+
+  // dd/MM/yyyy atau dd-MM-yyyy
+  match = str.match(/^(\d{1,2})[/-](\d{1,2})[/-](\d{4})$/);
+
+  if (match) {
+    const [, d, m, y] = match;
+    return validDateParts(y, m, d);
+  }
+
+  // Format tanggal teks yang bisa dikenali JavaScript.
+  const parsed = new Date(str);
+
+  if (!isNaN(parsed.getTime())) {
+    const y = parsed.getFullYear();
+    const m = String(parsed.getMonth() + 1).padStart(2, '0');
+    const d = String(parsed.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+
+  return '';
+}
+
+function validDateParts(year, month, day) {
+  const y = Number(year);
+  const m = Number(month);
+  const d = Number(day);
+
+  const date = new Date(Date.UTC(y, m - 1, d));
+
+  if (
+    date.getUTCFullYear() !== y ||
+    date.getUTCMonth() !== m - 1 ||
+    date.getUTCDate() !== d
+  ) {
+    return '';
+  }
+
+  return `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+}
 function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),3000)}
 
 function openDB(){
@@ -401,68 +489,107 @@ async function apiPost(action, data = {}) {
 
   return result;
 }
-
-// Mengambil data terbaru dari Google Spreadsheet.
 async function fetchSpreadsheetData() {
   const result = await apiGet('getActivities');
 
   if (!Array.isArray(result.data)) {
+    console.error('Respons spreadsheet tidak valid:', result);
     throw new Error('INVALID_SPREADSHEET_DATA');
   }
 
-  return result.data;
+  return result.data.map(item => {
+    const date = normalizeDateInput(item.date ?? item.tanggal);
+
+    return {
+      ...item,
+      id: String(item.id ?? ''),
+      date,
+      name: String(item.name ?? item.activity ?? item.kegiatan ?? ''),
+      category: String(item.category ?? item.kategori ?? 'Lainnya'),
+      status: String(item.status ?? 'Tidak terlaksana'),
+      note: String(item.note ?? item.keterangan ?? ''),
+      createdAt: Number(item.createdAt ?? item.timestamp ?? 0),
+      updatedAt: item.updatedAt ?? '',
+      attachment: item.attachment ?? null
+    };
+  }).filter(item => item.id && item.date && item.name);
 }
-// Menyamakan data lokal dengan spreadsheet.
+ // Menyamakan data lokal dengan spreadsheet.
 // Data yang masih memiliki antrean lokal tidak ditimpa.
 async function refreshFromSpreadsheet() {
-  if (!navigator.onLine) return;
+  if (!navigator.onLine) {
+    throw new Error('DEVICE_OFFLINE');
+  }
 
-  const [remote, local, queue] = await Promise.all([
-    fetchSpreadsheetData(),
+  // Ambil dan validasi data terlebih dahulu.
+  const remote = await fetchSpreadsheetData();
+
+  // Jangan mengosongkan cache jika respons API tidak valid.
+  if (!Array.isArray(remote)) {
+    throw new Error('INVALID_REMOTE_DATA');
+  }
+
+  const [local, queue] = await Promise.all([
     dbAll(CONFIG.STORE),
     dbAll(CONFIG.QUEUE)
   ]);
 
-  const pendingIds = new Set(queue.map(item => item.id));
+  const pendingIds = new Set(
+    queue
+      .filter(item => item.action === 'save')
+      .map(item => String(item.id))
+  );
+
+  const deletedIds = new Set(
+    queue
+      .filter(item => item.action === 'delete')
+      .map(item => String(item.id))
+  );
+
   const merged = new Map();
 
   remote.forEach(item => {
-    if (item.id) {
+    if (item.id && !deletedIds.has(String(item.id))) {
       merged.set(String(item.id), item);
     }
   });
 
-  // Data lokal yang masih menunggu sinkronisasi dipertahankan.
+  // Pertahankan data lokal yang masih menunggu upload.
   local.forEach(item => {
-    if (pendingIds.has(item.id)) {
+    if (pendingIds.has(String(item.id))) {
       merged.set(String(item.id), item);
     }
   });
 
-  // Antrean hapus tidak boleh membuat data muncul kembali.
-  queue.forEach(item => {
-    if (item.action === 'delete') {
-      merged.delete(String(item.id));
-    }
-  });
-
-  const finalData = [...merged.values()];
-
-  await dbClear(CONFIG.STORE);
-
-  for (const item of finalData) {
-    await dbPut(CONFIG.STORE, item);
-  }
-
-  state.activities = finalData.sort((a, b) =>
-    String(b.date || '').localeCompare(String(a.date || '')) ||
+  const finalData = [...merged.values()].sort((a, b) =>
+    String(b.date).localeCompare(String(a.date)) ||
     Number(b.createdAt || 0) - Number(a.createdAt || 0)
   );
 
+  // Ganti cache hanya setelah data remote berhasil diperoleh.
+  const db = await openDB();
+
+  await new Promise((resolve, reject) => {
+    const tx = db.transaction(CONFIG.STORE, 'readwrite');
+    const store = tx.objectStore(CONFIG.STORE);
+
+    store.clear();
+
+    finalData.forEach(item => store.put(item));
+
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+    tx.onabort = () => reject(tx.error || new Error('CACHE_UPDATE_ABORTED'));
+  });
+
+  state.activities = finalData;
+
   renderAll();
   updateNetwork();
+
+  return finalData;
 }
-async function loadSettings() {
+ async function loadSettings() {
   const rows = await dbAll(CONFIG.SETTINGS);
 
   state.settings = { ...CONFIG };
@@ -565,15 +692,16 @@ async function syncQueue() {
 
     for (const item of queue) {
       try {
-        if (item.action === 'delete') {
-          await apiPost('deleteActivity', {
-            id: item.id
-          });
-        } else {
-          await apiPost('saveActivity', {
-            data: item.payload
-          });
-        }
+if (item.action === 'delete') {
+  // Batalkan antrean penghapusan lama.
+  // Jangan hapus data dari Google Spreadsheet.
+  await dbDelete(CONFIG.QUEUE, item.id);
+  continue;
+}
+
+await apiPost('saveActivity', {
+  data: item.payload
+});
 
         await dbDelete(CONFIG.QUEUE, item.id);
         success++;
@@ -603,33 +731,29 @@ async function syncQueue() {
   }
 }
 async function deleteActivity(id) {
-  if (!confirm('Hapus kegiatan ini?')) return;
+  if (!confirm('Hapus salinan kegiatan ini dari perangkat lokal? Data di spreadsheet tidak akan dihapus.')) {
+    return;
+  }
 
   try {
+    // Hanya hapus dari IndexedDB.
     await dbDelete(CONFIG.STORE, id);
 
-    state.activities = state.activities.filter(
-      item => item.id !== id
-    );
+    // Jangan memanggil queueDelete().
+    // Jangan mengirim apiPost('deleteActivity').
 
-    await queueDelete(id);
+    state.activities = state.activities.filter(
+      item => String(item.id) !== String(id)
+    );
 
     renderAll();
     updateNetwork();
 
-    toast(
-      navigator.onLine
-        ? 'Penghapusan dimasukkan ke antrean sinkronisasi.'
-        : 'Data dihapus dari perangkat dan menunggu koneksi.'
-    );
-
-    if (navigator.onLine) {
-      syncQueue();
-    }
+    toast('Salinan lokal dihapus. Data spreadsheet tetap aman.');
 
   } catch (error) {
-    console.error(error);
-    toast('Gagal menghapus kegiatan.');
+    console.error('Hapus lokal gagal:', error);
+    toast('Gagal menghapus salinan lokal.');
   }
 }
  function editActivity(id){
@@ -1181,7 +1305,9 @@ function renderStats(){
  $('#statDoneNote').textContent=(total?Math.round(done/total*100):0)+'% dari seluruh kegiatan';$('#todayLabel').textContent=new Date().toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long'});
 }
 function renderWeek(){
- const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(d.toISOString().slice(0,10))}
+ const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(
+  `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
+);}
  const vals=days.map(d=>state.activities.filter(a=>a.date===d).length),max=Math.max(1,...vals);
  $('#weekBars').innerHTML=days.map((d,i)=>`<div class="bar-col"><span class="bar-value">${vals[i]}</span><div class="bar" style="height:${Math.max(2,vals[i]/max*155)}px"></div><span class="bar-label">${new Date(d+'T00:00:00').toLocaleDateString('id-ID',{weekday:'short',day:'numeric'})}</span></div>`).join('');
 }
@@ -1998,10 +2124,7 @@ const maxH = 42;
      SIMPAN
   ========================================================= */
 
-  const today =
-    new Date()
-      .toISOString()
-      .slice(0,10);
+const today = todayISO();
 
   doc.save(
     `Laporan-Kegiatan-${today}.pdf`
@@ -2095,28 +2218,42 @@ $('#saveSettings').onclick = async () => {
     syncQueue();
   }
 };
-$('#clearData').onclick=async()=>{if(!confirm('Hapus semua data lokal? Data yang belum tersinkron juga akan hilang.'))return;await dbClear(CONFIG.STORE);await dbClear(CONFIG.QUEUE);state.activities=[];renderAll();updateNetwork();toast('Data lokal dihapus.')};
-function normalizeDateInput(value) {
-  if (!value) return '';
+$('#clearData').onclick = async () => {
+  const confirmed = confirm(
+    'Hapus cache dan antrean lokal pada perangkat ini? Data yang sudah tersimpan di Google Spreadsheet tidak akan dihapus.'
+  );
 
-  const str = String(value).trim();
+  if (!confirmed) return;
 
-  // Sudah dalam format yyyy-MM-dd
-  const iso = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  try {
+    // Hapus cache lokal dan antrean.
+    await dbClear(CONFIG.STORE);
+    await dbClear(CONFIG.QUEUE);
 
-  if (iso) {
-    return `${iso[1]}-${String(iso[2]).padStart(2, '0')}-${String(iso[3]).padStart(2, '0')}`;
+    state.activities = [];
+
+    renderAll();
+    updateNetwork();
+
+    if (navigator.onLine) {
+      try {
+        // Ambil kembali data asli dari spreadsheet.
+        await refreshFromSpreadsheet();
+
+        toast('Cache lokal dibersihkan. Data spreadsheet berhasil dimuat kembali.');
+      } catch (error) {
+        console.error('Gagal mengambil ulang spreadsheet:', error);
+        toast('Cache lokal dibersihkan, tetapi spreadsheet gagal dimuat. Data server tidak dihapus.');
+      }
+    } else {
+      toast('Cache lokal dibersihkan. Data spreadsheet akan dimuat saat online.');
+    }
+
+  } catch (error) {
+    console.error('Gagal membersihkan data lokal:', error);
+    toast('Gagal membersihkan data lokal.');
   }
-
-  // Format dd/MM/yyyy
-  const dmy = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-
-  if (dmy) {
-    return `${dmy[3]}-${String(dmy[2]).padStart(2, '0')}-${String(dmy[1]).padStart(2, '0')}`;
-  }
-
-  return '';
-}
+};
 </script>
 </body>
 </html>
