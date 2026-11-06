@@ -412,84 +412,6 @@ async function fetchSpreadsheetData() {
 
   return result.data;
 }
-
-function getActivities() {
-  const ss = SpreadsheetApp.openById(CONFIG.SPREADSHEET_ID);
-  const sheet = ss.getSheetByName(CONFIG.SHEET_NAME);
-
-  if (!sheet || sheet.getLastRow() <= 1) {
-    return { ok: true, data: [] };
-  }
-
-  const values = sheet.getRange(
-    2, 1, sheet.getLastRow() - 1, HEADERS.length
-  ).getValues();
-
-  const timezone = Session.getScriptTimeZone();
-
-  const result = values
-    .filter(row => row[0] !== '' && row[0] !== null)
-    .map(row => {
-      const formatDate = value => {
-        if (!value) return '';
-
-        if (value instanceof Date && !isNaN(value)) {
-          return Utilities.formatDate(
-            value, timezone, 'yyyy-MM-dd'
-          );
-        }
-
-        return String(value).trim();
-      };
-
-      const formatTimestamp = value => {
-        if (!value) return '';
-
-        const date = value instanceof Date
-          ? value
-          : new Date(value);
-
-        return isNaN(date.getTime())
-          ? ''
-          : date.toISOString();
-      };
-
-      const attachmentUrl = String(row[8] || '');
-      const attachmentName = String(row[7] || '');
-
-      let attachment = null;
-
-      if (attachmentUrl || attachmentName) {
-        attachment = {
-          name: attachmentName || 'Lampiran',
-          type: /^https?:\/\//i.test(attachmentUrl)
-            ? 'link'
-            : 'application/octet-stream',
-          url: attachmentUrl,
-          data: attachmentUrl,
-          size: 0
-        };
-      }
-
-      return {
-        id: String(row[0] || ''),
-        timestamp: formatTimestamp(row[1]),
-        date: formatDate(row[2]),
-        name: String(row[3] || ''),
-        category: String(row[4] || 'Lainnya'),
-        status: String(row[5] || 'Terlaksana'),
-        note: String(row[6] || ''),
-        attachment: attachment,
-        device: String(row[9] || ''),
-        updatedAt: formatTimestamp(row[10])
-      };
-    });
-
-  return {
-    ok: true,
-    data: result
-  };
-}
 // Menyamakan data lokal dengan spreadsheet.
 // Data yang masih memiliki antrean lokal tidak ditimpa.
 async function refreshFromSpreadsheet() {
@@ -1293,13 +1215,57 @@ function renderReport(){
  $('#reportSummary').innerHTML=`<div class="grid stats" style="grid-template-columns:repeat(3,1fr)"><div class="card stat"><div><div class="stat-label">Total periode</div><div class="stat-value">${rows.length}</div></div><div class="stat-icon"><i class='bx bx-list-ul'></i></div></div><div class="card stat"><div><div class="stat-label">Terlaksana</div><div class="stat-value">${done}</div></div><div class="stat-icon"><i class='bx bx-check-circle'></i></div></div><div class="card stat"><div><div class="stat-label">Persentase</div><div class="stat-value">${rows.length?Math.round(done/rows.length*100):0}%</div></div><div class="stat-icon"><i class='bx bx-bar-chart'></i></div></div></div>`;
  $('#reportBody').innerHTML=rows.length?rows.map(a=>`<tr><td>${fmtDate(a.date)}</td><td><b>${esc(a.name)}</b><br><span class="tag">${esc(a.category)}</span></td><td>${esc(a.status)}</td><td>${esc(a.note||'-')}</td><td>${a.attachment?esc(a.attachment.name):'-'}</td></tr>`).join(''):`<tr><td colspan="5"><div class="empty">Tidak ada data pada periode tersebut.</div></td></tr>`;
 }
-function exportCSV(){
- const rows=filtered(),head=['ID','Waktu Pelaksanaan','Jenis Kegiatan','Kategori','Terlaksana/Tidak','Keterangan','Lampiran'];
- const data=[head,...rows.map(a=>[a.id,a.date,a.name,a.category,a.status,a.note||'',a.attachment?.name||''])];
- const csv=data.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\\n');
- const blob=new Blob(['\\ufeff'+csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='daily-monitor-'+todayISO()+'.csv';a.click();URL.revokeObjectURL(url);
-}
+function exportCSV() {
+  const rows = filtered();
 
+  const head = [
+    'ID',
+    'Waktu Pelaksanaan',
+    'Jenis Kegiatan',
+    'Kategori',
+    'Terlaksana/Tidak',
+    'Keterangan',
+    'Lampiran'
+  ];
+
+  const data = [
+    head,
+    ...rows.map(a => [
+      a.id,
+      a.date,
+      a.name,
+      a.category,
+      a.status,
+      a.note || '',
+      a.attachment?.name || ''
+    ])
+  ];
+
+  const csv = data
+    .map(row =>
+      row.map(value =>
+        `"${String(value ?? '').replace(/"/g, '""')}"`
+      ).join(',')
+    )
+    .join('\n');
+
+  const blob = new Blob(
+    ['\ufeff' + csv],
+    { type: 'text/csv;charset=utf-8' }
+  );
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+
+  link.href = url;
+  link.download = `secarik-${todayISO()}.csv`;
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  URL.revokeObjectURL(url);
+}
 function pdfText(doc,text,x,y,maxWidth,lineHeight=5,fontSize=9,bold=false){
  text=String(text||'');
  doc.setFont('helvetica',bold?'bold':'normal');
