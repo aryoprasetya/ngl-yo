@@ -469,7 +469,20 @@ async function apiGet(action, params = {}) {
 
   return result;
 }
+async function fetchSpreadsheetData() {
+  const result = await apiGet('getActivities');
 
+  if (!result || !Array.isArray(result.data)) {
+    throw new Error('INVALID_SPREADSHEET_RESPONSE');
+  }
+
+  return result.data.map(item => ({
+    ...item,
+    id: String(item.id),
+    date: normalizeDateInput(item.date),
+    createdAt: item.createdAt || Date.parse(item.timestamp) || 0
+  }));
+}
 async function apiPost(action, data = {}) {
   const response = await fetch(CONFIG.API_URL, {
     method: 'POST',
