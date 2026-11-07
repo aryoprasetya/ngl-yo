@@ -318,7 +318,7 @@ const CONFIG = {
   SETTINGS: 'settings',
 
   // URL Apps Script yang sudah diberikan
-  API_URL: 'https://script.google.com/macros/s/AKfycbwdkaZKPRstL-IKQQE9Ruu4VPONy2b6psFHq6jzvB0XanaMfm0QAIKT4VrR4RsiigVPIg/exec',
+  API_URL: 'https://script.google.com/macros/s/AKfycbxOoUU0FS-NKSBsKEiCL_PYKaxYvPNHp-NCXGNH1M2ZOYI3MrDUO-v239fqiUJvQCCELA/exec',
 
   MAX_FILE_MB: 8
 };
@@ -495,30 +495,33 @@ async function apiPost(action, data = {}) {
 
   return result;
 }
-async function fetchSpreadsheetData() {
-  const result = await apiGet('getActivities');
+async function fetchDriveImageAsDataUrl(attachment) {
+  const url = String(
+    attachment?.url || attachment?.data || ''
+  ).trim();
 
-  if (!Array.isArray(result.data)) {
-    console.error('Respons spreadsheet tidak valid:', result);
-    throw new Error('INVALID_SPREADSHEET_DATA');
+  if (!url || !/^https?:\/\//i.test(url)) {
+    return '';
   }
 
-  return result.data.map(item => {
-    const date = normalizeDateInput(item.date ?? item.tanggal);
+  try {
+    // Kirim URL utuh. Backend yang akan mengekstrak ID Drive.
+    const result = await apiGet('getAttachmentImage', {
+      url: url
+    });
 
-    return {
-      ...item,
-      id: String(item.id ?? ''),
-      date,
-      name: String(item.name ?? item.activity ?? item.kegiatan ?? ''),
-      category: String(item.category ?? item.kategori ?? 'Lainnya'),
-      status: String(item.status ?? 'Tidak terlaksana'),
-      note: String(item.note ?? item.keterangan ?? ''),
-      createdAt: Number(item.createdAt ?? item.timestamp ?? 0),
-      updatedAt: item.updatedAt ?? '',
-      attachment: item.attachment ?? null
-    };
-  }).filter(item => item.id && item.date && item.name);
+    return result?.dataUrl || '';
+
+  } catch (error) {
+    console.warn(
+      'Gambar Drive tidak dapat dimuat untuk PDF:',
+      error,
+      'URL:',
+      url
+    );
+
+    return '';
+  }
 }
  // Menyamakan data lokal dengan spreadsheet.
 // Data yang masih memiliki antrean lokal tidak ditimpa.
