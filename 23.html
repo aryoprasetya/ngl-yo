@@ -328,7 +328,12 @@ const state={activities:[],editing:null,online:navigator.onLine,settings:{},filt
 const $=s=>document.querySelector(s);
 const $$=s=>document.querySelectorAll(s);
 const uid=()=>Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);
-const fmtDate=d=>d?new Date(d+'T00:00:00').toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}):'-';
+const fmtDate=d=>{
+  const iso=normalizeDateInput(d);
+  if(!iso) return '-';
+  const [y,m,day]=iso.split('-').map(Number);
+  return new Date(y,m-1,day).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+};
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 const fileIcon=n=>/\.pdf$/i.test(n)?'bxs-file-pdf':/docx?$/i.test(n)?'bxs-file-doc':'bx-image';
 
@@ -441,9 +446,9 @@ async function dbAll(store){const db=await openDB();return new Promise((res,rej)
 async function dbClear(store){const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction(store,'readwrite');tx.objectStore(store).clear();tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error)})}
 let syncRunning = false;
 
-async function apiGet(action) {
+async function apiGet(action, params = {}) {
   const url = new URL(CONFIG.API_URL);
-  url.searchParams.set('action', action);
+  url.searchParams.set('action', action);\n  Object.entries(params).forEach(([key,value])=>url.searchParams.set(key,String(value)));
 
   const response = await fetch(url.toString(), {
     method: 'GET',
@@ -693,15 +698,10 @@ async function syncQueue() {
     for (const item of queue) {
       try {
 if (item.action === 'delete') {
-  // Batalkan antrean penghapusan lama.
-  // Jangan hapus data dari Google Spreadsheet.
-  await dbDelete(CONFIG.QUEUE, item.id);
-  continue;
+  await apiPost('deleteActivity',{id:String(item.id)});
+} else {
+  await apiPost('saveActivity', {data:item.payload});
 }
-
-await apiPost('saveActivity', {
-  data: item.payload
-});
 
         await dbDelete(CONFIG.QUEUE, item.id);
         success++;
@@ -731,33 +731,24 @@ await apiPost('saveActivity', {
   }
 }
 async function deleteActivity(id) {
-  if (!confirm('Hapus salinan kegiatan ini dari perangkat lokal? Data di spreadsheet tidak akan dihapus.')) {
-    return;
-  }
-
+  if (!confirm('Hapus kegiatan ini dari perangkat dan spreadsheet?')) return;
   try {
-    // Hanya hapus dari IndexedDB.
-    await dbDelete(CONFIG.STORE, id);
-
-    // Jangan memanggil queueDelete().
-    // Jangan mengirim apiPost('deleteActivity').
-
-    state.activities = state.activities.filter(
-      item => String(item.id) !== String(id)
-    );
-
-    renderAll();
-    updateNetwork();
-
-    toast('Salinan lokal dihapus. Data spreadsheet tetap aman.');
-
-  } catch (error) {
-    console.error('Hapus lokal gagal:', error);
-    toast('Gagal menghapus salinan lokal.');
+    if(navigator.onLine){
+      await apiPost('deleteActivity',{id:String(id)});
+    }else{
+      await queueDelete(String(id));
+    }
+    await dbDelete(CONFIG.STORE,id);
+    state.activities=state.activities.filter(item=>String(item.id)!==String(id));
+    renderAll(); updateNetwork();
+    toast(navigator.onLine?'Kegiatan berhasil dihapus.':'Penghapusan masuk antrean offline.');
+  }catch(error){
+    console.error('Hapus kegiatan gagal:',error);
+    toast('Gagal menghapus kegiatan dari spreadsheet.');
   }
 }
  function editActivity(id){
- const a=state.activities.find(x=>x.id===id);if(!a)return;
+ const a=state.activities.find(x=>String(x.id)===String(id));if(!a)return;
  state.editing=a;
  $('#modalTitle').textContent='Edit Kegiatan';
  $('#editId').value=a.id;$('#activityDate').value=a.date;$('#activityName').value=a.name;
@@ -1154,6 +1145,7 @@ $('#activityForm').addEventListener('submit', async e => {
         url: parsedUrl.href
       };
     } else if (old?.attachment) {
+      // Keep the original server-side attachment when editing other fields.
       attachment = old.attachment;
     }
 
@@ -1334,12 +1326,22 @@ window.showCalendarDay=iso=>{
  $('#calendarDetails').innerHTML=`<div style="border-top:1px solid var(--line);padding-top:15px"><h3 style="font-size:14px;margin:0 0 10px">${fmtDate(iso)}</h3>${rows.length?rows.map(a=>`<div style="padding:10px 0;border-bottom:1px solid #f0f2f5;display:flex;justify-content:space-between;gap:15px"><div><b>${esc(a.name)}</b><div style="color:#667085;font-size:11px;margin-top:3px">${esc(a.category)} · ${esc(a.note||'Tidak ada keterangan')}</div></div>${statusHTML(a.status)}</div>`).join(''):'<span style="color:#667085;font-size:12px">Tidak ada kegiatan.</span>'}</div>`;
 };
 
+function reportAttachmentHTML(att){
+ if(!att) return '-';
+ const url=String(att.url||att.data||'');
+ const isImage=String(att.type||'').startsWith('image/')||/\\.(jpe?g|png|gif|webp)$/i.test(String(att.name||''));
+ if(isImage && url){
+   const preview=/^data:image\\//i.test(url)?url:(url.match(/[-\\w]{25,}/)?'https://drive.google.com/thumbnail?id='+url.match(/[-\\w]{25,}/)[0]+'&sz=w300':'');
+   if(preview) return `<a href="${esc(url)}" target="_blank" rel="noopener"><img src="${esc(preview)}" alt="${esc(att.name||'Lampiran gambar')}" style="width:72px;height:58px;object-fit:contain;border:1px solid #e4e7ec;border-radius:4px"></a>`;
+ }
+ return `<a class="attach" href="${esc(url)}" target="_blank" rel="noopener">${esc(att.name||'Buka lampiran')}</a>`;
+}
 function renderReport(){
  const from=$('#reportFrom').value,to=$('#reportTo').value;
  const rows=state.activities.filter(a=>(!from||a.date>=from)&&(!to||a.date<=to));
  const done=rows.filter(a=>a.status==='Terlaksana').length;
  $('#reportSummary').innerHTML=`<div class="grid stats" style="grid-template-columns:repeat(3,1fr)"><div class="card stat"><div><div class="stat-label">Total periode</div><div class="stat-value">${rows.length}</div></div><div class="stat-icon"><i class='bx bx-list-ul'></i></div></div><div class="card stat"><div><div class="stat-label">Terlaksana</div><div class="stat-value">${done}</div></div><div class="stat-icon"><i class='bx bx-check-circle'></i></div></div><div class="card stat"><div><div class="stat-label">Persentase</div><div class="stat-value">${rows.length?Math.round(done/rows.length*100):0}%</div></div><div class="stat-icon"><i class='bx bx-bar-chart'></i></div></div></div>`;
- $('#reportBody').innerHTML=rows.length?rows.map(a=>`<tr><td>${fmtDate(a.date)}</td><td><b>${esc(a.name)}</b><br><span class="tag">${esc(a.category)}</span></td><td>${esc(a.status)}</td><td>${esc(a.note||'-')}</td><td>${a.attachment?esc(a.attachment.name):'-'}</td></tr>`).join(''):`<tr><td colspan="5"><div class="empty">Tidak ada data pada periode tersebut.</div></td></tr>`;
+ $('#reportBody').innerHTML=rows.length?rows.map(a=>`<tr><td>${fmtDate(a.date)}</td><td><b>${esc(a.name)}</b><br><span class="tag">${esc(a.category)}</span></td><td>${esc(a.status)}</td><td>${esc(a.note||'-')}</td><td>${reportAttachmentHTML(a.attachment)}</td></tr>`).join(''):`<tr><td colspan="5"><div class="empty">Tidak ada data pada periode tersebut.</div></td></tr>`;
 }
 function exportCSV() {
   const rows = filtered();
@@ -1433,6 +1435,20 @@ function pdfTableHeader(doc,y){
  doc.setDrawColor(210,214,220);let xx=15;for(const w of widths){xx+=w;doc.line(xx,y-5,xx,y+6)}
  return y+12;
 }
+async function fetchDriveImageAsDataUrl(attachment){
+  const url=String(attachment?.url||attachment?.data||'');
+  if(!url || !/^https?:\\/\\//i.test(url)) return '';
+  const match=url.match(/[-\\w]{25,}/);
+  if(!match) return '';
+  try{
+    const result=await apiGet('getAttachmentImage',{fileId:match[0]});
+    return result.dataUrl||'';
+  }catch(error){
+    console.warn('Gambar Drive tidak dapat dimuat untuk PDF:',error);
+    return '';
+  }
+}
+
 async function exportDetailedPDF(dataRows = state.activities) {
 
   const { jsPDF } = window.jspdf;
