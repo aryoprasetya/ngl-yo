@@ -448,7 +448,8 @@ let syncRunning = false;
 
 async function apiGet(action, params = {}) {
   const url = new URL(CONFIG.API_URL);
-  url.searchParams.set('action', action);\n  Object.entries(params).forEach(([key,value])=>url.searchParams.set(key,String(value)));
+  url.searchParams.set('action', action);
+  Object.entries(params).forEach(([key,value])=>url.searchParams.set(key,String(value)));
 
   const response = await fetch(url.toString(), {
     method: 'GET',
@@ -1329,9 +1330,9 @@ window.showCalendarDay=iso=>{
 function reportAttachmentHTML(att){
  if(!att) return '-';
  const url=String(att.url||att.data||'');
- const isImage=String(att.type||'').startsWith('image/')||/\\.(jpe?g|png|gif|webp)$/i.test(String(att.name||''));
+ const isImage=String(att.type||'').startsWith('image/')||/\.(jpe?g|png|gif|webp)$/i.test(String(att.name||''));
  if(isImage && url){
-   const preview=/^data:image\\//i.test(url)?url:(url.match(/[-\\w]{25,}/)?'https://drive.google.com/thumbnail?id='+url.match(/[-\\w]{25,}/)[0]+'&sz=w300':'');
+   const preview=/^data:image\//i.test(url)?url:(url.match(/[-\w]{25,}/)?'https://drive.google.com/thumbnail?id='+url.match(/[-\w]{25,}/)[0]+'&sz=w300':'');
    if(preview) return `<a href="${esc(url)}" target="_blank" rel="noopener"><img src="${esc(preview)}" alt="${esc(att.name||'Lampiran gambar')}" style="width:72px;height:58px;object-fit:contain;border:1px solid #e4e7ec;border-radius:4px"></a>`;
  }
  return `<a class="attach" href="${esc(url)}" target="_blank" rel="noopener">${esc(att.name||'Buka lampiran')}</a>`;
@@ -1437,8 +1438,8 @@ function pdfTableHeader(doc,y){
 }
 async function fetchDriveImageAsDataUrl(attachment){
   const url=String(attachment?.url||attachment?.data||'');
-  if(!url || !/^https?:\\/\\//i.test(url)) return '';
-  const match=url.match(/[-\\w]{25,}/);
+  if(!url || !/^https?:\/\//i.test(url)) return '';
+  const match=url.match(/[-\w]{25,}/);
   if(!match) return '';
   try{
     const result=await apiGet('getAttachmentImage',{fileId:match[0]});
