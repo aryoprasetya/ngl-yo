@@ -318,7 +318,7 @@ const CONFIG = {
   SETTINGS: 'settings',
 
   // URL Apps Script yang sudah diberikan
-  API_URL: 'https://script.google.com/macros/s/AKfycbw3PVpPGYcD8jgJSNluwnKW3Y_UI09poLszJpDbdDEca0AWsbTsITAX86AsBWDIo4V7-Q/exec',
+  API_URL: 'https://script.google.com/macros/s/AKfycbwdkaZKPRstL-IKQQE9Ruu4VPONy2b6psFHq6jzvB0XanaMfm0QAIKT4VrR4RsiigVPIg/exec',
 
   MAX_FILE_MB: 8
 };
@@ -1330,8 +1330,9 @@ window.showCalendarDay=iso=>{
 function reportAttachmentHTML(att){
  if(!att) return '-';
  const url=String(att.url||att.data||'');
- const isImage=String(att.type||'').startsWith('image/')||/\.(jpe?g|png|gif|webp)$/i.test(String(att.name||''));
- if(isImage && url){
+ const isImage=String(att.type||'').toLowerCase().startsWith('image/')||/\.(jpe?g|png|gif|webp|bmp|svg)$/i.test(String(att.name||''));
+ const isLink=String(att.type||'').toLowerCase()==='link';
+ if(isImage && !isLink && url){
    const preview=/^data:image\//i.test(url)?url:(url.match(/[-\w]{25,}/)?'https://drive.google.com/thumbnail?id='+url.match(/[-\w]{25,}/)[0]+'&sz=w300':'');
    if(preview) return `<a href="${esc(url)}" target="_blank" rel="noopener"><img src="${esc(preview)}" alt="${esc(att.name||'Lampiran gambar')}" style="width:72px;height:58px;object-fit:contain;border:1px solid #e4e7ec;border-radius:4px"></a>`;
  }
@@ -1728,23 +1729,25 @@ let rowH =
       a.attachment?.url ||
       '';
 
+    const attachmentName = String(a.attachment?.name || '');
+    const isImageByName = /\.(jpe?g|png|gif|webp|bmp|svg)$/i.test(attachmentName);
+    let attachmentIsLink =
+      String(attachmentType).toLowerCase() === 'link';
+
     let attachmentIsImage =
-      attachmentData &&
+      !attachmentIsLink &&
       (
-        String(attachmentType)
-          .toLowerCase()
-          .startsWith('image/')
-        ||
-        /^data:image\//i.test(
-          attachmentData
-        )
+        String(attachmentType).toLowerCase().startsWith('image/') ||
+        /^data:image\//i.test(String(attachmentData)) ||
+        isImageByName
       );
 
-    let attachmentIsLink =
-      attachmentType === 'link' ||
-      /^https?:\/\//i.test(
-        attachmentData
-      );
+    // Drive URL bukan otomatis link dokumentasi: jika nama file gambar,
+    // unduh blob dari Apps Script dan embed sebagai gambar pada PDF.
+    if (attachmentIsImage && /^https?:\/\//i.test(String(attachmentData))) {
+      const embeddedImage = await fetchDriveImageAsDataUrl(a.attachment);
+      if (embeddedImage) attachmentData = embeddedImage;
+    }
 
     let imageInfo = null;
 
