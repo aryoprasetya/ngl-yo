@@ -1,0 +1,526 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#fbfaf8">
+<title>DAYMARK — Eisenhower Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+--ink:#292d35;--muted:#858995;--line:#ecebf0;--paper:#fbfaf8;
+--q1:#f7d9d8;--q2:#dce9d8;--q3:#f8e8c9;--q4:#e8def4;
+--shadow:0 16px 45px #312b3c12;--radius:19px;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:"DM Sans",sans-serif}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+.app{min-height:100vh;display:grid;grid-template-columns:245px 1fr}
+.sidebar{background:white;border-right:1px solid var(--line);padding:30px 19px;display:flex;flex-direction:column;gap:32px;position:sticky;top:0;height:100vh}
+.brand{display:flex;align-items:center;gap:11px;padding:0 9px}
+.brand-mark{width:38px;height:38px;border-radius:13px;background:#343943;color:white;display:grid;place-items:center;font-family:Arvo;font-size:19px}
+.brand-name{font-family:Arvo;font-size:19px;letter-spacing:-.5px}
+.brand-sub{font-size:10px;color:var(--muted);letter-spacing:1.6px;text-transform:uppercase;margin-top:3px}
+.nav-label{font-size:10px;font-weight:700;color:#a3a5ad;letter-spacing:1.5px;padding:0 11px;margin-bottom:9px}
+.nav{display:grid;gap:5px}
+.nav button{border:0;background:transparent;color:#737783;text-align:left;padding:12px;border-radius:11px;display:flex;align-items:center;gap:12px;font-size:13px;transition:.22s}
+.nav button:hover,.nav button.active{background:#f3f2f0;color:var(--ink)}
+.nav button.active{font-weight:700}
+.nav .ico{width:19px;text-align:center;font-size:16px}
+.side-bottom{margin-top:auto;background:#f7f5f1;border-radius:15px;padding:15px}
+.side-bottom strong{font-family:Arvo;font-size:12px}
+.side-bottom p{font-size:11px;line-height:1.6;color:var(--muted);margin:7px 0 0}
+.main{min-width:0;padding:34px clamp(20px,4vw,58px) 60px;max-width:1600px;width:100%;margin:auto}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:36px}
+.date-line{font-size:12px;color:var(--muted);margin-bottom:7px}
+.page-title{font-family:Arvo;font-size:clamp(24px,3vw,34px);font-weight:400;letter-spacing:-1px;margin:0}
+.top-actions{display:flex;gap:9px;align-items:center}
+.primary{background:#343943;color:white;border:0;border-radius:12px;padding:12px 17px;font-size:12px;font-weight:700;box-shadow:0 6px 16px #34394320;transition:.22s}
+.primary:hover{transform:translateY(-2px);background:#20242c}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-bottom:28px}
+.stat{background:white;border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:flex;align-items:center;justify-content:space-between;animation:rise .5s both}
+.stat:nth-child(2){animation-delay:.07s}
+.stat:nth-child(3){animation-delay:.14s}
+.stat small{font-size:11px;color:var(--muted)}
+.stat strong{display:block;font-family:Arvo;font-size:25px;margin-top:5px;font-weight:400}
+.stat-icon{width:37px;height:37px;border-radius:12px;background:#f4f2ef;display:grid;place-items:center;font-size:17px}
+.section-head{display:flex;justify-content:space-between;align-items:end;margin:0 0 15px;gap:15px}
+.section-head h2{font-family:Arvo;font-size:17px;font-weight:400;margin:0}
+.section-head p{font-size:11px;color:var(--muted);margin:5px 0 0}
+.tools{display:flex;gap:8px;align-items:center}
+.search,.filter{height:37px;border:1px solid var(--line);border-radius:10px;padding:0 12px;background:white;font-size:11px;outline:none}
+.search{width:190px}
+.search:focus,.field input:focus,.field textarea:focus,.field select:focus{border-color:#b8b3c4;box-shadow:0 0 0 3px #b8b3c41c}
+.matrix{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.quadrant{border-radius:var(--radius);padding:17px;min-height:248px;position:relative;overflow:hidden;animation:rise .55s both;transition:transform .25s}
+.quadrant:nth-child(2){animation-delay:.06s}
+.quadrant:nth-child(3){animation-delay:.12s}
+.quadrant:nth-child(4){animation-delay:.18s}
+.quadrant:hover{transform:translateY(-2px)}
+.q1{background:var(--q1)}
+.q2{background:var(--q2)}
+.q3{background:var(--q3)}
+.q4{background:var(--q4)}
+.q-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px}
+.q-title{display:flex;align-items:center;gap:9px}
+.q-number{width:27px;height:27px;border-radius:9px;background:#ffffff9c;display:grid;place-items:center;font-family:Arvo;font-size:12px}
+.q-title strong{font-family:Arvo;font-weight:400;font-size:14px}
+.q-title small{display:block;font-size:10px;color:#65636a;margin-top:3px}
+.q-count{font-size:10px;color:#68636a;background:#ffffff80;padding:5px 8px;border-radius:20px}
+.task-list{display:grid;gap:8px}
+.task{background:#ffffffd9;border:1px solid #ffffffb0;border-radius:12px;padding:11px;display:flex;gap:9px;align-items:flex-start;transition:.2s;animation:pop .25s both}
+.task:hover{background:white;transform:translateX(2px)}
+.check{appearance:none;width:16px;height:16px;border:1.5px solid #aaa;border-radius:5px;flex:none;margin:2px 0 0;cursor:pointer;position:relative}
+.check:checked{background:#525760;border-color:#525760}
+.check:checked:after{content:"✓";position:absolute;color:white;font-size:11px;left:2px;top:-1px}
+.task-body{min-width:0;flex:1}
+.task-title{font-size:12px;font-weight:700;line-height:1.45;overflow-wrap:anywhere}
+.task.done .task-title{text-decoration:line-through;color:#9b9ba1}
+.task-meta{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;font-size:9px;color:#777983}
+.task-note{font-size:10px;color:#777983;margin-top:5px;line-height:1.4;white-space:pre-wrap}
+.task-actions{display:flex;gap:3px;opacity:0;transition:.2s}
+.task:hover .task-actions{opacity:1}
+.task-actions button{border:0;background:transparent;color:#777;padding:2px 4px;font-size:12px}
+.empty{border:1px dashed #ffffffd9;border-radius:11px;text-align:center;padding:22px 10px;font-size:11px;color:#777;background:#ffffff45}
+.add-inline{border:1px dashed #ffffffb8;background:#ffffff38;border-radius:10px;padding:9px;color:#69666c;font-size:10px;text-align:center;width:100%;margin-top:9px;transition:.2s}
+.add-inline:hover{background:#ffffffa8}
+.footer-note{margin-top:23px;color:#a0a0a5;font-size:10px;text-align:center}
+.view{display:none}
+.view.active{display:block;animation:fade .3s}
+.list-view{background:white;border:1px solid var(--line);border-radius:17px;overflow:hidden}
+.list-row{display:flex;align-items:center;gap:12px;padding:14px 17px;border-bottom:1px solid var(--line)}
+.list-row:last-child{border:0}
+.list-row .task-body{flex:1}
+.pill{font-size:9px;padding:5px 8px;border-radius:20px;white-space:nowrap}
+.pill.q1{background:var(--q1)}
+.pill.q2{background:var(--q2)}
+.pill.q3{background:var(--q3)}
+.pill.q4{background:var(--q4)}
+.modal-backdrop{position:fixed;inset:0;background:#22232a66;backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:18px;z-index:10}
+.modal-backdrop.open{display:flex;animation:fade .2s}
+.modal{background:white;width:min(480px,100%);border-radius:20px;padding:24px;box-shadow:0 25px 90px #17151c35;animation:modalIn .28s}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.modal-head h3{font-family:Arvo;font-weight:400;margin:0;font-size:18px}
+.close{border:0;background:#f4f3f1;border-radius:9px;width:31px;height:31px;font-size:17px;color:#666}
+.field{display:grid;gap:7px;margin-bottom:14px}
+.field label{font-size:11px;font-weight:700;color:#666a73}
+.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 12px;font-size:12px;outline:none;background:white}
+.field textarea{resize:vertical;min-height:76px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+.secondary{border:1px solid var(--line);background:white;border-radius:10px;padding:10px 15px;font-size:11px;color:#666}
+.toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,20px);opacity:0;background:#30343d;color:white;padding:11px 16px;border-radius:12px;font-size:11px;z-index:20;transition:.25s;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.sync{font-size:10px;color:#858995;display:flex;align-items:center;gap:6px}
+.dot{width:7px;height:7px;border-radius:50%;background:#8dbb8e}
+.dot.off{background:#d6a36b}
+@keyframes rise{from{opacity:0;transform:translateY(13px)}to{opacity:1;transform:translateY(0)}}
+@keyframes pop{from{opacity:0;transform:scale(.98)}to{opacity:1;transform:scale(1)}}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes modalIn{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+@media(max-width:850px){
+.app{grid-template-columns:1fr}
+.sidebar{height:auto;position:relative;padding:15px 18px;flex-direction:row;align-items:center;justify-content:space-between;border-right:0;border-bottom:1px solid var(--line)}
+.brand-sub,.side-bottom,.nav-label{display:none}
+.nav{display:flex;gap:3px}
+.nav button{padding:9px}
+.nav button span:last-child{display:none}
+.main{padding:25px 18px 45px}
+}
+@media(max-width:580px){
+.sidebar{padding:12px}
+.brand-mark{width:34px;height:34px}
+.brand-name{font-size:16px}
+.nav button{padding:9px 10px}
+.topbar{align-items:flex-start;margin-bottom:24px}
+.top-actions .primary{padding:11px 12px}
+.stats{gap:7px}
+.stat{padding:12px 10px}
+.stat strong{font-size:21px}
+.stat small{font-size:9px}
+.stat-icon{display:none}
+.matrix{grid-template-columns:1fr;gap:11px}
+.quadrant{min-height:180px;padding:14px}
+.section-head{align-items:flex-start;flex-direction:column}
+.tools{width:100%}
+.search{flex:1;width:0}
+.field-row{grid-template-columns:1fr}
+.page-title{font-size:25px}
+.sync{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+ <div class="brand">
+  <div class="brand-mark">D</div>
+  <div><div class="brand-name">daymark</div><div class="brand-sub">Eisenhower planner</div></div>
+ </div>
+ <div>
+  <div class="nav-label">WORKSPACE</div>
+  <nav class="nav">
+   <button class="active" data-view="matrix"><span class="ico">▦</span><span>Matrix</span></button>
+   <button data-view="all"><span class="ico">☷</span><span>All tasks</span></button>
+   <button data-view="completed"><span class="ico">✓</span><span>Completed</span></button>
+  </nav>
+ </div>
+ <div class="side-bottom"><strong>Make time for what matters.</strong><p>Sort your priorities. Focus on the work that moves you forward.</p></div>
+</aside>
+
+<main class="main">
+ <header class="topbar">
+  <div><div class="date-line" id="todayLabel"></div><h1 class="page-title" id="pageTitle">Your priorities, at a glance.</h1></div>
+  <div class="top-actions">
+   <div class="sync"><i class="dot" id="syncDot"></i><span id="syncText">Connecting…</span></div>
+   <button class="primary" id="newTaskBtn">＋ New task</button>
+  </div>
+ </header>
+
+ <section class="stats">
+  <div class="stat"><div><small>Active tasks</small><strong id="activeCount">0</strong></div><div class="stat-icon">◷</div></div>
+  <div class="stat"><div><small>Completed</small><strong id="doneCount">0</strong></div><div class="stat-icon">✓</div></div>
+  <div class="stat"><div><small>Due today</small><strong id="dueCount">0</strong></div><div class="stat-icon">✳</div></div>
+ </section>
+
+ <section class="view active" id="matrixView">
+  <div class="section-head">
+   <div><h2>The Eisenhower Matrix</h2><p>Decide what deserves your attention.</p></div>
+   <div class="tools">
+    <input class="search" id="searchMatrix" placeholder="Search tasks…">
+    <select class="filter" id="sortMatrix">
+     <option value="default">Sort: Default</option>
+     <option value="date">Due date</option>
+     <option value="created">Recently added</option>
+    </select>
+   </div>
+  </div>
+  <div class="matrix" id="matrix">
+   <section class="quadrant q1" data-q="q1">
+    <div class="q-head"><div class="q-title"><span class="q-number">01</span><div><strong>Do first</strong><small>Urgent · Important</small></div></div><span class="q-count">0 tasks</span></div>
+    <div class="task-list"></div><button class="add-inline">＋ Add a task</button>
+   </section>
+   <section class="quadrant q2" data-q="q2">
+    <div class="q-head"><div class="q-title"><span class="q-number">02</span><div><strong>Schedule</strong><small>Not urgent · Important</small></div></div><span class="q-count">0 tasks</span></div>
+    <div class="task-list"></div><button class="add-inline">＋ Add a task</button>
+   </section>
+   <section class="quadrant q3" data-q="q3">
+    <div class="q-head"><div class="q-title"><span class="q-number">03</span><div><strong>Delegate</strong><small>Urgent · Not important</small></div></div><span class="q-count">0 tasks</span></div>
+    <div class="task-list"></div><button class="add-inline">＋ Add a task</button>
+   </section>
+   <section class="quadrant q4" data-q="q4">
+    <div class="q-head"><div class="q-title"><span class="q-number">04</span><div><strong>Eliminate</strong><small>Not urgent · Not important</small></div></div><span class="q-count">0 tasks</span></div>
+    <div class="task-list"></div><button class="add-inline">＋ Add a task</button>
+   </section>
+  </div>
+ </section>
+
+ <section class="view" id="allView">
+  <div class="section-head"><div><h2>All tasks</h2><p>Your complete task list in one place.</p></div><input class="search" id="searchAll" placeholder="Search tasks…"></div>
+  <div class="list-view" id="allList"></div>
+ </section>
+ <section class="view" id="completedView">
+  <div class="section-head"><div><h2>Completed tasks</h2><p>A little progress is still progress.</p></div><input class="search" id="searchDone" placeholder="Search tasks…"></div>
+  <div class="list-view" id="doneList"></div>
+ </section>
+ <div class="footer-note">DAYMARK · PLAN WITH INTENTION</div>
+</main>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+ <div class="modal">
+  <div class="modal-head"><h3 id="modalTitle">Create a task</h3><button class="close" id="closeModal">×</button></div>
+  <form id="taskForm">
+   <input type="hidden" id="taskId">
+   <div class="field"><label for="titleInput">Task name</label><input id="titleInput" maxlength="140" placeholder="What needs to get done?" required></div>
+   <div class="field"><label for="quadrantInput">Priority quadrant</label>
+    <select id="quadrantInput">
+     <option value="q1">Do first — Urgent & Important</option>
+     <option value="q2">Schedule — Important</option>
+     <option value="q3">Delegate — Urgent</option>
+     <option value="q4">Eliminate — Neither</option>
+    </select>
+   </div>
+   <div class="field-row">
+    <div class="field"><label for="dueInput">Due date</label><input type="date" id="dueInput"></div>
+    <div class="field"><label for="categoryInput">Category</label><input id="categoryInput" maxlength="35" placeholder="e.g. Study"></div>
+   </div>
+   <div class="field"><label for="noteInput">Notes <span style="font-weight:400;color:#aaa">(optional)</span></label><textarea id="noteInput" maxlength="500" placeholder="Add a little context…"></textarea></div>
+   <div class="modal-actions"><button type="button" class="secondary" id="cancelModal">Cancel</button><button class="primary" type="submit" id="saveBtn">Save task</button></div>
+  </form>
+ </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* TEMPEL URL WEB APP GOOGLE APPS SCRIPT DI SINI */
+const API_URL = "https://script.google.com/macros/s/AKfycbyne3GLlWkTV4j_qJhOcFaZGjo2mgn71d11rmyoKHsJjZBCtLpmgNrOEs4oSsajDrda/exec";
+
+const QUADS={q1:"Do first",q2:"Schedule",q3:"Delegate",q4:"Eliminate"};
+let tasks=[],currentView="matrix",busy=false;
+const $=s=>document.querySelector(s);
+const $$=s=>[...document.querySelectorAll(s)];
+
+const today=new Date();
+$("#todayLabel").textContent=today.toLocaleDateString("id-ID",{
+ weekday:"long",day:"numeric",month:"long",year:"numeric"
+});
+
+function escapeHTML(v=""){
+ return String(v).replace(/[&<>"']/g,c=>({
+ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[c]));
+}
+function toast(msg){
+ const el=$("#toast");
+ el.textContent=msg;
+ el.classList.add("show");
+ setTimeout(()=>el.classList.remove("show"),2600);
+}
+function setSync(ok,msg){
+ $("#syncDot").classList.toggle("off",!ok);
+ $("#syncText").textContent=msg;
+}
+
+/* READ DATABASE: JSONP */
+function jsonp(action){
+ return new Promise((resolve,reject)=>{
+  if(!API_URL.startsWith("https://script.google.com/"))
+   return reject(Error("URL Apps Script belum dipasang."));
+
+  const cb="daymark_cb_"+Date.now()+"_"+Math.floor(Math.random()*10000);
+  const script=document.createElement("script");
+  const timer=setTimeout(()=>{
+   cleanup();reject(Error("Waktu koneksi habis."));
+  },15000);
+
+  function cleanup(){
+   clearTimeout(timer);
+   delete window[cb];
+   script.remove();
+  }
+  window[cb]=data=>{cleanup();resolve(data);};
+  script.onerror=()=>{cleanup();reject(Error("Tidak dapat menghubungi spreadsheet."));};
+  script.src=API_URL+"?action="+encodeURIComponent(action)+"&callback="+cb+"&_="+Date.now();
+  document.body.appendChild(script);
+ });
+}
+
+/* WRITE DATABASE */
+async function send(payload){
+ if(!API_URL.startsWith("https://script.google.com/"))
+  throw Error("URL Apps Script belum dipasang.");
+
+ await fetch(API_URL,{
+  method:"POST",
+  mode:"no-cors",
+  headers:{"Content-Type":"text/plain;charset=utf-8"},
+  body:JSON.stringify(payload)
+ });
+ await new Promise(r=>setTimeout(r,900));
+}
+
+async function loadTasks(){
+ try{
+  setSync(false,"Syncing…");
+  const result=await jsonp("list");
+  if(!result.ok)throw Error(result.error||"Gagal memuat data");
+  tasks=(result.tasks||[]).map(normalize);
+  render();
+  setSync(true,"Synced");
+ }catch(e){
+  setSync(false,"Offline");
+  toast(e.message+" Periksa URL dan deployment Apps Script.");
+ }
+}
+
+function normalize(t){
+ return {
+  id:String(t.id||""),
+  title:String(t.title||""),
+  quadrant:QUADS[t.quadrant]?t.quadrant:"q2",
+  due:String(t.due||""),
+  category:String(t.category||""),
+  note:String(t.note||""),
+  done:t.done===true||String(t.done)==="true",
+  created:Number(t.created)||Date.now(),
+  updated:Number(t.updated)||Date.now()
+ };
+}
+function dateLabel(v){
+ if(!v)return "";
+ const d=new Date(v+"T00:00:00");
+ return isNaN(d)?v:d.toLocaleDateString("id-ID",{day:"numeric",month:"short",year:"numeric"});
+}
+function filtered(arr,query){
+ query=(query||"").trim().toLowerCase();
+ return arr.filter(t=>!query||[t.title,t.note,t.category].join(" ").toLowerCase().includes(query));
+}
+function taskHTML(t){
+ return `<article class="task ${t.done?"done":""}" data-id="${escapeHTML(t.id)}">
+ <input class="check" type="checkbox" ${t.done?"checked":""} aria-label="Mark complete">
+ <div class="task-body">
+  <div class="task-title">${escapeHTML(t.title)}</div>
+  <div class="task-meta">
+   ${t.due?`<span>◷ ${escapeHTML(dateLabel(t.due))}</span>`:""}
+   ${t.category?`<span>· ${escapeHTML(t.category)}</span>`:""}
+  </div>
+  ${t.note?`<div class="task-note">${escapeHTML(t.note)}</div>`:""}
+ </div>
+ <div class="task-actions">
+  <button data-action="edit" title="Edit">✎</button>
+  <button data-action="delete" title="Delete">×</button>
+ </div>
+ </article>`;
+}
+function sortTasks(arr,mode){
+ return [...arr].sort((a,b)=>
+  mode==="date"?(a.due||"9999").localeCompare(b.due||"9999"):
+  mode==="created"?b.created-a.created:a.created-b.created
+ );
+}
+function render(){
+ const active=tasks.filter(t=>!t.done);
+ const done=tasks.filter(t=>t.done);
+ const todayStr=new Date().toISOString().slice(0,10);
+
+ $("#activeCount").textContent=active.length;
+ $("#doneCount").textContent=done.length;
+ $("#dueCount").textContent=active.filter(t=>t.due===todayStr).length;
+
+ const q=$("#searchMatrix").value;
+ const mode=$("#sortMatrix").value;
+
+ $$(".quadrant").forEach(el=>{
+  const key=el.dataset.q;
+  const list=sortTasks(filtered(active.filter(t=>t.quadrant===key),q),mode);
+  el.querySelector(".q-count").textContent=list.length+" tasks";
+  el.querySelector(".task-list").innerHTML=list.length?
+   list.map(taskHTML).join(""):'<div class="empty">Nothing here yet</div>';
+ });
+
+ $("#allList").innerHTML=renderRows(filtered(sortTasks(tasks,"created"),$("#searchAll").value));
+ $("#doneList").innerHTML=renderRows(filtered(sortTasks(done,"created"),$("#searchDone").value));
+}
+function renderRows(arr){
+ return arr.length?arr.map(t=>`
+ <div class="list-row">
+  ${taskHTML(t)}
+  <span class="pill ${t.quadrant}">${QUADS[t.quadrant]}</span>
+ </div>`).join(""):'<div class="empty" style="margin:14px">No tasks to show</div>';
+}
+function openModal(q="q1",task=null){
+ $("#taskForm").reset();
+ $("#taskId").value=task?.id||"";
+ $("#titleInput").value=task?.title||"";
+ $("#quadrantInput").value=task?.quadrant||q;
+ $("#dueInput").value=task?.due||"";
+ $("#categoryInput").value=task?.category||"";
+ $("#noteInput").value=task?.note||"";
+ $("#modalTitle").textContent=task?"Edit task":"Create a task";
+ $("#saveBtn").textContent=task?"Save changes":"Save task";
+ $("#modalBackdrop").classList.add("open");
+ setTimeout(()=>$("#titleInput").focus(),100);
+}
+function closeModal(){
+ $("#modalBackdrop").classList.remove("open");
+}
+
+async function persist(payload,success){
+ if(busy)return;
+ busy=true;
+ $("#saveBtn").disabled=true;
+ try{
+  await send(payload);
+  await loadTasks();
+  toast(success);
+ }catch(e){
+  toast(e.message);
+  setSync(false,"Not synced");
+ }finally{
+  busy=false;
+  $("#saveBtn").disabled=false;
+ }
+}
+
+/* CREATE / UPDATE */
+$("#taskForm").addEventListener("submit",async e=>{
+ e.preventDefault();
+ const id=$("#taskId").value;
+ const old=tasks.find(t=>t.id===id);
+
+ const task={
+  id:id||("tsk_"+Date.now()+"_"+Math.random().toString(36).slice(2,7)),
+  title:$("#titleInput").value.trim(),
+  quadrant:$("#quadrantInput").value,
+  due:$("#dueInput").value,
+  category:$("#categoryInput").value.trim(),
+  note:$("#noteInput").value.trim(),
+  done:old?.done||false,
+  created:old?.created||Date.now(),
+  updated:Date.now()
+ };
+ if(!task.title)return;
+ closeModal();
+ await persist({action:id?"update":"create",task},id?"Task updated":"Task added");
+});
+
+/* CHECK, EDIT, DELETE */
+function handleTaskAction(e){
+ const taskEl=e.target.closest(".task");
+ if(!taskEl)return;
+ const task=tasks.find(t=>t.id===taskEl.dataset.id);
+ if(!task)return;
+
+ if(e.target.matches(".check")){
+  persist({action:"toggle",id:task.id,done:e.target.checked},
+   e.target.checked?"Task completed":"Moved back to active");
+  return;
+ }
+ const action=e.target.dataset.action;
+ if(action==="edit")openModal(task.quadrant,task);
+ if(action==="delete"&&confirm("Delete this task?"))
+  persist({action:"delete",id:task.id},"Task deleted");
+}
+
+$("#matrix").addEventListener("click",e=>{
+ if(e.target.classList.contains("add-inline"))
+  openModal(e.target.closest(".quadrant").dataset.q);
+ else handleTaskAction(e);
+});
+$("#allList").addEventListener("click",handleTaskAction);
+$("#doneList").addEventListener("click",handleTaskAction);
+
+/* NAVIGATION */
+$$(".nav button").forEach(btn=>btn.addEventListener("click",()=>{
+ currentView=btn.dataset.view;
+ $$(".nav button").forEach(b=>b.classList.toggle("active",b===btn));
+ $$(".view").forEach(v=>v.classList.remove("active"));
+ $("#"+currentView+"View").classList.add("active");
+ $("#pageTitle").textContent={
+  matrix:"Your priorities, at a glance.",
+  all:"Everything on your list.",
+  completed:"Look how far you’ve come."
+ }[currentView];
+}));
+
+$("#newTaskBtn").onclick=()=>openModal("q1");
+$("#closeModal").onclick=closeModal;
+$("#cancelModal").onclick=closeModal;
+$("#modalBackdrop").addEventListener("click",e=>{
+ if(e.target.id==="modalBackdrop")closeModal();
+});
+document.addEventListener("keydown",e=>{
+ if(e.key==="Escape")closeModal();
+});
+["searchMatrix","searchAll","searchDone","sortMatrix"].forEach(id=>
+ $("#"+id).addEventListener("input",render)
+);
+
+/* INITIALIZE */
+loadTasks();
+</script>
+</body>
+</html>
