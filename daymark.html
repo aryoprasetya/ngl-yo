@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -256,7 +255,7 @@ button{cursor:pointer}
 
 <script>
 /* TEMPEL URL WEB APP GOOGLE APPS SCRIPT DI SINI */
-const API_URL = "https://script.google.com/macros/s/AKfycbyne3GLlWkTV4j_qJhOcFaZGjo2mgn71d11rmyoKHsJjZBCtLpmgNrOEs4oSsajDrda/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbywOugdE2e3pRRqNHjuo-rxYW5XXi9G-V6dyvvI3uVyuWLYYFY9PaBMjxybfXjKxZc0/exec";
 
 const QUADS={q1:"Do first",q2:"Schedule",q3:"Delegate",q4:"Eliminate"};
 let tasks=[],currentView="matrix",busy=false;
@@ -349,38 +348,28 @@ function normalize(t){
   updated:Number(t.updated)||Date.now()
  };
 }
-function dateLabel(v){
- if(!v)return "";
+function dateLabel(value) {
+  if (!value) return "";
 
- let d;
+  const match = String(value).match(
+    /^(\d{4})-(\d{2})-(\d{2})/
+  );
 
- if(v instanceof Date){
-  d=v;
- }else if(typeof v==="string" && v.includes("T")){
-  d=new Date(v);
- }else{
-  const parts=String(v).split("-");
-  if(parts.length===3){
-   d=new Date(
-    Number(parts[0]),
-    Number(parts[1])-1,
-    Number(parts[2])
-   );
-  }else{
-   d=new Date(v);
-  }
- }
+  if (!match) return String(value);
 
- if(isNaN(d.getTime()))return v;
+  const date = new Date(
+    Number(match[1]),
+    Number(match[2]) - 1,
+    Number(match[3])
+  );
 
- return d.toLocaleDateString("id-ID",{
-  day:"numeric",
-  month:"long",
-  year:"numeric",
-  timeZone:"Asia/Jakarta"
- });
+  return date.toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  });
 }
-function filtered(arr,query){
+ function filtered(arr,query){
  query=(query||"").trim().toLowerCase();
  return arr.filter(t=>!query||[t.title,t.note,t.category].join(" ").toLowerCase().includes(query));
 }
