@@ -1,0 +1,19 @@
+MyAnjem V3.1 - POST bridge response fix
+
+Files changed:
+- code.gs: doPost() now posts its response to window.top to bypass the intermediate HtmlService sandbox wrapper.
+- akun.html, ma-pass.html, ma-driver.html, m-a-admin.html: POST bridge accepts only a response with the expected one-time nonce and either the direct iframe source or a recognized Google Apps Script origin.
+- akun.html: removed a duplicate api() declaration.
+- MyAnjem_README.txt: documented the POST bridge change.
+
+Deployment:
+1. Replace the Apps Script Code.gs with this code.gs.
+2. Deploy > Manage deployments > Edit > New version > Deploy.
+3. Keep the same /exec URL if editing the existing deployment. If a new URL is created, update API_URL in all HTML pages.
+4. Re-upload the changed HTML files to the static host: akun.html, ma-pass.html, ma-driver.html, m-a-admin.html.
+5. Test OTP send, passenger registration, rider login, driver registration, and admin login.
+
+Important:
+- This package cannot be live-tested against the owner's Google account, deployment, spreadsheet, or mail quota from this environment.
+- Keep the database ID in code.gs aligned with the spreadsheet you intend to use.
+- Set ADMIN_PASSWORD to a strong private password before using the admin panel. The shipped placeholder intentionally disables admin login.
