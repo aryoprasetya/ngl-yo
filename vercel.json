@@ -6,37 +6,37 @@
   "permanent": false
     },
     {
-      "source": "/home.html",
+      "source": "/myanjem/home.html",
       "destination": "/home",
       "permanent": true
     },
     {
-      "source": "/driver.html",
+      "source": "/myanjem/driver.html",
       "destination": "/driver",
       "permanent": true
     },
     {
-      "source": "/admin.html",
+      "source": "/myanjem/admin.html",
       "destination": "/mimin",
       "permanent": true
     },
     {
-      "source": "/about.html",
+      "source": "/myanjem/about.html",
       "destination": "/about",
       "permanent": true
     },
     {
-      "source": "/pesan.html",
+      "source": "/myanjem/pesan.html",
       "destination": "/order",
       "permanent": true
     },
     {
-      "source": "/lacak.html",
+      "source": "/myanjem/lacak.html",
       "destination": "/track",
       "permanent": true
     },
     {
-      "source": "/akun.html",
+      "source": "/myanjem/akun.html",
       "destination": "/account",
       "permanent": true
     }
@@ -44,35 +44,35 @@
   "rewrites": [
     {
       "source": "/home",
-      "destination": "/home.html"
+      "destination": "/myanjem/home.html"
     },
     {
       "source": "/driver",
-      "destination": "/driver.html"
+      "destination": "/myanjem/driver.html"
     },
     {
       "source": "/mimin",
-      "destination": "/admin.html"
+      "destination": "/myanjem/admin.html"
     },
     {
       "source": "/about",
-      "destination": "/about.html"
+      "destination": "/myanjem/about.html"
     },
     {
       "source": "/order",
-      "destination": "/pesan.html"
+      "destination": "/myanjem/pesan.html"
     },
     {
       "source": "/track",
-      "destination": "/lacak.html"
+      "destination": "/myanjem/lacak.html"
     },
     {
       "source": "/invoice",
-      "destination": "/invoice.html"
+      "destination": "/myanjem/invoice.html"
     },
     {
       "source": "/account",
-      "destination": "/akun.html"
+      "destination": "/myanjem/akun.html"
     }
   ]
 }
