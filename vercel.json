@@ -47,6 +47,14 @@
       "destination": "/home.html"
     },
     {
+      "source": "/driver",
+      "destination": "/driver.html"
+    },
+    {
+      "source": "/mimin",
+      "destination": "/admin.html"
+    },
+    {
       "source": "/about",
       "destination": "/about.html"
     },
