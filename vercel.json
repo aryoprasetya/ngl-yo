@@ -1,4 +1,3 @@
-
 {
   "redirects": [
     {
@@ -9,6 +8,11 @@
     {
       "source": "/home.html",
       "destination": "/home",
+      "permanent": true
+    },
+    {
+      "source": "/driver.html",
+      "destination": "/driver",
       "permanent": true
     },
     {
