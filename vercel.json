@@ -1,0 +1,66 @@
+
+{
+  "redirects": [
+    {
+  "source": "/",
+  "destination": "/load",
+  "permanent": false
+    },
+    {
+      "source": "/home.html",
+      "destination": "/home",
+      "permanent": true
+    },
+    {
+      "source": "/admin.html",
+      "destination": "/mimin",
+      "permanent": true
+    },
+    {
+      "source": "/about.html",
+      "destination": "/about",
+      "permanent": true
+    },
+    {
+      "source": "/pesan.html",
+      "destination": "/order",
+      "permanent": true
+    },
+    {
+      "source": "/lacak.html",
+      "destination": "/track",
+      "permanent": true
+    },
+    {
+      "source": "/akun.html",
+      "destination": "/account",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/home",
+      "destination": "/home.html"
+    },
+    {
+      "source": "/about",
+      "destination": "/about.html"
+    },
+    {
+      "source": "/order",
+      "destination": "/pesan.html"
+    },
+    {
+      "source": "/track",
+      "destination": "/lacak.html"
+    },
+    {
+      "source": "/invoice",
+      "destination": "/invoice.html"
+    },
+    {
+      "source": "/account",
+      "destination": "/akun.html"
+    }
+  ]
+}
