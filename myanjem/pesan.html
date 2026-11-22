@@ -269,7 +269,7 @@ button:hover i.bx{transform:translateY(-1px) scale(1.06)}
         url.searchParams.set('callback',callback);
         url.searchParams.set('_',String(Date.now()));
         script.src=url.toString();
-        script.onerror=()=>{cleanup();reject(new Error('Tidak dapat menghubungi API MyAnjem. Pastikan deployment Database dapat diakses oleh siapa saja.'));};
+        script.onerror=()=>{cleanup();reject(new Error('Eh maaf kak tidak dapat menghubungi Server, abaikan atau gunakan browser lain.'));};
         document.head.appendChild(script);
       }catch(error){cleanup();reject(error);}
     });
