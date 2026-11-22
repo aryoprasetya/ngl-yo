@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="logo.png.png">
+<link rel="icon" type="image/png" sizes="192x192" href="logo.png.png">
+<link rel="apple-touch-icon" href="logo.png.png">
+
+<!-- Browser Theme -->
+<meta name="theme-color" content="#e83e8c">
+<meta name="msapplication-TileColor" content="#e83e8c">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#e83e8c">
+  <meta name="description" content="MyAnjem — Antar Jemput yang praktis, aman, dan mudah digunakan.">
+  <title>MyAnjem — Driver</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <style>
+    :root{--pink:#e83e8c;--pink-dark:#c92d75;--pink-soft:#fff0f6;--pink-pale:#fff7fa;--ink:#25212a;--muted:#77717b;--line:#eee8ed;--surface:#fff;--bg:#f7f5f7;--green:#169b62;--green-soft:#eaf8f1;--amber:#b87513;--amber-soft:#fff5e5;--red:#cf3f55;--red-soft:#fff0f1;--blue:#3769c8;--blue-soft:#eef4ff;--shadow:0 14px 40px rgba(40,20,35,.07);--radius:16px}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:'Nunito',Georgia,serif;font-size:15px;line-height:1.45}button,input,select,textarea{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}.hidden{display:none!important}.muted{color:var(--muted)}.tiny{font-size:12px}.small{font-size:13px}.strong{font-weight:700}.pink{color:var(--pink)}.container{width:min(1160px,calc(100% - 36px));margin:auto}.app-header{height:72px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;position:sticky;top:0;z-index:900}.header-inner{display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:-.4px;font-size:21px}.brand-mark{width:39px;height:39px;border-radius:12px;background:var(--pink);color:white;display:grid;place-items:center;font-weight:800;font-size:18px;box-shadow:0 5px 12px #e83e8c38;overflow:hidden}.brand-mark img{width:100%;height:100%;object-fit:contain;background:transparent}.brand small{display:block;color:var(--muted);font-size:10px;font-weight:500;letter-spacing:.3px;margin-top:-3px}.header-actions{display:flex;align-items:center;gap:9px}.header-link{border:0;background:none;padding:9px 12px;border-radius:9px;color:#5d5660;font-weight:600}.header-link:hover{background:var(--pink-soft);color:var(--pink-dark)}.btn{border:1px solid transparent;border-radius:10px;padding:11px 16px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.16s ease;line-height:1.2}.btn:disabled{opacity:.55;cursor:not-allowed}.btn-primary{background:var(--pink);color:#fff;box-shadow:0 5px 12px #e83e8c2b}.btn-primary:hover{background:var(--pink-dark);transform:translateY(-1px)}.btn-light{background:#fff;border-color:var(--line);color:#514a54}.btn-light:hover{border-color:#e9a6c6;background:var(--pink-pale)}.btn-soft{background:var(--pink-soft);color:var(--pink-dark)}.btn-danger{background:var(--red-soft);color:var(--red);border-color:#f8d8dd}.btn-success{background:var(--green-soft);color:var(--green);border-color:#d4efdf}.btn-sm{padding:8px 11px;font-size:13px;border-radius:8px}.btn-block{width:100%}.icon-btn{border:1px solid var(--line);background:#fff;width:38px;height:38px;border-radius:10px;display:grid;place-items:center;color:#635b65}.hero{padding:62px 0 48px;background:linear-gradient(110deg,#fff 0%,#fff 54%,#fff1f7 100%);border-bottom:1px solid #f5e8ef}.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:38px;align-items:center}.eyebrow{display:inline-flex;align-items:center;gap:7px;color:var(--pink-dark);background:var(--pink-soft);padding:7px 11px;border-radius:99px;font-size:12px;font-weight:700;letter-spacing:.3px}.hero h1{font-size:clamp(38px,5vw,61px);line-height:1.06;letter-spacing:-2px;margin:18px 0 15px;max-width:650px}.hero h1 span{color:var(--pink)}.hero p{color:#6f6872;font-size:17px;max-width:570px;margin:0 0 25px}.hero-buttons{display:flex;gap:10px;flex-wrap:wrap}.hero-visual{background:#fff;border:1px solid #f2dce7;border-radius:25px;padding:22px;box-shadow:var(--shadow);position:relative;max-width:440px;margin-left:auto;width:100%}.visual-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.mini-tag{font-size:11px;background:var(--green-soft);color:var(--green);font-weight:700;padding:6px 9px;border-radius:30px}.route-preview{background:#faf8fa;border:1px solid var(--line);padding:15px;border-radius:15px}.route-point{display:flex;gap:12px;align-items:flex-start;padding:6px 0}.dot{width:11px;height:11px;border:3px solid var(--pink);border-radius:50%;margin-top:4px;flex:none}.dot.destination{border-color:#29242d;border-radius:3px}.route-line{height:19px;border-left:1px dashed #d7cbd3;margin:0 0 0 5px}.route-point b{font-size:13px;display:block}.route-point small{font-size:11px;color:var(--muted)}.visual-footer{display:flex;justify-content:space-between;align-items:center;margin-top:15px;padding-top:14px;border-top:1px solid var(--line)}.visual-price{font-weight:800;color:var(--pink-dark);font-size:20px}.section{padding:48px 0}.section-title{margin:0 0 8px;font-size:26px;letter-spacing:-.6px}.section-sub{margin:0;color:var(--muted);max-width:680px}.service-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}.service-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:21px;box-shadow:0 5px 18px #28142308}.service-icon{width:45px;height:45px;border-radius:13px;background:var(--pink-soft);color:var(--pink-dark);display:grid;place-items:center;font-weight:800;font-size:18px;margin-bottom:14px}.service-card h3{margin:0 0 6px;font-size:18px}.service-card p{color:var(--muted);margin:0 0 15px;font-size:13px}.service-card .btn{width:100%}.feature-strip{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:20px 0}.feature-row{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}.feature-item{display:flex;gap:9px;align-items:center;font-size:13px;color:#5e5660}.check{width:23px;height:23px;background:var(--green-soft);color:var(--green);border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800}.footer{padding:26px 0;color:var(--muted);font-size:12px}.view{padding:28px 0 60px;min-height:70vh}.page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin-bottom:22px}.page-head h1{font-size:28px;margin:0 0 4px;letter-spacing:-.7px}.page-head p{margin:0;color:var(--muted)}.panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 5px 20px #28142306}.panel-pad{padding:21px}.panel-title{font-size:17px;font-weight:700;margin:0 0 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}.layout-two{display:grid;grid-template-columns:minmax(0,1fr) 370px;gap:18px;align-items:start}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field{display:flex;flex-direction:column;gap:6px;min-width:0}.field.full{grid-column:1/-1}.field label{font-size:13px;font-weight:600;color:#514a54}.field input,.field select,.field textarea{width:100%;border:1px solid #e6dfe5;border-radius:9px;padding:11px 12px;outline:none;background:#fff;color:var(--ink);min-height:43px}.field textarea{resize:vertical;min-height:75px}.field input:focus,.field select:focus,.field textarea:focus{border-color:#e67aad;box-shadow:0 0 0 3px #e83e8c16}.field input::placeholder,.field textarea::placeholder{color:#aaa2ac}.input-row{display:flex;gap:7px}.input-row input{flex:1;min-width:0}.suggestions{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:5px;background:white;box-shadow:var(--shadow);max-height:220px;overflow-y:auto;position:relative;z-index:50}.suggestion{display:block;width:100%;text-align:left;background:white;border:0;border-bottom:1px solid #f3edf1;padding:11px 12px;font-size:12px;color:#534c55}.suggestion:hover{background:var(--pink-pale)}.map-box{height:310px;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#f0edf0;position:relative}.map-note{font-size:11px;color:var(--muted);margin:7px 0 0}.map-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.quote-card{background:var(--pink-pale);border:1px solid #f6d7e6;padding:15px;border-radius:13px;margin-top:14px}.quote-row{display:flex;justify-content:space-between;gap:10px;font-size:13px;margin:5px 0}.quote-total{border-top:1px solid #f0d0e0;padding-top:10px;margin-top:10px;display:flex;justify-content:space-between;align-items:center}.quote-total strong{font-size:23px;color:var(--pink-dark)}.choice-row{display:flex;gap:9px;flex-wrap:wrap}.choice{flex:1;min-width:130px;border:1px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;background:#fff}.choice.active{border-color:var(--pink);background:var(--pink-pale);box-shadow:0 0 0 2px #e83e8c14}.choice b{display:block;font-size:13px}.choice small{color:var(--muted);font-size:11px}.driver-choice-list{display:grid;gap:8px;margin-top:11px}.driver-choice{display:flex;align-items:center;gap:10px;border:1px solid var(--line);padding:11px;border-radius:11px;cursor:pointer}.driver-choice.selected{border-color:var(--pink);background:var(--pink-pale)}.avatar{width:39px;height:39px;border-radius:12px;background:#f9e0eb;color:var(--pink-dark);font-weight:800;display:grid;place-items:center;flex:none}.driver-choice-info{flex:1;min-width:0}.driver-choice-info b{display:block;font-size:13px}.driver-choice-info small{font-size:11px;color:var(--muted)}.driver-choice-price{text-align:right;font-weight:700;color:var(--pink-dark);font-size:13px}.empty{padding:25px;text-align:center;color:var(--muted);font-size:13px;background:#faf9fa;border:1px dashed #e7dfe5;border-radius:12px}.status{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:30px;font-size:11px;font-weight:700;white-space:nowrap}.status.pending,.status.requested,.status.unpaid{background:var(--amber-soft);color:var(--amber)}.status.approved,.status.completed,.status.paid,.status.online{background:var(--green-soft);color:var(--green)}.status.rejected,.status.cancelled,.status.suspended,.status.declined{background:var(--red-soft);color:var(--red)}.status.accepted,.status.arrived,.status.on_trip,.status.waiting_confirmation{background:var(--blue-soft);color:var(--blue)}.notice{padding:12px 14px;border-radius:10px;background:var(--blue-soft);color:#315b9f;font-size:12px;border:1px solid #dce7ff}.notice.warn{background:var(--amber-soft);color:#95600e;border-color:#f6e2bd}.notice.success{background:var(--green-soft);color:#18774d;border-color:#d9f0e3}.result-card{border:1px solid #f0c9dc;background:#fffafd;border-radius:14px;padding:17px;margin-top:15px}.result-code{font-size:20px;font-weight:800;letter-spacing:.8px;color:var(--pink-dark)}.progress{display:flex;align-items:flex-start;gap:0;margin:18px 0 10px}.progress-step{flex:1;text-align:center;position:relative;font-size:10px;color:#aaa2ac}.progress-step:before{content:'';width:15px;height:15px;border-radius:50%;display:block;background:#e8e2e7;border:3px solid #fff;box-shadow:0 0 0 1px #ddd4dc;margin:0 auto 7px;position:relative;z-index:2}.progress-step:after{content:'';height:2px;background:#e8e2e7;position:absolute;top:6px;left:50%;width:100%;z-index:1}.progress-step:last-child:after{display:none}.progress-step.done{color:var(--pink-dark);font-weight:700}.progress-step.done:before{background:var(--pink);box-shadow:0 0 0 1px var(--pink)}.progress-step.done:after{background:#ef9bc1}.auth-wrap{max-width:500px;margin:24px auto}.auth-switch{display:flex;background:#f7f3f6;padding:4px;border-radius:10px;margin-bottom:18px}.auth-switch button{flex:1;border:0;background:transparent;border-radius:8px;padding:9px;font-weight:700;color:var(--muted)}.auth-switch button.active{background:#fff;color:var(--pink-dark);box-shadow:0 2px 6px #22101c0c}.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:17px}.stat{padding:16px;background:#fff;border:1px solid var(--line);border-radius:13px}.stat small{color:var(--muted);font-size:11px}.stat strong{display:block;font-size:24px;letter-spacing:-.7px;margin-top:5px}.stat .stat-foot{color:var(--muted);font-size:11px;margin-top:3px}.dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.list-stack{display:grid;gap:10px}.item-card{border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff}.item-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}.item-card h3{font-size:14px;margin:0 0 4px}.item-card p{margin:4px 0;color:var(--muted);font-size:12px}.item-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.route-mini{display:grid;gap:5px;border-left:2px solid #f1bed5;margin:10px 0 7px 4px;padding-left:11px;font-size:12px}.route-mini span{color:var(--muted)}.switch-row{display:flex;justify-content:space-between;gap:10px;align-items:center;border:1px solid var(--line);padding:12px;border-radius:11px}.toggle{width:48px;height:27px;border-radius:99px;border:0;background:#d8d1d7;padding:3px;transition:.2s}.toggle:after{content:'';display:block;width:21px;height:21px;border-radius:50%;background:white;box-shadow:0 1px 4px #0002;transition:.2s}.toggle.on{background:var(--green)}.toggle.on:after{transform:translateX(21px)}.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}table{border-collapse:collapse;width:100%;min-width:680px;font-size:12px}th,td{text-align:left;padding:12px 13px;border-bottom:1px solid #f0ebef;vertical-align:middle}th{font-size:11px;color:#736b75;text-transform:uppercase;letter-spacing:.35px;background:#faf8fa;position:sticky;top:0}tr:last-child td{border-bottom:0}.tabs{display:flex;gap:5px;overflow:auto;padding-bottom:2px;margin:0 0 14px}.tab{border:0;background:transparent;padding:9px 12px;border-radius:9px;color:var(--muted);font-weight:700;white-space:nowrap}.tab.active{color:var(--pink-dark);background:var(--pink-soft)}.tracking-layout{display:grid;grid-template-columns:1fr 370px;gap:16px}.tracking-detail{display:grid;gap:12px}.tracking-map{height:390px}.bank-box{background:#faf8fa;border:1px dashed #dfd4dc;padding:13px;border-radius:11px;font-size:12px}.bank-box strong{display:block;font-size:15px;margin:3px 0}.modal-backdrop{position:fixed;inset:0;background:#21151f77;z-index:2000;display:grid;place-items:center;padding:18px}.modal{width:min(480px,100%);background:#fff;border-radius:17px;padding:22px;box-shadow:0 25px 70px #170d1744}.modal h3{margin:0 0 7px}.toast-host{position:fixed;right:18px;bottom:20px;z-index:3000;display:grid;gap:8px;width:min(350px,calc(100% - 36px))}.toast{background:#29232b;color:white;padding:13px 15px;border-radius:11px;box-shadow:var(--shadow);font-size:13px;animation:toastIn .2s ease}.toast.error{background:#9e2c43}.toast.success{background:#16774e}@keyframes toastIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}.loading{opacity:.65;pointer-events:none}.admin-nav{display:flex;gap:7px;flex-wrap:wrap}.admin-content{margin-top:15px}.map-legend{display:flex;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:11px;margin-top:8px}.legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--pink);margin-right:5px}.mobile-bottom{display:none}
+    @media(max-width:900px){.hero-grid{grid-template-columns:1fr .8fr;gap:18px}.layout-two,.tracking-layout{grid-template-columns:1fr}.stats-grid{grid-template-columns:repeat(2,1fr)}.dashboard-grid{grid-template-columns:1fr}.map-box{height:290px}}
+    @media(max-width:640px){.container{width:min(100% - 24px,1160px)}.app-header{height:62px}.brand{font-size:18px}.brand-mark{width:35px;height:35px}.header-link{display:none}.hero{padding:39px 0 31px}.hero-grid{grid-template-columns:1fr}.hero h1{font-size:40px}.hero p{font-size:15px}.hero-visual{margin:0;max-width:none}.section{padding:34px 0}.section-title{font-size:23px}.service-grid{grid-template-columns:1fr;gap:10px}.service-card{padding:17px}.view{padding:20px 0 85px}.page-head h1{font-size:24px}.panel-pad{padding:16px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.stats-grid{gap:8px}.stat{padding:13px}.stat strong{font-size:21px}.map-box{height:260px}.tracking-map{height:300px}.progress-step{font-size:9px}.progress-step:before{width:13px;height:13px}.progress-step:after{top:5px}.mobile-bottom{display:flex;position:fixed;z-index:950;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:8px 10px calc(8px + env(safe-area-inset-bottom));justify-content:space-around;box-shadow:0 -5px 20px #2a12200b}.mobile-bottom button{border:0;background:none;color:#8d8490;font-size:10px;font-weight:700;display:grid;justify-items:center;gap:3px;min-width:65px}.mobile-bottom button span{font-size:18px}.mobile-bottom button.active{color:var(--pink-dark)}.footer{padding-bottom:85px}.item-top{align-items:flex-start}.page-head{align-items:center}.auth-wrap{margin:12px auto}.header-actions .btn{padding:9px 11px;font-size:12px}.choice{min-width:calc(50% - 8px)}}
+  
+/* MyAnjem split-page refinements */
+:root{--font-ui:'Nunito',Georgia,serif}
+body,button,input,select,textarea{font-family:var(--font-ui)}
+.btn,.header-link,.field label,.status,.tiny,.small{letter-spacing:0}
+.btn{white-space:normal;text-align:center;max-width:100%;min-width:0;overflow-wrap:anywhere}
+.container,.panel,.panel-pad,.field,.field input,.field select,.field textarea,.item-card,.item-top,.page-head,.header-inner{min-width:0}
+img,svg,iframe,canvas{max-width:100%}
+.page-head,.panel-title,.item-top{flex-wrap:wrap}
+.page-head>div,.item-top>div{min-width:0;overflow-wrap:anywhere}
+.form-grid>*,.dashboard-grid>*,.layout-two>*,.tracking-layout>*{min-width:0}
+.driver-choice-info,.driver-choice-price{min-width:0;overflow-wrap:anywhere}
+.route-mini span,.notice,.map-note,.service-card p{overflow-wrap:anywhere}
+.service-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.service-icon{font-size:25px}
+.captcha-box{border:1px solid #f0c7da;background:#fff8fb;border-radius:13px;padding:14px;display:grid;gap:9px;min-width:0}
+.captcha-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.captcha-head>div{display:grid;gap:3px;min-width:0}
+.captcha-head b{font-size:13px;color:var(--pink-dark)}
+.captcha-head small{font-size:11px;color:var(--muted);overflow-wrap:anywhere}
+.captcha-question{font-weight:700;font-size:18px;letter-spacing:.5px;background:#fff;border:1px dashed #e5a9c7;border-radius:9px;padding:12px;text-align:center;color:#8d2455}
+.captcha-box input:not([type=hidden]){width:100%;border:1px solid #e6dfe5;border-radius:9px;padding:11px 12px;min-height:43px;outline:none}
+.captcha-box input:focus{border-color:#e67aad;box-shadow:0 0 0 3px #e83e8c16}
+@media(max-width:760px){.service-grid{grid-template-columns:1fr}.layout-two,.tracking-layout,.dashboard-grid{grid-template-columns:minmax(0,1fr)}.page-head{align-items:flex-start}.panel-title{align-items:flex-start}.quote-total{align-items:flex-start;flex-wrap:wrap}.item-actions .btn{flex:1 1 auto}}
+@media(max-width:640px){.container{width:calc(100% - 24px)}.hero h1{letter-spacing:-1px;line-height:1.12}.hero-grid{gap:20px}.hero-visual{padding:16px}.panel-pad{padding:14px}.form-grid{grid-template-columns:minmax(0,1fr)}.field.full{grid-column:auto}.input-row{align-items:stretch}.input-row .btn{padding:9px 10px}.page-head{gap:9px}.page-head h1{font-size:23px;line-height:1.2}.panel-title{font-size:15px}.stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.stat{min-width:0}.stat strong{font-size:19px;overflow-wrap:anywhere}.choice{min-width:0;flex:1 1 calc(50% - 8px)}.progress{overflow-x:auto;padding-bottom:5px}.progress-step{min-width:62px;flex:0 0 62px}.progress-step:after{width:100%}.table-wrap{max-width:100%}.admin-nav{overflow-x:auto;flex-wrap:nowrap}.admin-nav .tab{flex:0 0 auto}.toast-host{right:12px;bottom:14px;width:calc(100% - 24px)}.service-card h3{line-height:1.3}}
+
+@media(max-width:640px){body[data-page="admin"] .app-header .header-link{display:inline-flex;padding:7px 8px;font-size:11px}}
+
+/* MyAnjem V3 visual system — retain brand color and Nunito, refine spacing and motion */
+:root{--radius:15px;--shadow:0 8px 24px rgba(38,24,34,.055);--bg:#f7f7f9;--line:#ece9ed}
+body{background:#f7f7f9;font-family:'Nunito',sans-serif;-webkit-font-smoothing:antialiased}
+.app-header{backdrop-filter:none;box-shadow:0 2px 10px rgba(31,22,30,.035)}
+.brand{letter-spacing:-.55px}
+.brand-mark{border-radius:11px;box-shadow:none}
+.btn{border-radius:11px;transition:background .18s ease,border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+.btn-primary{box-shadow:0 4px 10px rgba(232,62,140,.16)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 7px 16px rgba(232,62,140,.22)}
+.btn-light:hover,.header-link:hover,.tab:hover{transform:translateY(-1px)}
+button i.bx{transition:transform .2s ease}
+button:hover i.bx{transform:translateY(-1px) scale(1.06)}
+.panel,.service-card,.stat,.item-card{box-shadow:0 2px 10px rgba(35,24,32,.035);transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease}
+.service-card:hover,.item-card:hover{border-color:#e9b3cd;box-shadow:0 8px 20px rgba(35,24,32,.06);transform:translateY(-2px)}
+.panel-title{letter-spacing:-.25px}
+.field input,.field select,.field textarea{border-radius:10px;transition:border-color .18s ease,box-shadow .18s ease}
+.choice{transition:border-color .18s ease,background .18s ease,transform .18s ease}
+.choice:hover{transform:translateY(-1px)}
+.choice.active{box-shadow:inset 0 0 0 1px rgba(232,62,140,.08)}
+.hero{background:linear-gradient(105deg,#fff 0%,#fff 70%,#fff5f9 100%)}
+.hero-visual{border-radius:20px;box-shadow:0 10px 28px rgba(38,24,34,.06)}
+.route-preview{background:#fbfafb}
+.service-icon{border-radius:13px}
+.view,.hero,.section,.service-card,.panel{animation:maFadeUp .36s ease both}
+.mobile-bottom{box-shadow:0 -4px 18px rgba(35,24,32,.045)}
+.mobile-bottom button{transition:color .16s ease,transform .16s ease}
+.mobile-bottom button:active{transform:scale(.94)}
+.mobile-bottom button i.bx{font-size:21px}
+.toast{border-radius:12px}
+@keyframes maFadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+.mobile-bottom{justify-content:stretch;gap:0}.mobile-bottom a{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:700;color:#8d8490;white-space:nowrap}.mobile-bottom a.active{color:var(--pink-dark)}@media(max-width:640px){.mobile-bottom{display:flex}.mobile-bottom a{flex:1 1 0;min-width:0}}@media(max-width:380px){.mobile-bottom a{font-size:9px}}
+</style>
+<style>
+/* V4: logo transparan utuh + bottom navigation dengan slot sama lebar */
+.brand-mark{background:transparent!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important}
+.brand-mark img{display:block;width:100%;height:100%;object-fit:contain;background:transparent!important;border-radius:0!important;padding:0!important}
+.mobile-bottom{justify-content:stretch!important;gap:0!important}
+.mobile-bottom button{flex:1 1 0!important;width:0;min-width:0!important;max-width:none;padding:4px 2px!important;white-space:nowrap;line-height:1.15}
+.mobile-bottom button i.bx{font-size:21px;line-height:1.1}
+@media(max-width:380px){.mobile-bottom button{font-size:9px!important}.mobile-bottom button i.bx{font-size:19px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+<style id="myanjem-shared-navigation">
+.mobile-bottom{display:flex;align-items:stretch;justify-content:stretch;gap:0;padding:6px max(5px,env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(5px,env(safe-area-inset-left));}
+.mobile-bottom a{flex:1 1 0!important;width:auto!important;min-width:0!important;max-width:none!important;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:4px 2px!important;font-size:10px;font-weight:800;line-height:1.15;color:#817984;white-space:nowrap;text-align:center;}
+.mobile-bottom a i{font-size:21px;line-height:1.1;}
+.mobile-bottom a.active{color:#c92d75;}
+@media(max-width:640px){body{padding-bottom:calc(82px + env(safe-area-inset-bottom))}.mobile-bottom{position:fixed;z-index:950;bottom:0;left:0;right:0;height:76px;background:#fff;border-top:1px solid #eee8ed;box-shadow:0 -4px 18px rgba(35,24,32,.045)}.mobile-bottom a{font-size:10px}}
+@media(max-width:380px){.mobile-bottom a{font-size:9px}.mobile-bottom a i{font-size:19px}}
+@media(min-width:641px){.mobile-bottom{position:fixed;z-index:950;bottom:0;left:0;right:0;height:64px;background:#fff;border-top:1px solid #eee8ed;box-shadow:0 -4px 18px rgba(35,24,32,.045)}body{padding-bottom:72px}}
+</style>
+<style id="myanjem-consistent-header">
+.app-header{height:72px!important;min-height:72px!important;background:#fff!important;border-bottom:1px solid #eee8ed!important;display:flex!important;align-items:center!important;position:sticky!important;top:0!important;z-index:1000!important;box-shadow:0 2px 12px rgba(35,24,32,.045)!important}
+.app-header>.container.header-inner{width:min(1160px,calc(100% - 36px))!important;max-width:1160px!important;margin:0 auto!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:16px!important}
+.app-header .brand{display:flex!important;align-items:center!important;gap:10px!important;font-size:21px!important;font-weight:900!important;letter-spacing:-.55px!important;line-height:1.1!important;white-space:nowrap!important}
+.app-header .brand-mark{width:40px!important;height:40px!important;flex:0 0 40px!important;display:grid!important;place-items:center!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important}
+.app-header .brand-mark img{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;padding:0!important;background:transparent!important;border-radius:0!important}
+.app-header .brand small{display:block!important;margin-top:3px!important;color:#8a818b!important;font-size:10px!important;font-weight:700!important;letter-spacing:.35px!important}
+.app-header .header-actions{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:7px!important;min-width:0!important}
+.app-header .header-link{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;border:0!important;background:transparent!important;padding:9px 11px!important;border-radius:9px!important;color:#5d5660!important;font-size:13px!important;font-weight:800!important;white-space:nowrap!important;text-decoration:none!important}
+.app-header .header-link:hover{background:#fff0f6!important;color:#c92d75!important}
+.header-datetime{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:1px;min-width:104px;padding-left:13px;margin-left:5px;border-left:1px solid #eee8ed;color:#6f6570;line-height:1.2;font-variant-numeric:tabular-nums}
+.header-clock{font-size:14px;font-weight:900;letter-spacing:.15px;color:#c92d75;white-space:nowrap}
+.header-date{font-size:10px;font-weight:800;letter-spacing:.2px;color:#958b95;white-space:nowrap;text-transform:capitalize}
+@media(max-width:640px){.app-header{height:64px!important;min-height:64px!important}.app-header>.container.header-inner{width:calc(100% - 24px)!important;gap:8px!important}.app-header .brand{font-size:18px!important;gap:8px!important}.app-header .brand-mark{width:36px!important;height:36px!important;flex-basis:36px!important}.app-header .brand small{font-size:9px!important;margin-top:2px!important}.app-header .header-actions{gap:0!important}.app-header .header-link{display:none!important}.header-datetime{min-width:98px;padding-left:10px;margin-left:0}.header-clock{font-size:14px}.header-date{font-size:9px}}
+@media(max-width:360px){.app-header>.container.header-inner{width:calc(100% - 18px)!important}.app-header .brand{font-size:17px!important}.header-datetime{min-width:91px}.header-clock{font-size:13px}}
+</style>
+</head>
+<body data-page="driver">
+  <header class="app-header"><div class="container header-inner"><a class="brand" href="/home" aria-label="MyAnjem beranda"><div class="brand-mark" id="brandMark"><img src="logo.png.png" alt="Logo MyAnjem"></div><div>MyAnjem<small>Your Ride, Your Way</small></div></a><div class="header-actions"><a class="header-link" href="/order"><i class="bx bx-map-pin"></i> Pesan</a><a class="header-link" href="/about"><i class="bx bx-info-circle"></i> Tentang</a><a class="header-link" href="/account"><i class="bx bx-user-circle"></i> Akun</a><div class="header-datetime" aria-label="Waktu Indonesia Barat"><span class="header-clock" id="headerClockTime">--:-- WIB</span><span class="header-date" id="headerClockDate">Memuat tanggal…</span></div></div></div></header>
+  <main>
+<!-- DRIVER -->
+    <section id="driverView" class="view hidden">
+      <div class="container">
+        <div class="page-head"><div><h1>Portal driver</h1><p>Kelola akun, tarif, ketersediaan, dan perjalananmu.</p></div><button class="btn btn-light btn-sm" onclick="goHome()"><i class="bx bx-arrow-back"></i> Beranda</button></div>
+        <div id="driverAuth" class="auth-wrap panel panel-pad">
+          <div class="auth-switch"><button id="driverLoginTab" class="active" onclick="showDriverAuth('login')">Masuk</button><button id="driverRegisterTab" onclick="showDriverAuth('register')">Daftar driver</button></div>
+          <div id="driverLoginForm"><h2 class="panel-title">Masuk akun driver</h2><div class="form-grid"><div class="field full"><label>Nomor telepon</label><input id="driverLoginPhone" inputmode="tel" placeholder="Nomor saat pendaftaran"></div><div class="field full"><label>Kata sandi</label><input id="driverLoginPassword" type="password" placeholder="Kata sandi"></div><div class="field full"><button class="btn btn-primary btn-block" onclick="doDriverLogin()">Masuk</button></div><div class="field full"><button class="btn btn-light btn-block" type="button" onclick="forgotPasswordForm('driver')">Lupa kata sandi?</button></div></div></div>
+          <div id="driverRegisterForm" class="hidden"><h2 class="panel-title">Pendaftaran mitra driver</h2><div class="notice warn" style="margin-bottom:14px">Akun baru harus disetujui admin sebelum dapat menerima pesanan.</div><div class="form-grid"><div class="field full"><label>Nama lengkap</label><input id="regName" placeholder="Nama sesuai identitas"></div><div class="field"><label>Nomor telepon</label><input id="regPhone" inputmode="tel" placeholder="08xxxxxxxxxx"></div><div class="field full"><label>Email (wajib)</label><div class="input-row"><input id="regEmail" type="email" autocomplete="email" placeholder="nama@email.com" required><button class="btn btn-light btn-sm" type="button" onclick="sendDriverOtp()">Kirim kode</button></div></div><div class="field full"><label>Kode verifikasi email</label><input id="regEmailOtp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6 digit dari email"></div><div class="field"><label>Jenis kendaraan</label><select id="regVehicle"><option>Motor</option><option>Mobil</option></select></div><div class="field"><label>Merek / tipe kendaraan</label><input id="regBrand" placeholder="Contoh: Honda Beat"></div><div class="field"><label>Nomor polisi</label><input id="regPlate" placeholder="R 1234 XX"></div><div class="field"><label>Area layanan</label><input id="regRegion" placeholder="Kecamatan / kota"></div><div class="field"><label>Tarif awal (Rp)</label><input id="regBaseFare" type="number" min="0" max="7000" placeholder="Maks. 7000"></div><div class="field"><label>Tarif per km (Rp)</label><input id="regFareKm" type="number" min="0" max="2000" placeholder="Maks. 2000"></div><div class="field full"><label>Kata sandi (minimal 8 karakter)</label><input id="regPassword" type="password" placeholder="Buat kata sandi"></div><div class="field full"><label for="regIdentityType">Jenis identitas</label><select id="regIdentityType"><option value="KTP">KTP</option><option value="KTM">KTM</option></select><label for="regIdentityDocument">Unggah foto / PDF KTP atau KTM (wajib, maks. 2 MB)</label><input id="regIdentityDocument" type="file" accept="image/jpeg,image/png,application/pdf" required><small class="tiny muted">Dokumen disimpan privat di Google Drive pemilik aplikasi dan hanya dapat ditinjau admin.</small></div><div class="field full">
+                <div class="captcha-box" aria-live="polite">
+                  <div class="captcha-head"><div><b><i class="bx bx-shield-quarter"></i> Verifikasi keamanan</b><small>Jawab tantangan sederhana sebelum mendaftar.</small></div><button type="button" class="icon-btn" onclick="refreshCaptcha()" aria-label="Muat tantangan baru"><i class="bx bx-refresh"></i></button></div>
+                  <div class="captcha-question" id="captchaQuestion">Memuat tantangan…</div>
+                  <label for="captchaAnswer">Jawaban verifikasi</label>
+                  <input id="captchaAnswer" type="number" inputmode="numeric" autocomplete="off" placeholder="Masukkan hasil perhitungan">
+                  <input id="captchaToken" type="hidden">
+                </div>
+              </div>
+              <div class="field full"><button class="btn btn-primary btn-block" onclick="doDriverRegister()"><i class="bx bx-user-plus"></i> Kirim pendaftaran</button></div></div></div>
+        </div>
+        <div id="driverDashboard" class="hidden">
+          <div class="panel panel-pad" style="margin-bottom:15px"><div class="item-top"><div><span class="tiny muted">Selamat datang,</span><h2 id="driverWelcome" style="margin:1px 0 4px">Driver</h2><div id="driverStatusLine" class="tiny muted">Status akun</div></div><button class="btn btn-light btn-sm" onclick="driverLogout()">Keluar</button></div><div id="driverPendingNotice" class="notice warn hidden" style="margin-top:13px">Akunmu masih menunggu verifikasi admin. Kamu belum dapat online sebelum akun disetujui.</div><div id="driverPassengerWarning" class="notice warn hidden" style="margin-top:10px">Kamu sedang membawa penumpang. Selesaikan perjalanan ini sebelum menerima pesanan berikutnya.</div><div class="item-actions" style="margin-top:12px"><button id="enableDriverAlerts" class="btn btn-light btn-sm" type="button" onclick="enableDriverAlerts()"><i class="bx bx-volume-full"></i> Aktifkan suara pesanan</button><span class="tiny muted">Aktifkan sekali setelah membuka portal agar browser mengizinkan bunyi notifikasi.</span></div></div>
+          <div class="stats-grid"><div class="stat"><small>Pesanan selesai</small><strong id="driverStatTotal">0</strong><div class="stat-foot">Total perjalanan</div></div><div class="stat"><small>Pesanan aktif</small><strong id="driverStatActive">0</strong><div class="stat-foot">Sedang diproses</div></div><div class="stat"><small>Estimasi pendapatan</small><strong id="driverStatEarning">Rp0</strong><div class="stat-foot">Akumulasi pesanan selesai</div></div><div class="stat"><small>Rating</small><strong id="driverStatRating">5.0</strong><div class="stat-foot">Rating akun</div></div></div>
+          <div class="dashboard-grid">
+            <div class="panel panel-pad"><h2 class="panel-title">Status operasional</h2><div class="switch-row"><div><b id="onlineLabel">Sedang offline</b><div class="tiny muted">Aktifkan untuk menerima order</div></div><button id="onlineToggle" class="toggle" onclick="toggleDriverOnline()" aria-label="Ubah status online"></button></div><div id="driverLocationStatus" class="tiny muted" style="margin-top:10px">GPS belum dibagikan.</div><div id="driverMap" class="map-box" style="height:220px;margin-top:12px"></div><div class="map-actions"><button class="btn btn-light btn-sm" onclick="shareDriverLocation()"><i class="bx bx-current-location"></i> Bagikan lokasi GPS</button><button class="btn btn-light btn-sm" onclick="openDriverMaps()"><i class="bx bx-map"></i> Google Maps</button></div><p class="map-note">Lokasi dibagikan saat halaman driver aktif dan izin lokasi diberikan. Matikan status online untuk berhenti membagikan lokasi.</p></div>
+            <div class="panel panel-pad"><h2 class="panel-title">Tarif pribadi driver</h2><p class="tiny muted">Atur tarif pribadi yang ingin ditampilkan pada profil layanan. Batas maksimal tarif awal Rp7.000 dan tambahan Rp2.000/km.</p><div class="form-grid"><div class="field"><label for="driverBaseFare">Tarif awal pribadi (Rp)</label><input id="driverBaseFare" type="number" min="0" max="7000" step="500" placeholder="Maks. 7000"></div><div class="field"><label for="driverFareKm">Tambahan per km (Rp)</label><input id="driverFareKm" type="number" min="0" max="2000" step="100" placeholder="Maks. 2000"></div><div class="field full"><button class="btn btn-primary btn-block" type="button" onclick="saveDriverFare()">Simpan tarif pribadi</button></div></div><div class="notice" style="margin-top:14px">Tarif order saat ini tetap menggunakan tarif dasar MyAnjem: Rp6.000 untuk 0–5 km, kemudian tambahan Rp1.500 setiap km selanjutnya. Tarif pribadi disimpan pada profil driver dan tidak mengubah tarif broadcast yang ditetapkan admin.</div><div class="quote-row" style="margin-top:12px"><span>Tarif layanan penumpang</span><b id="driverServiceBaseFare">—</b></div><div class="quote-row"><span>Tambahan per km layanan</span><b id="driverServiceFareKm">—</b></div><div class="quote-row"><span>Tarif minimum layanan</span><b id="driverServiceMinimumFare">—</b></div></div>
+          </div>
+          <div class="dashboard-grid" style="margin-top:15px"><div class="panel panel-pad"><h2 class="panel-title">Saldo & penarikan</h2><div class="quote-row"><span>Saldo tersedia</span><b id="driverWalletBalance">Rp0</b></div><div class="form-grid" style="margin-top:12px"><div class="field"><label>Metode pencairan</label><select id="driverPayoutMethod"><option value="BANK">Transfer bank / e-wallet</option><option value="QRIS">QRIS</option></select></div><div class="field"><label>Nomor rekening / detail QRIS</label><input id="driverPayoutDetails" placeholder="Nomor rekening dan nama / ID QRIS"></div><div class="field full"><button class="btn btn-light btn-block" onclick="saveDriverPayout()">Simpan tujuan pencairan</button></div><div class="field"><label>Nominal tarik saldo (Rp)</label><input id="driverWithdrawAmount" type="number" min="10000" step="1000" placeholder="Minimal 10000"></div><div class="field"><button class="btn btn-primary btn-block" onclick="requestDriverWithdrawal()">Ajukan penarikan</button></div></div><p class="tiny muted">Saldo digital masuk setelah pembayaran transfer/QRIS diverifikasi admin. Penarikan diproses manual oleh admin ke rekening/QRIS terdaftar.</p></div><div class="panel panel-pad"><h2 class="panel-title">Riwayat penarikan</h2><div id="driverWithdrawals" class="list-stack"><div class="empty">Belum ada permintaan penarikan.</div></div></div></div><div class="panel panel-pad" style="margin-top:15px"><h2 class="panel-title">Pesanan masuk & perjalanan</h2><div id="driverOrders" class="list-stack"><div class="empty">Belum ada pesanan.</div></div></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <nav class="mobile-bottom" aria-label="Navigasi utama"><a data-nav="home" href="/home" class=""><i class="bx bx-home-alt-2"></i>Beranda</a><a data-nav="book" href="/order" class=""><i class="bx bx-map-pin"></i>Pesan</a><a data-nav="track" href="/order#track" class=""><i class="bx bx-current-location"></i>Lacak</a><a data-nav="about" href="/about" class=""><i class="bx bx-info-circle"></i>Tentang</a><a data-nav="account" href="/account" class=""><i class="bx bx-user-circle"></i>Akun</a></nav>
+  <footer class="footer"><div class="container">© <span id="footerYear"></span> MyAnjem · Your Ride, Your Way.</div></footer>
+  <div id="modalHost"></div><div id="toastHost" class="toast-host" aria-live="polite"></div>
+  <script>document.getElementById('footerYear').textContent=new Date().getFullYear();</script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script>
+'use strict';
+  // Backend Google Database hanya sebagai API; website tetap di hosting statis.
+  const API_URL = 'https://script.google.com/macros/s/AKfycbzDigF6XLPEdgbhCQUpp1y4IarE53qE2qjsn192zybF_2msdxOPKiCZQzxV_qU7o_d2/exec';
+  const BACKEND_MODE = /^https:\/\//i.test(API_URL) && !API_URL.includes('TEMPEL_URL');
+  const $ = id => document.getElementById(id);
+  const money = n => new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n)||0);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const phoneClean = s => { let p=String(s||'').trim().replace(/[^0-9+]/g,''); if(p.startsWith('+62'))p='0'+p.slice(3); else if(p.startsWith('62'))p='0'+p.slice(2); else if(/^8\d{8,12}$/.test(p))p='0'+p; return p; };
+  const statusText = {PENDING:'Menunggu verifikasi',APPROVED:'Disetujui',REJECTED:'Ditolak',SUSPENDED:'Ditangguhkan',REQUESTED:'Menunggu driver',ACCEPTED:'Driver menerima',ARRIVED:'Driver tiba',ON_TRIP:'Dalam perjalanan',COMPLETED:'Selesai',CANCELLED:'Dibatalkan',DECLINED:'Ditolak driver',UNPAID:'Belum dibayar',WAITING_CONFIRMATION:'Menunggu konfirmasi',PAID:'Lunas',PAID_CASH:'Dibayar tunai',PAY_ON_COMPLETION:'Bayar setelah perjalanan'};
+  const flow = ['REQUESTED','ACCEPTED','ARRIVED','ON_TRIP','COMPLETED'];
+  let settings = {brand:'MyAnjem',defaultBaseFare:6000,defaultFarePerKm:1500,minimumFare:6000,fareIncludedKm:5,cancelFee:0,bankName:'',bankAccount:'',bankHolder:'',helpPhone:''};
+  let selectedVehicle='Motor', paymentMethod='CASH', selectedDriverId='', routeInfo=null, driverData=null, adminData=null, currentOrder=null;
+  let riderLoc={pickup:null,dropoff:null}, maps={}, markers={}, routeLine=null, searchTimers={}, driverGpsTimer=null, trackingTimer=null, driverRefreshTimer=null;
+  let driverToken=localStorage.getItem('ma2_driver_token')||sessionStorage.getItem('ma2_driver_token')||'', adminToken=localStorage.getItem('ma2_admin_token')||sessionStorage.getItem('ma2_admin_token')||'';
+  let logoData=localStorage.getItem('ma2_logo')||'';
+  let demoCaptchaToken='', demoCaptchaAnswer=null, captchaState={token:'',question:''};
+  let knownBroadcastIds = null, driverAudioEnabled = false, driverAudioContext = null;
+  let driverToggleBusy = false;
+let driverDashboardFetchBusy = false;
+let driverDashboardRevision = 0;
+  const PAGE=document.body.dataset.page||'home';
+  const PAGE_FILES={home:'/home',passenger:'/order',driver:'/driver',admin:'/mimin',account:'/account'};
+  function routeTo(page,hash=''){location.href=(PAGE_FILES[page]||PAGE_FILES.home)+hash;}
+
+  /* ---------------------- API JSONP / LOCAL PREVIEW ---------------------- */
+  function apiJsonp(action,payload={}){
+    return new Promise((resolve,reject)=>{
+      const callback='__ma2_cb_'+Date.now()+'_'+Math.random().toString(36).slice(2);
+      const script=document.createElement('script');
+      let settled=false;
+      const cleanup=()=>{if(settled)return;settled=true;clearTimeout(timer);delete window[callback];script.remove();};
+      const timer=setTimeout(()=>{cleanup();reject(new Error('Server MyAnjem tidak merespons. Periksa URL deployment Database dan koneksi internet.'));},25000);
+      window[callback]=(result)=>{cleanup();resolve(result);};
+      try{
+        const encoded=btoa(unescape(encodeURIComponent(JSON.stringify(payload)))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+        const url=new URL(API_URL);
+        url.searchParams.set('ma2','1');
+        url.searchParams.set('action',action);
+        url.searchParams.set('payload',encoded);
+        url.searchParams.set('callback',callback);
+        url.searchParams.set('_',String(Date.now()));
+        script.src=url.toString();
+        script.onerror=()=>{cleanup();reject(new Error('Tidak dapat menghubungi API MyAnjem. Pastikan deployment Database dapat diakses oleh siapa saja.'));};
+        document.head.appendChild(script);
+      }catch(error){cleanup();reject(error);}
+    });
+  }
+
+  function rpc(action,payload={}){
+    if(BACKEND_MODE)return apiJsonp(action,payload);
+    return demoApi(action,payload);
+  }
+  function isTrustedMyAnjemPostOrigin(origin) {
+  return origin === 'https://script.google.com' ||
+    origin === 'https://script.googleusercontent.com' ||
+    /^https:\/\/[a-z0-9-]+-script\.googleusercontent\.com$/i.test(origin);
+}
+
+function apiPostFrame(action, payload = {}) {
+  return new Promise((resolve, reject) => {
+    const nonce = 'ma4_' + Date.now() + '_' + Math.random().toString(36).slice(2, 14);
+    const frame = document.createElement('iframe');
+    frame.name = 'ma4_post_' + nonce;
+    frame.hidden = true;
+    frame.setAttribute('aria-hidden', 'true');
+
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = API_URL;
+    form.target = frame.name;
+    form.enctype = 'application/x-www-form-urlencoded';
+    form.hidden = true;
+
+    const params = {
+      ma2: '1',
+      action: action,
+      nonce: nonce,
+      payload: JSON.stringify(payload)
+    };
+    Object.entries(params).forEach(([key, value]) => {
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = key;
+      input.value = String(value);
+      form.appendChild(input);
+    });
+
+    let finished = false;
+    let timer;
+    const cleanup = () => {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timer);
+      window.removeEventListener('message', onMessage);
+      form.remove();
+      frame.remove();
+    };
+
+    const onMessage = (event) => {
+      const data = event.data;
+      const fromExpectedFrame = event.source === frame.contentWindow;
+      const fromAppsScriptSandbox = isTrustedMyAnjemPostOrigin(event.origin);
+
+      // HtmlService may post from a nested sandbox frame, so its source may
+      // not equal frame.contentWindow. Require a trusted Google origin AND
+      // the per-request nonce in that case.
+      if ((!fromExpectedFrame && !fromAppsScriptSandbox) ||
+          !data || data.__myanjem !== true || data.nonce !== nonce) {
+        return;
+      }
+
+      cleanup();
+      const result = data.result || {};
+      if (result.ok === true) {
+        resolve(result);
+      } else {
+        reject(new Error(result.message || 'Permintaan gagal diproses server.'));
+      }
+    };
+
+    window.addEventListener('message', onMessage);
+    timer = setTimeout(() => {
+      cleanup();
+      reject(new Error(
+        'Respons server tidak diterima. Permintaan mungkin sudah diproses; periksa data sebelum mencoba kembali.'
+      ));
+    }, 90000);
+
+    document.body.appendChild(frame);
+    document.body.appendChild(form);
+    try {
+      form.submit();
+    } catch (error) {
+      cleanup();
+      reject(error);
+    }
+  });
+}
+  function demoDb(){
+    try{return JSON.parse(localStorage.getItem('ma2_demo_db')||'{}')}catch(e){return {}}
+  }
+  function saveDemo(db){localStorage.setItem('ma2_demo_db',JSON.stringify(db))}
+  function demoInit(){const db=demoDb();if(!db.drivers){db.drivers=[];db.orders=[];db.payments=[];db.events=[];db.settings={...settings};saveDemo(db)}return db}
+  const demoToken = role => sessionStorage.getItem('ma2_demo_'+role)||'';
+  function demoApi(action,p){
+    const db=demoInit();
+    const ok=x=>Promise.resolve({ok:true,...x});const no=message=>Promise.resolve({ok:false,message});
+    const findDriver=id=>db.drivers.find(x=>x.driverId===id);
+    const findOrder=id=>db.orders.find(x=>x.orderId===id);
+    const session=(role,token)=>{if(!token||token!==demoToken(role))throw new Error('Sesi berakhir. Silakan masuk kembali.');return role==='driver'?findDriver(sessionStorage.getItem('ma2_demo_driver_id')):true};
+    try{
+      if(action==='bootstrap')return ok({version:'2.0.0-demo',settings:{...settings,...db.settings}});
+      if(action==='captchaChallenge'){const a=12+Math.floor(Math.random()*18),b=3+Math.floor(Math.random()*9),token='demo-captcha-'+Date.now()+'-'+Math.random().toString(36).slice(2);demoCaptchaToken=token;demoCaptchaAnswer=a+b;return ok({captchaToken:token,question:`Berapakah ${a} + ${b} ?`})}
+      if(action==='registerDriver'){
+        if(!p.captchaToken||p.captchaToken!==demoCaptchaToken||String(p.captchaAnswer)!==String(demoCaptchaAnswer)){demoCaptchaToken='';demoCaptchaAnswer=null;return no('Verifikasi keamanan salah atau kedaluwarsa. Muat tantangan baru.')}demoCaptchaToken='';demoCaptchaAnswer=null;
+        const phone=phoneClean(p.phone);if(db.drivers.some(d=>d.phone===phone))return no('Nomor telepon sudah terdaftar.');if(String(p.password||'').length<8)return no('Kata sandi minimal 8 karakter.');if(Number(p.baseFare)>7000||Number(p.farePerKm)>2000)return no('Tarif pribadi maksimal Rp7.000 dan Rp2.000 per km.')
+        const d={driverId:'DRV-'+Math.random().toString(36).slice(2,10).toUpperCase(),name:p.name,phone,email:p.email,vehicleType:p.vehicleType||'Motor',vehicleBrand:p.vehicleBrand,plate:p.plate,region:p.region,status:'PENDING',online:false,baseFare:Math.min(7000,+p.baseFare||6000),farePerKm:Math.min(2000,+p.farePerKm||1500),rating:5,ratingCount:0,balance:0,lat:null,lng:null,password:p.password,createdAt:new Date().toISOString()};db.drivers.push(d);saveDemo(db);return ok({driverId:d.driverId,status:'PENDING'});
+      }
+      if(action==='driverLogin'){
+        const d=db.drivers.find(x=>x.phone===phoneClean(p.phone)&&x.password===p.password);if(!d)return no('Nomor telepon atau kata sandi salah.');if(['REJECTED','SUSPENDED'].includes(d.status))return no('Akun belum dapat digunakan.');const t='demo-driver-'+Date.now();sessionStorage.setItem('ma2_demo_driver',t);sessionStorage.setItem('ma2_demo_driver_id',d.driverId);return ok({token:t,driver:d});
+      }
+      if(action==='adminLogin'){if(p.username!=='admin'||p.password!=='demo1234')return no('Mode demo admin: username admin, kata sandi demo1234.');const t='demo-admin-'+Date.now();sessionStorage.setItem('ma2_demo_admin',t);return ok({token:t});}
+      if(action==='publicDrivers')return ok({drivers:db.drivers.filter(d=>d.status==='APPROVED'&&d.online)});
+      if(action==='createOrder'){
+        const d=p.driverId?findDriver(p.driverId):null;if(p.driverId&&(!d||!d.online||d.status!=='APPROVED'))return no('Driver sudah tidak tersedia.');const distance=+p.distanceKm||1;const included=Number(db.settings.fareIncludedKm??5),extra=Math.max(0,Math.ceil(distance-included-1e-9));const fare=Math.max(+db.settings.minimumFare||6000,(+db.settings.defaultBaseFare||6000)+extra*(+db.settings.defaultFarePerKm||1500));const o={orderId:'MA-'+Math.random().toString(36).slice(2,12).toUpperCase(),createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),riderName:p.riderName,riderPhone:phoneClean(p.riderPhone),driverId:d?.driverId||'',driverName:d?.name||'',pickupAddress:p.pickupAddress,pickupLat:p.pickupLat,pickupLng:p.pickupLng,dropoffAddress:p.dropoffAddress,dropoffLat:p.dropoffLat,dropoffLng:p.dropoffLng,distanceKm:distance,durationMin:p.durationMin||distance*3,fare,paymentMethod:p.paymentMethod||'CASH',paymentStatus:p.paymentMethod==='TRANSFER'?'UNPAID':'PAY_ON_COMPLETION',orderStatus:'REQUESTED',note:p.note||''};db.orders.unshift(o);db.events.push({orderId:o.orderId,eventType:'REQUESTED',message:'Pesanan dibuat',createdAt:o.createdAt});db.payments.push({paymentId:'PAY-'+Date.now(),orderId:o.orderId,method:o.paymentMethod,amount:fare,status:o.paymentStatus,updatedAt:o.createdAt});saveDemo(db);return ok({order:o,settings:db.settings});
+      }
+      if(action==='getOrder'){const o=findOrder(p.orderId);if(!o||o.riderPhone!==phoneClean(p.phone))return no('Pesanan tidak ditemukan.');const d=findDriver(o.driverId);return ok({order:o,driver:d||null,events:db.events.filter(e=>e.orderId===o.orderId),settings:db.settings});}
+      if(action==='cancelCustomerOrder'){const o=findOrder(p.orderId);if(!o||o.riderPhone!==phoneClean(p.phone))return no('Pesanan tidak ditemukan.');if(o.orderStatus!=='REQUESTED')return no('Pesanan tidak bisa dibatalkan pada tahap ini.');o.orderStatus='CANCELLED';o.cancelReason='Dibatalkan penumpang';saveDemo(db);return ok({cancelled:true})}
+      if(action==='submitPaymentReference'){const o=findOrder(p.orderId);if(!o||o.riderPhone!==phoneClean(p.phone))return no('Pesanan tidak ditemukan.');const pay=db.payments.find(x=>x.orderId===o.orderId);if(!pay)return no('Pembayaran tidak ditemukan.');pay.reference=p.reference;pay.status='WAITING_CONFIRMATION';o.paymentStatus='WAITING_CONFIRMATION';saveDemo(db);return ok({submitted:true})}
+      if(action==='driverDashboard'){const d=session('driver',p.token);const orders=db.orders.filter(o=>o.driverId===d.driverId);const done=orders.filter(o=>o.orderStatus==='COMPLETED');return ok({driver:d,orders,stats:{total:done.length,active:orders.filter(o=>['REQUESTED','ACCEPTED','ARRIVED','ON_TRIP'].includes(o.orderStatus)).length,earnings:done.reduce((s,o)=>s+(+o.fare||0),0)}})}
+      if(action==='driverUpdate'){const d=session('driver',p.token);if(p.online!==undefined){if(p.online&&d.status!=='APPROVED')return no('Akun belum disetujui.');d.online=!!p.online;}if(p.baseFare!==undefined){if(+p.baseFare<0||+p.baseFare>7000)return no('Tarif awal pribadi maksimal Rp7.000.');d.baseFare=+p.baseFare;}if(p.farePerKm!==undefined){if(+p.farePerKm<0||+p.farePerKm>2000)return no('Tarif tambahan pribadi maksimal Rp2.000 per km.');d.farePerKm=+p.farePerKm;}saveDemo(db);return ok({driver:d})}
+      if(action==='driverLocation'){const d=session('driver',p.token);d.lat=+p.lat;d.lng=+p.lng;d.lastLocationAt=new Date().toISOString();saveDemo(db);return ok({saved:true})}
+      if(action==='driverAction'){const d=session('driver',p.token),o=findOrder(p.orderId);if(!o||o.driverId!==d.driverId)return no('Pesanan tidak ditemukan.');const map={accept:['ACCEPTED','Driver menerima pesanan'],decline:['DECLINED','Driver menolak pesanan'],arrive:['ARRIVED','Driver tiba'],start:['ON_TRIP','Perjalanan dimulai'],complete:['COMPLETED','Perjalanan selesai'],cancel:['CANCELLED','Pesanan dibatalkan']};const z=map[p.action];if(!z)return no('Aksi tidak valid.');o.orderStatus=z[0];o.updatedAt=new Date().toISOString();if(p.action==='decline'||p.action==='cancel'){o.driverId='';o.driverName=''}if(p.action==='complete'&&o.paymentMethod==='CASH'){o.paymentStatus='PAID_CASH';const pay=db.payments.find(x=>x.orderId===o.orderId);if(pay)pay.status='PAID_CASH'}if(p.action==='complete'&&o.paymentMethod==='TRANSFER'){const pay=db.payments.find(x=>x.orderId===o.orderId);if(pay&&pay.status!=='PAID'){pay.status='WAITING_CONFIRMATION';o.paymentStatus='WAITING_CONFIRMATION'}}db.events.push({orderId:o.orderId,eventType:z[0],message:z[1],createdAt:o.updatedAt});saveDemo(db);return ok({order:o})}
+      if(action==='adminDashboard'){session('admin',p.token);return ok({drivers:db.drivers,orders:db.orders,payments:db.payments,settings:db.settings,stats:{drivers:db.drivers.length,pendingDrivers:db.drivers.filter(d=>d.status==='PENDING').length,onlineDrivers:db.drivers.filter(d=>d.online&&d.status==='APPROVED').length,orders:db.orders.length,activeOrders:db.orders.filter(o=>['REQUESTED','ACCEPTED','ARRIVED','ON_TRIP'].includes(o.orderStatus)).length,completedOrders:db.orders.filter(o=>o.orderStatus==='COMPLETED').length,grossRevenue:db.orders.filter(o=>o.orderStatus==='COMPLETED').reduce((s,o)=>s+(+o.fare||0),0),pendingPayments:db.payments.filter(x=>['UNPAID','WAITING_CONFIRMATION'].includes(x.status)).length}})}
+      if(action==='adminAction'){session('admin',p.token);if(p.action==='saveSettings'){Object.assign(db.settings,p.settings);saveDemo(db);return ok({settings:db.settings})}if(p.action==='driverStatus'){const d=findDriver(p.driverId);if(!d)return no('Driver tidak ditemukan.');d.status=p.status;d.online=false;saveDemo(db);return ok({updated:true})}if(p.action==='assignOrder'){const o=findOrder(p.orderId),d=findDriver(p.driverId);if(!o||!d)return no('Data tidak ditemukan.');o.driverId=d.driverId;o.driverName=d.name;o.orderStatus='REQUESTED';saveDemo(db);return ok({assigned:true})}if(p.action==='paymentConfirm'){const pay=db.payments.find(x=>x.paymentId===p.paymentId);if(!pay)return no('Pembayaran tidak ditemukan.');pay.status=p.status==='REJECTED'?'REJECTED':'PAID';const o=findOrder(pay.orderId);if(o)o.paymentStatus=pay.status;saveDemo(db);return ok({updated:true})}if(p.action==='cancelOrder'){const o=findOrder(p.orderId);if(!o)return no('Order tidak ditemukan.');o.orderStatus='CANCELLED';o.cancelReason=p.reason;saveDemo(db);return ok({updated:true})}}
+      if(action==='logout')return ok({loggedOut:true});
+      return no('Aksi demo tidak dikenali.');
+    }catch(e){return no(e.message||'Kesalahan demo.');}
+  }
+  async function apiCall(action,payload={}){const usePost=BACKEND_MODE&&['sendEmailOtp','driverLogin','driverDashboard','driverUpdate','driverLocation','driverAction','getOrder','cancelCustomerOrder','submitPaymentReference','requestWithdrawal','logout','forgotPassword'].includes(action);const r=usePost?await apiPostFrame(action,payload):await rpc(action,payload);if(!r||!r.ok)throw new Error(r?.message||'Permintaan gagal.');return r}
+
+  /* ---------------------- NAVIGATION / GLOBAL UI ---------------------- */
+  function hideViews(){['homeView','riderView','trackView','driverView','adminView'].forEach(id=>{const el=$(id);if(el)el.classList.add('hidden')});}
+  function setMobileActive(which){document.querySelectorAll('.mobile-bottom [data-nav]').forEach(a=>a.classList.toggle('active',a.dataset.nav===which));}
+  function goHome(){stopTrackingPoll();if(!$('homeView')){routeTo('home');return;}hideViews();$('homeView').classList.remove('hidden');setMobileActive('home');window.scrollTo({top:0,behavior:'smooth'});}
+  function enterRole(role){const pageFor={rider:'passenger',driver:'driver',admin:'admin'}[role]||'home';if(!$(role+'View')){routeTo(pageFor);return;}hideViews();stopTrackingPoll();$(role+'View').classList.remove('hidden');setMobileActive(role==='rider'?'book':role);window.scrollTo({top:0,behavior:'smooth'});if(role==='rider'){setTimeout(()=>ensureMap('riderMap'),160);refreshQuote();loadPublicDrivers();}if(role==='driver'){if(driverToken)refreshDriver();else showDriverAuth('login');}if(role==='admin'){if(adminToken)refreshAdmin();}}
+  function openTrack(){if(!$('trackView')){routeTo('passenger','#track');return;}hideViews();$('trackView').classList.remove('hidden');setMobileActive('track');window.scrollTo({top:0,behavior:'smooth'});if(currentOrder){$('trackCode').value=currentOrder.orderId;$('trackPhone').value=currentOrder.riderPhone;lookupOrder();}}
+  function toast(message,type=''){const host=$('toastHost'),node=document.createElement('div');node.className='toast '+type;node.textContent=message;host.appendChild(node);setTimeout(()=>node.remove(),3700)}
+  function setBusy(btn,busy,label){if(!btn)return;btn.disabled=busy;if(busy){btn.dataset.old=btn.textContent;btn.textContent=label||'Memproses…'}else if(btn.dataset.old){btn.textContent=btn.dataset.old;delete btn.dataset.old}}
+  function openModal(title,body,buttons=''){ $('modalHost').innerHTML=`<div class="modal-backdrop" onclick="if(event.target===this)closeModal()"><div class="modal"><h3>${esc(title)}</h3><div class="small muted" style="margin:8px 0 18px">${body}</div><div class="item-actions">${buttons||'<button class="btn btn-primary" onclick="closeModal()">Tutup</button>'}</div></div></div>`; }
+  function closeModal(){$('modalHost').innerHTML=''}
+  function updateLogo(){const el=$('brandMark');if(el&&logoData){el.innerHTML=`<img src="${logoData}" alt="Logo MyAnjem">`}}
+
+  /* ---------------------- MAP AND ADDRESS SEARCH ---------------------- */
+  function ensureMap(id){
+    if(!window.L){$(id).innerHTML='<div class="empty">Peta belum termuat. Periksa koneksi internet.</div>';return null}
+    if(maps[id]){setTimeout(()=>maps[id].invalidateSize(),100);return maps[id]}
+    const map=L.map(id,{scrollWheelZoom:false}).setView([-7.35,109.9],11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'}).addTo(map);
+    maps[id]=map;return map;
+  }
+  function pointIcon(kind){return L.divIcon({className:'',html:`<div style="width:18px;height:18px;border:4px solid #fff;border-radius:50%;background:${kind==='driver'?'#2465c8':kind==='dropoff'?'#28232a':'#e83e8c'};box-shadow:0 1px 7px #0005"></div>`,iconSize:[18,18],iconAnchor:[9,9]})}
+  function setMarker(mapId,key,loc,kind,label){if(!window.L||!loc)return;const map=ensureMap(mapId);if(!map)return;const group=markers[mapId]||(markers[mapId]={});if(group[key])group[key].remove();group[key]=L.marker([loc.lat,loc.lng],{icon:pointIcon(kind)}).addTo(map);if(label)group[key].bindPopup(esc(label));}
+  function updateRiderMap(){if(!riderLoc.pickup&&!riderLoc.dropoff)return;const map=ensureMap('riderMap');if(!map)return;if(riderLoc.pickup)setMarker('riderMap','pickup',riderLoc.pickup,'pickup','Penjemputan');if(riderLoc.dropoff)setMarker('riderMap','dropoff',riderLoc.dropoff,'dropoff','Tujuan');if(riderLoc.pickup&&riderLoc.dropoff){const b=L.latLngBounds([[riderLoc.pickup.lat,riderLoc.pickup.lng],[riderLoc.dropoff.lat,riderLoc.dropoff.lng]]);map.fitBounds(b.pad(.18));drawRiderRoute()}else{const p=riderLoc.pickup||riderLoc.dropoff;map.setView([p.lat,p.lng],15)}}
+  async function drawRiderRoute(){if(!riderLoc.pickup||!riderLoc.dropoff||!window.L)return;try{const a=riderLoc.pickup,b=riderLoc.dropoff;const url=`https://router.project-osrm.org/route/v1/driving/${a.lng},${a.lat};${b.lng},${b.lat}?overview=full&geometries=geojson`;const res=await fetch(url);const j=await res.json();if(j.code==='Ok'&&j.routes?.[0]){const r=j.routes[0];routeInfo={distanceKm:r.distance/1000,durationMin:r.duration/60,geometry:r.geometry.coordinates.map(x=>[x[1],x[0]])};if(routeLine)routeLine.remove();routeLine=L.polyline(routeInfo.geometry,{color:'#e83e8c',weight:5,opacity:.8}).addTo(maps.riderMap);refreshQuote();}else throw new Error('Rute tidak tersedia')}catch(e){const km=haversine(riderLoc.pickup,riderLoc.dropoff)*1.25;routeInfo={distanceKm:km,durationMin:km/25*60,geometry:null};refreshQuote();toast('Jarak memakai estimasi sementara. Rute jalan tidak berhasil dimuat.','error')}}
+  function haversine(a,b){const R=6371,dLat=(b.lat-a.lat)*Math.PI/180,dLon=(b.lng-a.lng)*Math.PI/180;const x=Math.sin(dLat/2)**2+Math.cos(a.lat*Math.PI/180)*Math.cos(b.lat*Math.PI/180)*Math.sin(dLon/2)**2;return 2*R*Math.asin(Math.sqrt(x))}
+  function schedulePlaceSearch(kind){clearTimeout(searchTimers[kind]);searchTimers[kind]=setTimeout(()=>searchPlaceNow(kind),650)}
+  async function searchPlaceNow(kind){const input=$(kind==='pickup'?'pickupInput':'dropoffInput');const q=input.value.trim();if(q.length<3)return;const target=$(kind==='pickup'?'pickupSuggestions':'dropoffSuggestions');target.innerHTML='<div class="tiny muted" style="padding:8px">Mencari alamat…</div>';try{const url='https://nominatim.openstreetmap.org/search?format=jsonv2&countrycodes=id&limit=5&q='+encodeURIComponent(q);const r=await fetch(url,{headers:{'Accept-Language':'id'}});if(!r.ok)throw new Error('Pencarian alamat gagal');const items=await r.json();if(!items.length){target.innerHTML='<div class="tiny muted" style="padding:8px">Alamat tidak ditemukan. Coba kata kunci lain.</div>';return}target.innerHTML='<div class="suggestions">'+items.map((x,i)=>`<button class="suggestion" onclick="selectPlace('${kind}',${i})">${esc(x.display_name)}</button>`).join('')+'</div>';window.__placeResults=window.__placeResults||{};window.__placeResults[kind]=items;}catch(e){target.innerHTML='<div class="tiny" style="padding:8px;color:#b33">Tidak dapat mencari alamat. Periksa koneksi.</div>'}}
+  function selectPlace(kind,index){const x=window.__placeResults?.[kind]?.[index];if(!x)return;if(routeLine){routeLine.remove();routeLine=null}const loc={lat:+x.lat,lng:+x.lon,address:x.display_name};riderLoc[kind]=loc;$(kind==='pickup'?'pickupInput':'dropoffInput').value=x.display_name;$(kind==='pickup'?'pickupSuggestions':'dropoffSuggestions').innerHTML='';updateRiderMap();if(riderLoc.pickup&&riderLoc.dropoff){calculateRoute()}else{routeInfo=null;refreshQuote();loadPublicDrivers()}}
+  async function calculateRoute(){await drawRiderRoute();await loadPublicDrivers()}
+  function useMyLocation(kind){if(!navigator.geolocation){toast('Browser tidak mendukung GPS.','error');return}toast('Meminta izin lokasi perangkat…');navigator.geolocation.getCurrentPosition(async pos=>{const loc={lat:pos.coords.latitude,lng:pos.coords.longitude,address:'Lokasi saya'};try{const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${loc.lat}&lon=${loc.lng}`,{headers:{'Accept-Language':'id'}});const j=await r.json();loc.address=j.display_name||'Lokasi saya'}catch(e){}riderLoc[kind]=loc;$(kind==='pickup'?'pickupInput':'dropoffInput').value=loc.address;$(kind==='pickup'?'pickupSuggestions':'dropoffSuggestions').innerHTML='';updateRiderMap();if(riderLoc.pickup&&riderLoc.dropoff){calculateRoute();loadPublicDrivers()}toast('Lokasi berhasil ditentukan.','success')},err=>toast('GPS tidak dapat diakses: '+(err.message||'izin lokasi ditolak'),'error'),{enableHighAccuracy:true,timeout:15000,maximumAge:5000})}
+  function fitRiderMap(){if(!maps.riderMap)return;updateRiderMap()}
+  function openRiderGoogleMaps(){if(!riderLoc.pickup||!riderLoc.dropoff){toast('Tentukan titik jemput dan tujuan terlebih dahulu.','error');return}const a=`${riderLoc.pickup.lat},${riderLoc.pickup.lng}`,b=`${riderLoc.dropoff.lat},${riderLoc.dropoff.lng}`;window.open(`https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(a)}&destination=${encodeURIComponent(b)}&travelmode=driving`,'_blank','noopener')}
+  function chooseVehicle(v){selectedVehicle=v;document.querySelectorAll('[data-vehicle]').forEach(x=>x.classList.toggle('active',x.dataset.vehicle===v));loadPublicDrivers()}
+  function choosePayment(v){paymentMethod=v;document.querySelectorAll('[data-pay]').forEach(x=>x.classList.toggle('active',x.dataset.pay===v))}
+  async function loadPublicDrivers(){try{const r=await apiCall('publicDrivers');let drivers=(r.drivers||[]).filter(d=>d.vehicleType===selectedVehicle);if(riderLoc.pickup)drivers.sort((a,b)=>driverDistance(a)-driverDistance(b));renderPublicDrivers(drivers)}catch(e){$('publicDriverList').innerHTML='<div class="empty">Driver belum dapat dimuat.</div>'}}
+  function driverDistance(d){if(!riderLoc.pickup||d.lat==null||d.lng==null)return 99999;return haversine(riderLoc.pickup,{lat:+d.lat,lng:+d.lng})}
+  function renderPublicDrivers(drivers){window.__publicDrivers=drivers||[];if(!drivers.length){$('publicDriverList').innerHTML='<div class="empty">Belum ada driver '+esc(selectedVehicle.toLowerCase())+' yang online. Pesanan tetap bisa dibuat dan admin dapat menugaskan driver.</div>';selectedDriverId='';refreshQuote();return}if(!drivers.some(d=>d.driverId===selectedDriverId))selectedDriverId=drivers[0].driverId;$('publicDriverList').innerHTML=drivers.map(d=>{const km=driverDistance(d),distance=Math.max(0,Number(routeInfo?.distanceKm||1)),included=Number(settings.fareIncludedKm??5),extra=Math.max(0,Math.ceil(distance-included-1e-9)),estimate=Math.max(Number(settings.minimumFare)||6000,(Number(settings.defaultBaseFare)||6000)+extra*(Number(settings.defaultFarePerKm)||1500));return `<div class="driver-choice ${d.driverId===selectedDriverId?'selected':''}" onclick="selectDriver('${esc(d.driverId)}')"><div class="avatar">${esc((d.name||'D').slice(0,1).toUpperCase())}</div><div class="driver-choice-info"><b>${esc(d.name)}</b><small>${esc(d.vehicleBrand||d.vehicleType)} · ${esc(d.plate||'')} · ★ ${Number(d.rating||5).toFixed(1)}${km<999?' · '+km.toFixed(1)+' km':''}</small></div><div class="driver-choice-price">${money(estimate)}</div></div>`}).join('');refreshQuote()}
+  function selectDriver(id){selectedDriverId=id;document.querySelectorAll('.driver-choice').forEach(x=>x.classList.remove('selected'));loadPublicDrivers()}
+  function refreshQuote(){const km=routeInfo?.distanceKm||0,min=routeInfo?.durationMin||0;const included=Number(settings.fareIncludedKm??5),per=Number(settings.defaultFarePerKm)||1500;const extra=Math.max(0,Math.ceil(km-included-1e-9));const fare=km?Math.max(Number(settings.minimumFare)||6000,(Number(settings.defaultBaseFare)||6000)+extra*per):0;$('quoteDistance').textContent=km?km.toFixed(1)+' km':'—';$('quoteDuration').textContent=min?Math.round(min)+' menit':'—';$('quotePerKm').textContent=money(per)+'/km setelah '+included+' km';$('quoteFare').textContent=km?money(fare):'—'}
+  async function submitRiderOrder(){const btn=$('createOrderBtn');try{const name=$('riderName').value.trim(),phone=phoneClean($('riderPhone').value);if(name.length<2)throw new Error('Masukkan nama penumpang.');if(phone.length<9)throw new Error('Masukkan nomor telepon yang valid.');if(!riderLoc.pickup||!riderLoc.dropoff)throw new Error('Pilih alamat jemput dan tujuan dari hasil pencarian.');if(!routeInfo)await calculateRoute();if(!routeInfo)throw new Error('Rute belum dapat dihitung.');setBusy(btn,true,'Mengirim pesanan…');const r=await apiCall('createOrder',{riderName:name,riderPhone:phone,pickupAddress:riderLoc.pickup.address||$('pickupInput').value,pickupLat:riderLoc.pickup.lat,pickupLng:riderLoc.pickup.lng,dropoffAddress:riderLoc.dropoff.address||$('dropoffInput').value,dropoffLat:riderLoc.dropoff.lat,dropoffLng:riderLoc.dropoff.lng,distanceKm:routeInfo.distanceKm,durationMin:routeInfo.durationMin,driverId:selectedDriverId||'',paymentMethod:paymentMethod,note:$('riderNote').value.trim()});currentOrder=r.order;sessionStorage.setItem('ma2_last_order',JSON.stringify(currentOrder));$('riderOrderResult').innerHTML=orderReceipt(currentOrder,r.settings||settings);$('trackCode').value=currentOrder.orderId;$('trackPhone').value=currentOrder.riderPhone;toast('Pesanan berhasil dibuat.','success');}catch(e){toast(e.message,'error')}finally{setBusy(btn,false)}}
+  function orderReceipt(o,cfg){const pay=o.paymentMethod==='TRANSFER'?`<div class="bank-box" style="margin-top:12px"><b>Transfer manual</b><strong>${esc(cfg.bankName||'Bank / E-Wallet')} · ${esc(cfg.bankAccount||'Atur rekening di admin')}</strong>Atas nama ${esc(cfg.bankHolder||'MyAnjem')}<br><span class="tiny">Setelah transfer, isi nomor referensi atau catatan transfer di bawah. Admin akan memverifikasi secara manual.</span><div class="field" style="margin-top:9px"><input id="paymentReference" placeholder="Nomor referensi / nama pengirim"></div><button class="btn btn-light btn-sm" style="margin-top:8px" onclick="sendPaymentReference('${esc(o.orderId)}','${esc(o.riderPhone)}')">Kirim referensi transfer</button>${cfg.helpPhone?`<a class="btn btn-soft btn-sm" style="margin-top:8px" href="https://wa.me/${String(cfg.helpPhone).replace(/[^0-9]/g,'')}?text=${encodeURIComponent('Halo MyAnjem, saya ingin konfirmasi pembayaran pesanan '+o.orderId)}" target="_blank" rel="noopener">Hubungi admin via WhatsApp</a>`:''}</div>`:'Bayar tunai kepada driver setelah perjalanan selesai.';return `<div class="result-card"><div class="tiny muted">Kode pesanan berhasil dibuat</div><div class="result-code">${esc(o.orderId)}</div><p class="small">Simpan kode ini untuk melacak perjalanan. Status: <b>${esc(statusText[o.orderStatus]||o.orderStatus)}</b></p><div class="quote-row"><span>Estimasi tarif</span><b>${money(o.fare)}</b></div><div class="quote-row"><span>Metode bayar</span><b>${o.paymentMethod==='CASH'?'Tunai':o.paymentMethod==='QRIS'?'QRIS':'Transfer'}</b></div><p class="small muted">${pay}</p><button class="btn btn-primary btn-block" style="margin-top:12px" onclick="openTrack()">Pantau perjalanan →</button></div>`}
+
+  async function sendPaymentReference(orderId,phone){const value=$('paymentReference')?.value.trim();if(!value){toast('Masukkan nomor referensi atau catatan transfer.','error');return}try{await apiCall('submitPaymentReference',{orderId,phone,reference:value});toast('Referensi transfer dikirim untuk diverifikasi admin.','success')}catch(e){toast(e.message,'error')}}
+  async function sendTrackPaymentReference(orderId,phone,inputId='trackPaymentReferenceTransfer'){const value=$(inputId)?.value.trim();if(!value){toast('Masukkan nomor referensi atau catatan transfer.','error');return}try{await apiCall('submitPaymentReference',{orderId,phone,reference:value});toast('Referensi transfer dikirim untuk diverifikasi admin.','success');await lookupOrderQuiet()}catch(e){toast(e.message,'error')}}
+  async function cancelCustomerOrder(orderId,phone){if(!confirm('Batalkan pesanan ini?'))return;try{await apiCall('cancelCustomerOrder',{orderId,phone});toast('Pesanan berhasil dibatalkan.','success');await lookupOrderQuiet()}catch(e){toast(e.message,'error')}}
+
+  /* ---------------------- TRACKING ---------------------- */
+  async function lookupOrder(){const id=$('trackCode').value.trim(),phone=phoneClean($('trackPhone').value);if(!id||phone.length<9){toast('Masukkan kode pesanan dan nomor telepon.','error');return}try{const r=await apiCall('getOrder',{orderId:id,phone});currentOrder=r.order;renderTracking(r);startTrackingPoll();}catch(e){$('trackingContent').classList.add('hidden');toast(e.message,'error')}}
+  function progressHtml(status){const idx=flow.indexOf(status);return `<div class="progress">${flow.map((s,i)=>`<div class="progress-step ${idx>=i?'done':''}">${['Dipesan','Diterima','Tiba','Berangkat','Selesai'][i]}</div>`).join('')}</div>`}
+  function renderTracking(r){if(maps.trackMap){maps.trackMap.remove();delete maps.trackMap;delete markers.trackMap;}const o=r.order,d=r.driver;$('trackingContent').classList.remove('hidden');const active=['REQUESTED','ACCEPTED','ARRIVED','ON_TRIP'].includes(o.orderStatus);$('trackingContent').innerHTML=`<div class="tracking-layout"><div class="panel panel-pad"><div class="item-top"><div><div class="tiny muted">Kode pesanan</div><div class="result-code" style="font-size:19px">${esc(o.orderId)}</div></div><span class="status ${String(o.orderStatus).toLowerCase()}">${esc(statusText[o.orderStatus]||o.orderStatus)}</span></div>${progressHtml(o.orderStatus)}<div id="trackMap" class="map-box tracking-map"></div><div class="map-actions"><button class="btn btn-light btn-sm" onclick="openTrackGoogleMaps()"><i class="bx bx-map"></i> Buka Google Maps</button><button class="btn btn-light btn-sm" onclick="lookupOrder()">↻ Perbarui status</button>${o.orderStatus==='REQUESTED'?`<button class="btn btn-danger btn-sm" onclick="cancelCustomerOrder('${esc(o.orderId)}','${esc(o.riderPhone)}')">Batalkan pesanan</button>`:''}</div><div class="route-mini"><div><b>Jemput: </b><span>${esc(o.pickupAddress)}</span></div><div><b>Tujuan: </b><span>${esc(o.dropoffAddress)}</span></div></div></div><div class="tracking-detail"><div class="panel panel-pad"><h2 class="panel-title">Informasi driver</h2>${d?`<div class="item-top"><div style="display:flex;gap:10px"><div class="avatar">${esc((d.name||'D').slice(0,1))}</div><div><b>${esc(d.name)}</b><div class="tiny muted">${esc(d.vehicleBrand||d.vehicleType)} · ${esc(d.plate||'')}</div><div class="tiny muted">★ ${Number(d.rating||5).toFixed(1)}</div></div></div><span class="status online">Driver terpilih</span></div><div class="tiny muted" style="margin-top:12px">Nomor driver: ${esc(d.phone||'—')}</div>`:'<div class="empty">Menunggu admin atau driver menerima pesanan. Informasi driver akan tampil setelah ditugaskan.</div>'}</div><div class="panel panel-pad"><h2 class="panel-title">Rincian biaya</h2><div class="quote-row"><span>Jarak estimasi</span><b>${Number(o.distanceKm||0).toFixed(1)} km</b></div><div class="quote-row"><span>Metode pembayaran</span><b>${o.paymentMethod==='CASH'?'Tunai':o.paymentMethod==='QRIS'?'QRIS':'Transfer'}</b></div><div class="quote-row"><span>Status pembayaran</span><b>${esc(statusText[o.paymentStatus]||o.paymentStatus)}</b></div><div class="quote-total"><b>Total estimasi</b><strong>${money(o.fare)}</strong></div>${o.paymentMethod==='TRANSFER'?`<div class="bank-box" style="margin-top:12px">${esc(r.settings?.bankName||'Bank')}<strong>${esc(r.settings?.bankAccount||'Informasi rekening belum diatur')}</strong>Atas nama ${esc(r.settings?.bankHolder||'MyAnjem')}<div class="field" style="margin-top:9px"><input id="trackPaymentReferenceTransfer" placeholder="Nomor referensi / nama pengirim"></div><button class="btn btn-light btn-sm" style="margin-top:8px" onclick="sendTrackPaymentReference('${esc(o.orderId)}','${esc(o.riderPhone)}','trackPaymentReferenceTransfer')">Kirim referensi transfer</button></div>`:o.paymentMethod==='QRIS'?`<div class="bank-box" style="margin-top:12px"><b>Bayar dengan QRIS</b><p class="tiny">${esc(r.settings?.qrisMerchantName||'MyAnjem')}</p>${r.settings?.qrisImageUrl?`<img src="${esc(r.settings.qrisImageUrl)}" alt="Kode QRIS MyAnjem" style="display:block;width:min(230px,100%);height:auto;margin:10px auto;background:#fff;padding:7px;border:1px solid var(--line);border-radius:9px">`:'QRIS belum dikonfigurasi.'}<div class="field" style="margin-top:9px"><input id="trackPaymentReferenceQris" placeholder="Nomor referensi / nama pengirim"></div><button class="btn btn-light btn-sm" style="margin-top:8px" onclick="sendTrackPaymentReference('${esc(o.orderId)}','${esc(o.riderPhone)}','trackPaymentReferenceQris')">Kirim konfirmasi QRIS</button></div>`:''}</div><div class="panel panel-pad"><h2 class="panel-title">Riwayat status</h2><div class="list-stack">${(r.events||[]).map(e=>`<div><b class="small">${esc(e.message)}</b><div class="tiny muted">${formatDate(e.createdAt)}</div></div>`).join('')||'<div class="tiny muted">Belum ada pembaruan.</div>'}</div></div></div></div>`;
+    setTimeout(()=>{const map=ensureMap('trackMap');if(!map)return;const group=markers.trackMap||(markers.trackMap={});Object.values(group).forEach(m=>m.remove());setMarker('trackMap','pickup',{lat:+o.pickupLat,lng:+o.pickupLng},'pickup','Penjemputan');setMarker('trackMap','dropoff',{lat:+o.dropoffLat,lng:+o.dropoffLng},'dropoff','Tujuan');if(d&&d.lat!=null&&d.lng!=null)setMarker('trackMap','driver',{lat:+d.lat,lng:+d.lng},'driver','Lokasi driver');const pts=[[+o.pickupLat,+o.pickupLng],[+o.dropoffLat,+o.dropoffLng]];if(d&&d.lat!=null&&d.lng!=null)pts.push([+d.lat,+d.lng]);map.fitBounds(L.latLngBounds(pts).pad(.18));},180);
+  }
+  function openTrackGoogleMaps(){if(!currentOrder)return;const o=currentOrder;window.open(`https://www.google.com/maps/dir/?api=1&origin=${o.pickupLat},${o.pickupLng}&destination=${o.dropoffLat},${o.dropoffLng}&travelmode=driving`,'_blank','noopener')}
+  function startTrackingPoll(){stopTrackingPoll();if(!currentOrder||['COMPLETED','CANCELLED'].includes(currentOrder.orderStatus))return;trackingTimer=setInterval(()=>{if(!$('trackView').classList.contains('hidden')&&$('trackCode').value&&$('trackPhone').value)lookupOrderQuiet()},8000)}
+  function stopTrackingPoll(){if(trackingTimer){clearInterval(trackingTimer);trackingTimer=null}}
+  async function lookupOrderQuiet(){try{const r=await apiCall('getOrder',{orderId:$('trackCode').value.trim(),phone:phoneClean($('trackPhone').value)});currentOrder=r.order;renderTracking(r)}catch(e){}}
+
+  /* ---------------------- DRIVER AUTH / OPERATIONS ---------------------- */
+  function showDriverAuth(mode){$('driverLoginForm').classList.toggle('hidden',mode!=='login');$('driverRegisterForm').classList.toggle('hidden',mode!=='register');$('driverLoginTab').classList.toggle('active',mode==='login');$('driverRegisterTab').classList.toggle('active',mode==='register');if(mode==='register'&&!captchaState.token)refreshCaptcha()}
+  async function refreshCaptcha(){const q=$('captchaQuestion');if(!q)return;q.textContent='Membuat tantangan…';try{const r=await apiCall('captchaChallenge');captchaState={token:r.captchaToken,question:r.question};$('captchaToken').value=r.captchaToken;q.textContent=r.question;$('captchaAnswer').value='';}catch(e){q.textContent='Tantangan gagal dimuat. Tekan tombol muat ulang.';toast(e.message,'error')}}
+  async function sendDriverOtp(){const email=$('regEmail').value.trim().toLowerCase(),btn=$('driverRegisterForm').querySelector('.input-row .btn');if(!email){toast('Isi email terlebih dahulu.','error');return}try{setBusy(btn,true,'Mengirim…');await apiCall('sendEmailOtp',{role:'driver',email});toast('Kode verifikasi dikirim ke email. Berlaku 5 menit.','success')}catch(e){toast(e.message,'error')}finally{setBusy(btn,false)}}
+  async function readDriverIdentityDocument(){const file=$('regIdentityDocument').files?.[0];if(!file)throw new Error('Unggah KTP atau KTM terlebih dahulu.');if(!['image/jpeg','image/png','application/pdf'].includes(file.type))throw new Error('Dokumen harus JPG, PNG, atau PDF.');if(file.size>2*1024*1024)throw new Error('Ukuran dokumen maksimal 2 MB.');return await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve({fileName:file.name,mimeType:file.type,documentType:$('regIdentityType').value,base64:String(reader.result)});reader.onerror=()=>reject(new Error('Dokumen gagal dibaca. Coba pilih file lain.'));reader.readAsDataURL(file)})}
+  async function doDriverRegister(){const btn=$('driverRegisterForm').querySelector('button.btn-primary');try{if(!captchaState.token)throw new Error('Tantangan keamanan belum tersedia. Muat ulang tantangan.');const phone=phoneClean($('regPhone').value),email=$('regEmail').value.trim().toLowerCase(),emailOtp=$('regEmailOtp').value.trim();if(!/^0[0-9]{8,14}$/.test(phone))throw new Error('Gunakan nomor telepon dengan format 08xxxxxxxxxx.');if(!/^\d{6}$/.test(emailOtp))throw new Error('Masukkan kode verifikasi email 6 digit.');if($('regPassword').value.length<8)throw new Error('Kata sandi minimal 8 karakter.');if(!$('captchaAnswer').value)throw new Error('Isi jawaban verifikasi terlebih dahulu.');const baseFare=Number($('regBaseFare').value||settings.defaultBaseFare),farePerKm=Number($('regFareKm').value||settings.defaultFarePerKm);if(!Number.isFinite(baseFare)||baseFare<0||baseFare>7000)throw new Error('Tarif awal maksimal Rp7.000.');if(!Number.isFinite(farePerKm)||farePerKm<0||farePerKm>2000)throw new Error('Tambahan per km maksimal Rp2.000.');const identityDocument=await readDriverIdentityDocument();const p={name:$('regName').value.trim(),phone,email,emailOtp,identityDocument,vehicleType:$('regVehicle').value,vehicleBrand:$('regBrand').value,plate:$('regPlate').value,region:$('regRegion').value,baseFare:baseFare,farePerKm:farePerKm,password:$('regPassword').value,captchaToken:captchaState.token,captchaAnswer:$('captchaAnswer').value};setBusy(btn,true,'Mengirim pendaftaran…');const r=await apiPostFrame('registerDriver',p);captchaState={token:'',question:''};toast('Pendaftaran berhasil dikirim.','success');showDriverAuth('login');$('driverLoginPhone').value=p.phone;openModal('Pendaftaran terkirim',`ID driver: <b>${esc(r.driverId)}</b><br>Status: Menunggu pemeriksaan dokumen dan persetujuan admin.`)}catch(e){toast(e.message,'error');await refreshCaptcha()}finally{setBusy(btn,false)}}
+  function forgotPasswordForm(role){openModal('Lupa kata sandi','Masukkan email yang terdaftar pada akun driver. Kata sandi sementara akan dikirim ke email tersebut.',`<div class=\"field full\"><input id=\"resetEmailInput\" type=\"email\" placeholder=\"Email terdaftar\"></div><button type=\"button\" class=\"btn btn-primary\" onclick=\"sendTemporaryPassword('${role}')\">Kirim kata sandi sementara</button><button type=\"button\" class=\"btn btn-light\" onclick=\"closeModal()\">Batal</button>`)}
+  async function sendTemporaryPassword(role){const email=$('resetEmailInput')?.value.trim().toLowerCase();if(!email){toast('Masukkan email terdaftar.','error');return}try{await apiCall('forgotPassword',{role,email});closeModal();toast('Jika email terdaftar, kata sandi sementara akan dikirim.','success')}catch(e){toast(e.message,'error')}}
+  async function enableDriverAlerts(){try{const AudioCtx=window.AudioContext||window.webkitAudioContext;if(!AudioCtx)throw new Error('Browser tidak mendukung audio.');driverAudioContext=driverAudioContext||new AudioCtx();if(driverAudioContext.state==='suspended')await driverAudioContext.resume();driverAudioEnabled=true;const btn=$('enableDriverAlerts');if(btn)btn.innerHTML='<i class="bx bx-volume-full"></i> Suara pesanan aktif';if('Notification'in window&&Notification.permission==='default')await Notification.requestPermission();playDriverAlert();toast('Notifikasi suara pesanan diaktifkan.','success')}catch(e){toast(e.message||'Tidak dapat mengaktifkan suara.','error')}}
+  function playDriverAlert(){if(!driverAudioEnabled||!driverAudioContext)return;const ctx=driverAudioContext;[0,0.32,0.64].forEach((delay,i)=>{const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type='square';osc.frequency.value=i===1?1040:820;gain.gain.setValueAtTime(0.0001,ctx.currentTime+delay);gain.gain.exponentialRampToValueAtTime(0.85,ctx.currentTime+delay+0.025);gain.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+delay+0.24);osc.connect(gain);gain.connect(ctx.destination);osc.start(ctx.currentTime+delay);osc.stop(ctx.currentTime+delay+0.26)});}
+  function notifyIncomingOrders(orders){const open=(orders||[]).filter(o=>o.orderStatus==='REQUESTED'&&!o.driverId);const ids=new Set(open.map(o=>String(o.orderId)));if(knownBroadcastIds===null){knownBroadcastIds=ids;return}const fresh=open.filter(o=>!knownBroadcastIds.has(String(o.orderId)));knownBroadcastIds=ids;if(fresh.length){if(driverAudioEnabled)playDriverAlert();if('Notification'in window&&Notification.permission==='granted')new Notification('Pesanan MyAnjem baru',{body:fresh.length+' pesanan baru menunggu driver. Buka aplikasi untuk menerima.'});toast(fresh.length+' pesanan baru masuk.','success')}}
+  async function doDriverLogin(){try{const r=await apiCall('driverLogin',{phone:$('driverLoginPhone').value,password:$('driverLoginPassword').value});driverToken=r.token;localStorage.setItem('ma2_driver_token',driverToken);sessionStorage.setItem('ma2_driver_token',driverToken);driverData={driver:r.driver};$('driverAuth').classList.add('hidden');$('driverDashboard').classList.remove('hidden');await refreshDriver();toast('Berhasil masuk ke portal driver.','success')}catch(e){toast(e.message,'error')}}
+  async function refreshDriver(){try{const r=await apiCall('driverDashboard',{token:driverToken});driverData=r;renderDriverDashboard(r);knownBroadcastIds=new Set((r.orders||[]).filter(o=>o.orderStatus==='REQUESTED'&&!o.driverId).map(o=>String(o.orderId)))}catch(e){toast('Dashboard belum dapat disinkronkan: '+e.message,'error')}}
+  function renderDriverDashboard(r){const d=r.driver;$('driverAuth').classList.add('hidden');$('driverDashboard').classList.remove('hidden');$('driverWelcome').textContent=d.name;$('driverStatusLine').innerHTML=`ID ${esc(d.driverId)} · <span class="status ${String(d.status).toLowerCase()}">${esc(statusText[d.status]||d.status)}</span>`;$('driverPendingNotice').classList.toggle('hidden',d.status!=='PENDING');const carrying=(r.orders||[]).some(o=>String(o.driverId||'')===String(d.driverId)&&['ACCEPTED','ARRIVED','ON_TRIP'].includes(o.orderStatus));$('driverPassengerWarning').classList.toggle('hidden',!carrying);$('driverStatTotal').textContent=r.stats.total||0;$('driverStatActive').textContent=r.stats.active||0;$('driverStatEarning').textContent=money(r.stats.earnings||0);$('driverStatRating').textContent=Number(d.rating||5).toFixed(1);$('onlineLabel').textContent=d.online?'Sedang online':'Sedang offline';$('onlineToggle').classList.toggle('on',!!d.online);$('onlineToggle').disabled=d.status!=='APPROVED';$('driverServiceBaseFare').textContent=money(settings.defaultBaseFare||0);$('driverServiceFareKm').textContent=money(settings.defaultFarePerKm||0);$('driverServiceMinimumFare').textContent=money(settings.minimumFare||0);if($('driverBaseFare'))$('driverBaseFare').value=d.baseFare??0;if($('driverFareKm'))$('driverFareKm').value=d.farePerKm??0;if($('driverPayoutMethod'))$('driverPayoutMethod').value=d.payoutMethod||'BANK';if($('driverPayoutDetails'))$('driverPayoutDetails').value=d.payoutDetails||'';if($('driverWalletBalance'))$('driverWalletBalance').textContent=money(d.balance||0);renderDriverWithdrawals(r.withdrawals||[]);renderDriverOrders(r.orders||[]);setTimeout(()=>ensureMap('driverMap'),180);if(d.lat!=null&&d.lng!=null)setMarker('driverMap','self',{lat:+d.lat,lng:+d.lng},'driver','Lokasi saya');if(d.online)startDriverGps();else stopDriverGps();startDriverPolling()}
+  function startDriverPolling(){if(driverRefreshTimer)return;driverRefreshTimer=setInterval(()=>{if(driverToken&&!$('driverView').classList.contains('hidden'))refreshDriverQuiet()},9000)}
+  
+async function refreshDriverQuiet() {
+  if (
+    driverToggleBusy ||
+    driverDashboardFetchBusy
+  ) return;
+
+  driverDashboardFetchBusy = true;
+  const revision = driverDashboardRevision;
+
+  try {
+    const r = await apiCall('driverDashboard', {
+      token: driverToken
+    });
+
+    // Abaikan respons lama yang datang terlambat.
+    if (
+      driverToggleBusy ||
+      revision !== driverDashboardRevision
+    ) return;
+
+    driverData = r;
+    notifyIncomingOrders(r.orders || []);
+    renderDriverDashboard(r);
+
+  } catch (e) {
+    // Jangan menghapus sesi karena gangguan polling sementara.
+  } finally {
+    driverDashboardFetchBusy = false;
+  }
+}
+  function renderDriverOrders(orders){const active=orders.filter(o=>['REQUESTED','ACCEPTED','ARRIVED','ON_TRIP'].includes(o.orderStatus));if(!active.length){$('driverOrders').innerHTML='<div class="empty">Belum ada pesanan aktif. Pastikan status online untuk menerima pesanan.</div>';return}$('driverOrders').innerHTML=active.map(o=>{let actions='';if(o.orderStatus==='REQUESTED')actions=`<button class="btn btn-success btn-sm" onclick="driverOrderAction('${esc(o.orderId)}','accept')">Terima</button><button class="btn btn-danger btn-sm" onclick="driverOrderAction('${esc(o.orderId)}','decline')">Tolak</button>`;if(o.orderStatus==='ACCEPTED')actions=`<button class="btn btn-primary btn-sm" onclick="driverOrderAction('${esc(o.orderId)}','arrive')">Saya tiba</button>`;if(o.orderStatus==='ARRIVED')actions=`<button class="btn btn-primary btn-sm" onclick="driverOrderAction('${esc(o.orderId)}','start')">Mulai perjalanan</button>`;if(o.orderStatus==='ON_TRIP')actions=`<button class="btn btn-success btn-sm" onclick="driverOrderAction('${esc(o.orderId)}','complete')">Selesaikan perjalanan</button>`;return `<div class="item-card"><div class="item-top"><div><h3>${esc(o.orderId)} · ${esc(o.riderName)}</h3><div class="tiny muted">${esc(o.riderPhone)}</div></div><span class="status ${String(o.orderStatus).toLowerCase()}">${esc(statusText[o.orderStatus]||o.orderStatus)}</span></div><div class="route-mini"><div><b>Jemput: </b><span>${esc(o.pickupAddress)}</span></div><div><b>Tujuan: </b><span>${esc(o.dropoffAddress)}</span></div></div><div class="quote-row"><span>${Number(o.distanceKm||0).toFixed(1)} km · ${o.paymentMethod==='CASH'?'Tunai':o.paymentMethod==='QRIS'?'QRIS':'Transfer'}</span><b>${money(o.fare)}</b></div>${o.voucherCode?`<div class="tiny muted">Voucher ${esc(o.voucherCode)} · Tarif awal ${money(o.originalFare||o.fare)} · Diskon ${money(o.discountAmount||0)}</div>`:''}<div class="item-actions">${actions}<button class="btn btn-light btn-sm" onclick="openOrderNav('${esc(o.pickupLat)}','${esc(o.pickupLng)}','${esc(o.dropoffLat)}','${esc(o.dropoffLng)}','${esc(o.orderStatus)}')"><i class="bx bx-map-alt"></i> Lihat rute</button></div></div>`}).join('')}
+  async function driverOrderAction(orderId,action){try{await apiCall('driverAction',{token:driverToken,orderId,action});toast('Status pesanan diperbarui.','success');await refreshDriver()}catch(e){toast(e.message,'error')}}
+  
+async function toggleDriverOnline() {
+  const d = driverData?.driver;
+  const btn = $('onlineToggle');
+
+  if (!d || driverToggleBusy) return;
+
+  if (d.status !== 'APPROVED') {
+    toast('Akun driver belum disetujui admin.', 'error');
+    return;
+  }
+
+  const desiredOnline = d.online !== true;
+
+  driverToggleBusy = true;
+  driverDashboardRevision++;
+  btn.disabled = true;
+
+  try {
+    const r = await apiCall('driverUpdate', {
+      token: driverToken,
+      online: desiredOnline
+    });
+
+    if (!r.driver) {
+      throw new Error('Server tidak mengembalikan status driver.');
+    }
+
+    // Gunakan status yang dikembalikan backend.
+    driverData.driver = {
+      ...driverData.driver,
+      ...r.driver
+    };
+
+    const isOnline = r.driver.online === true;
+
+    $('onlineLabel').textContent =
+      isOnline ? 'Sedang online' : 'Sedang offline';
+
+    btn.classList.toggle('on', isOnline);
+
+    if (isOnline) {
+      startDriverGps();
+    } else {
+      stopDriverGps();
+    }
+
+    toast(
+      isOnline
+        ? 'Kamu sekarang online!'
+        : 'Kamu sekarang offline.',
+      'success'
+    );
+
+  } catch (e) {
+    toast(e.message || 'Gagal mengubah status driver.', 'error');
+
+  } finally {
+    driverToggleBusy = false;
+    btn.disabled =
+      driverData?.driver?.status !== 'APPROVED';
+  }
+}
+  async function saveDriverFare(){const base=Number($('driverBaseFare').value),per=Number($('driverFareKm').value);if(!Number.isFinite(base)||base<0||base>7000){toast('Tarif awal pribadi harus antara Rp0–Rp7.000.','error');return}if(!Number.isFinite(per)||per<0||per>2000){toast('Tarif tambahan harus antara Rp0–Rp2.000 per km.','error');return}try{await apiCall('driverUpdate',{token:driverToken,baseFare:base,farePerKm:per});toast('Tarif pribadi berhasil disimpan.','success');await refreshDriver()}catch(e){toast(e.message,'error')}}
+  async function saveDriverPayout(){try{await apiCall('driverUpdate',{token:driverToken,payoutMethod:$('driverPayoutMethod').value,payoutDetails:$('driverPayoutDetails').value.trim()});toast('Tujuan pencairan tersimpan.','success');await refreshDriver()}catch(e){toast(e.message,'error')}}
+  async function requestDriverWithdrawal(){const amount=Number($('driverWithdrawAmount').value||0);if(!confirm('Ajukan penarikan '+money(amount)+' ke tujuan pencairan terdaftar?'))return;try{await apiCall('requestWithdrawal',{token:driverToken,amount});$('driverWithdrawAmount').value='';toast('Permintaan penarikan dikirim.','success');await refreshDriver()}catch(e){toast(e.message,'error')}}
+  function renderDriverWithdrawals(items){const host=$('driverWithdrawals');if(!host)return;host.innerHTML=items.length?items.map(w=>`<div class="item-card"><div class="item-top"><b>${esc(w.withdrawalId)}</b><span class="status ${String(w.status).toLowerCase()}">${esc(w.status==='PENDING'?'Diproses':w.status==='PAID'?'Dibayar':'Ditolak')}</span></div><div class="quote-row"><span>${esc(w.method)} · ${formatDate(w.requestedAt)}</span><b>${money(w.amount)}</b></div></div>`).join(''):'<div class="empty">Belum ada permintaan penarikan.</div>'}
+  function startDriverGps(){if(driverGpsTimer)return;shareDriverLocation();driverGpsTimer=setInterval(()=>{if(driverData?.driver?.online)shareDriverLocation()},12000)}
+  function stopDriverGps(){if(driverGpsTimer){clearInterval(driverGpsTimer);driverGpsTimer=null}}
+  function shareDriverLocation(){if(!navigator.geolocation){toast('Perangkat tidak mendukung GPS.','error');return}if(!driverData?.driver?.online){toast('Aktifkan status online terlebih dahulu.','error');return}navigator.geolocation.getCurrentPosition(async pos=>{try{await apiCall('driverLocation',{token:driverToken,lat:pos.coords.latitude,lng:pos.coords.longitude});$('driverLocationStatus').textContent=`GPS dibagikan · akurasi ±${Math.round(pos.coords.accuracy)} m · ${new Date().toLocaleTimeString('id-ID')}`;setMarker('driverMap','self',{lat:pos.coords.latitude,lng:pos.coords.longitude},'driver','Lokasi saya');if(maps.driverMap)maps.driverMap.setView([pos.coords.latitude,pos.coords.longitude],15)}catch(e){toast(e.message,'error')}},err=>toast('GPS gagal: '+err.message,'error'),{enableHighAccuracy:true,timeout:15000,maximumAge:5000})}
+  function openDriverMaps(){const d=driverData?.driver;if(d?.lat!=null&&d?.lng!=null)window.open(`https://www.google.com/maps/search/?api=1&query=${d.lat},${d.lng}`,'_blank','noopener');else toast('Lokasi GPS belum tersedia.','error')}
+  function openOrderNav(a,b,c,d,status){const current=driverData?.driver;const origin=current?.lat!=null&&current?.lng!=null?`${current.lat},${current.lng}`:null;const target=status==='ON_TRIP'?`${c},${d}`:`${a},${b}`;const base='https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(target)+'&travelmode=driving';const url=origin?base+'&origin='+encodeURIComponent(origin):base;window.open(url,'_blank','noopener')}
+  async function driverLogout(){try{await apiCall('logout',{token:driverToken})}catch(e){}driverToken='';localStorage.removeItem('ma2_driver_token');sessionStorage.removeItem('ma2_driver_token');stopDriverGps();if(driverRefreshTimer){clearInterval(driverRefreshTimer);driverRefreshTimer=null;}$('driverDashboard').classList.add('hidden');$('driverAuth').classList.remove('hidden');toast('Kamu sudah keluar.','success')}
+
+  /* ---------------------- ADMIN PANEL ---------------------- */
+  async function doAdminLogin(){try{const r=await apiCall('adminLogin',{username:$('adminUsername').value.trim(),password:$('adminPassword').value});adminToken=r.token;localStorage.setItem('ma2_admin_token',adminToken);sessionStorage.setItem('ma2_admin_token',adminToken);$('adminAuth').classList.add('hidden');$('adminDashboard').classList.remove('hidden');await refreshAdmin();toast('Berhasil masuk sebagai admin.','success')}catch(e){toast(e.message,'error')}}
+  async function refreshAdmin(){try{const r=await apiCall('adminDashboard',{token:adminToken});adminData=r;$('adminAuth').classList.add('hidden');$('adminDashboard').classList.remove('hidden');$('adminStatDrivers').textContent=r.stats.drivers;$('adminStatPending').textContent=r.stats.pendingDrivers;$('adminStatActive').textContent=r.stats.activeOrders;$('adminStatCompleted').textContent=r.stats.completedOrders;adminTab(document.querySelector('.admin-nav .tab.active')?.dataset.adminTab||'overview')}catch(e){adminToken='';localStorage.removeItem('ma2_admin_token');sessionStorage.removeItem('ma2_admin_token');$('adminAuth').classList.remove('hidden');$('adminDashboard').classList.add('hidden');toast(e.message,'error')}}
+  function adminTab(tab){document.querySelectorAll('[data-admin-tab]').forEach(x=>x.classList.toggle('active',x.dataset.adminTab===tab));if(!adminData)return;const host=$('adminContent');if(tab==='overview'){host.innerHTML=`<div class="dashboard-grid"><div class="panel panel-pad"><h2 class="panel-title">Aktivitas terbaru</h2><div class="list-stack">${(adminData.orders||[]).slice(0,6).map(o=>`<div class="item-card"><div class="item-top"><b>${esc(o.orderId)}</b><span class="status ${String(o.orderStatus).toLowerCase()}">${esc(statusText[o.orderStatus]||o.orderStatus)}</span></div><div class="tiny muted">${esc(o.riderName)} · ${money(o.fare)}</div><div class="tiny muted">${formatDate(o.createdAt)}</div></div>`).join('')||'<div class="empty">Belum ada pesanan.</div>'}</div></div><div class="panel panel-pad"><h2 class="panel-title">Ringkasan pembayaran</h2><div class="quote-row"><span>Perkiraan omzet selesai</span><b>${money(adminData.stats.grossRevenue)}</b></div><div class="quote-row"><span>Menunggu verifikasi</span><b>${adminData.stats.pendingPayments}</b></div><div class="quote-row"><span>Driver online</span><b>${adminData.stats.onlineDrivers}</b></div><div class="notice" style="margin-top:15px">Gunakan tab Driver untuk verifikasi, Pesanan untuk penugasan, Pembayaran untuk konfirmasi transfer, dan Pengaturan untuk tarif layanan.</div></div></div>`;return}
+    if(tab==='drivers'){host.innerHTML=`<div class="panel panel-pad"><h2 class="panel-title">Manajemen driver <span class="tiny muted">${adminData.drivers.length} akun</span></h2><div class="table-wrap"><table><thead><tr><th>Driver</th><th>Kendaraan</th><th>Area</th><th>Status</th><th>Tarif awal / km</th><th>Aksi</th></tr></thead><tbody>${adminData.drivers.map(d=>`<tr><td><b>${esc(d.name)}</b><div class="tiny muted">${esc(d.phone)} · ${esc(d.driverId)}</div></td><td>${esc(d.vehicleBrand||d.vehicleType)}<div class="tiny muted">${esc(d.plate)}</div></td><td>${esc(d.region||'—')}</td><td><span class="status ${String(d.status).toLowerCase()}">${esc(statusText[d.status]||d.status)}</span></td><td>${money(d.baseFare)} / ${money(d.farePerKm)}</td><td><div class="item-actions" style="margin:0">${d.status==='PENDING'?`<button class="btn btn-success btn-sm" onclick="adminDriverStatus('${esc(d.driverId)}','APPROVED')">Setujui</button><button class="btn btn-danger btn-sm" onclick="adminDriverStatus('${esc(d.driverId)}','REJECTED')">Tolak</button>`:d.status==='APPROVED'?`<button class="btn btn-danger btn-sm" onclick="adminDriverStatus('${esc(d.driverId)}','SUSPENDED')">Nonaktifkan</button>`:`<button class="btn btn-success btn-sm" onclick="adminDriverStatus('${esc(d.driverId)}','APPROVED')">Aktifkan</button>`}</div></td></tr>`).join('')||'<tr><td colspan="6">Belum ada driver terdaftar.</td></tr>'}</tbody></table></div></div>`;return}
+    if(tab==='orders'){host.innerHTML=`<div class="panel panel-pad"><h2 class="panel-title">Manajemen pesanan <span class="tiny muted">${adminData.orders.length} data terakhir</span></h2><div class="list-stack">${adminData.orders.map(o=>{const drivers=adminData.drivers.filter(d=>d.status==='APPROVED');return `<div class="item-card"><div class="item-top"><div><h3>${esc(o.orderId)} · ${esc(o.riderName)}</h3><div class="tiny muted">${esc(o.riderPhone)} · ${formatDate(o.createdAt)}</div></div><span class="status ${String(o.orderStatus).toLowerCase()}">${esc(statusText[o.orderStatus]||o.orderStatus)}</span></div><div class="route-mini"><div><b>Jemput</b><span>${esc(o.pickupAddress)}</span></div><div><b>Tujuan</b><span>${esc(o.dropoffAddress)}</span></div></div><div class="quote-row"><span>Driver: ${esc(o.driverName||'Belum ditugaskan')} · ${o.paymentMethod==='CASH'?'Tunai':o.paymentMethod==='QRIS'?'QRIS':'Transfer'}</span><b>${money(o.fare)}</b></div>${['REQUESTED','DECLINED'].includes(o.orderStatus)?`<div class="item-actions"><select id="assign-${esc(o.orderId)}" style="padding:8px;border:1px solid var(--line);border-radius:8px;max-width:230px"><option value="">Pilih driver</option>${drivers.map(d=>`<option value="${esc(d.driverId)}">${esc(d.name)} · ${esc(d.plate)}</option>`).join('')}</select><button class="btn btn-primary btn-sm" onclick="adminAssignOrder('${esc(o.orderId)}')">Tugaskan driver</button></div>`:''}${!['COMPLETED','CANCELLED'].includes(o.orderStatus)?`<div class="item-actions"><button class="btn btn-danger btn-sm" onclick="adminCancelOrder('${esc(o.orderId)}')">Batalkan pesanan</button><button class="btn btn-light btn-sm" onclick="openOrderNav('${esc(o.pickupLat)}','${esc(o.pickupLng)}','${esc(o.dropoffLat)}','${esc(o.dropoffLng)}','${esc(o.orderStatus)}')"><i class="bx bx-map-alt"></i> Lihat rute</button></div>`:''}</div>`}).join('')||'<div class="empty">Belum ada pesanan.</div>'}</div></div>`;return}
+    if(tab==='payments'){host.innerHTML=`<div class="panel panel-pad"><h2 class="panel-title">Verifikasi pembayaran</h2><div class="list-stack">${adminData.payments.map(p=>{const o=adminData.orders.find(x=>x.orderId===p.orderId);return `<div class="item-card"><div class="item-top"><div><h3>${esc(p.orderId)}</h3><div class="tiny muted">${esc(p.method)} · ${formatDate(p.updatedAt)}</div></div><span class="status ${String(p.status).toLowerCase()}">${esc(statusText[p.status]||p.status)}</span></div><div class="quote-row"><span>${esc(o?.riderName||'Penumpang')}</span><b>${money(p.amount)}</b></div>${p.reference?`<div class="tiny muted">Referensi: ${esc(p.reference)}</div>`:''}${p.method==='TRANSFER'&&['UNPAID','WAITING_CONFIRMATION'].includes(p.status)?`<div class="item-actions"><button class="btn btn-success btn-sm" onclick="adminPayment('${esc(p.paymentId)}','PAID')">Konfirmasi lunas</button><button class="btn btn-danger btn-sm" onclick="adminPayment('${esc(p.paymentId)}','REJECTED')">Tolak</button></div>`:''}</div>`}).join('')||'<div class="empty">Belum ada data pembayaran.</div>'}</div><p class="tiny muted">Transfer saat ini diverifikasi manual. Pengguna melakukan transfer di luar aplikasi dan admin mengubah status setelah mengecek bukti melalui kanal komunikasi resmi.</p></div>`;return}
+    if(tab==='settings'){const s=adminData.settings;host.innerHTML=`<div class="panel panel-pad"><h2 class="panel-title">Pengaturan layanan</h2><div class="notice" style="margin-bottom:15px">Tarif default digunakan ketika penumpang belum memilih driver. Driver dapat mengatur tarif pribadinya sendiri. Terapkan ketentuan tarif secara konsisten.</div><div class="form-grid"><div class="field"><label>Nama layanan</label><input id="setBrand" value="${esc(s.brand)}"></div><div class="field"><label>Tarif awal default (Rp)</label><input id="setBase" type="number" value="${+s.defaultBaseFare}"></div><div class="field"><label>Tarif per km default (Rp)</label><input id="setPerKm" type="number" value="${+s.defaultFarePerKm}"></div><div class="field"><label>Tarif minimum (Rp)</label><input id="setMin" type="number" value="${+s.minimumFare}"></div><div class="field"><label>Biaya pembatalan (Rp)</label><input id="setCancel" type="number" value="${+s.cancelFee}"></div><div class="field"><label>Nomor bantuan</label><input id="setHelp" value="${esc(s.helpPhone||'')}"></div><div class="field"><label>Bank / e-wallet</label><input id="setBank" value="${esc(s.bankName||'')}"></div><div class="field"><label>Nomor rekening</label><input id="setAccount" value="${esc(s.bankAccount||'')}"></div><div class="field full"><label>Nama pemilik rekening</label><input id="setHolder" value="${esc(s.bankHolder||'')}"></div><div class="field full"><button class="btn btn-primary" onclick="saveAdminSettings()">Simpan pengaturan</button></div></div><hr style="border:0;border-top:1px solid var(--line);margin:20px 0"><h3 style="font-size:15px">Logo MyAnjem</h3><p class="tiny muted">Pilih gambar logo. File disimpan pada browser/perangkat ini; untuk logo permanen lintas perangkat, masukkan data gambar ke konfigurasi HTML sebelum deploy.</p><input type="file" accept="image/*" onchange="uploadLocalLogo(event)"></div>`;return}
+  }
+  async function adminDriverStatus(driverId,status){try{await apiCall('adminAction',{token:adminToken,action:'driverStatus',driverId,status});toast('Status driver diperbarui.','success');await refreshAdmin()}catch(e){toast(e.message,'error')}}
+  async function adminAssignOrder(orderId){const driverId=$('assign-'+orderId)?.value;if(!driverId){toast('Pilih driver terlebih dahulu.','error');return}try{await apiCall('adminAction',{token:adminToken,action:'assignOrder',orderId,driverId});toast('Driver berhasil ditugaskan.','success');await refreshAdmin()}catch(e){toast(e.message,'error')}}
+  async function adminCancelOrder(orderId){if(!confirm('Batalkan pesanan '+orderId+'?'))return;try{await apiCall('adminAction',{token:adminToken,action:'cancelOrder',orderId,reason:'Dibatalkan admin'});toast('Pesanan dibatalkan.','success');await refreshAdmin()}catch(e){toast(e.message,'error')}}
+  async function adminPayment(paymentId,status){try{await apiCall('adminAction',{token:adminToken,action:'paymentConfirm',paymentId,status,reference:''});toast('Status pembayaran diperbarui.','success');await refreshAdmin()}catch(e){toast(e.message,'error')}}
+  async function saveAdminSettings(){try{await apiCall('adminAction',{token:adminToken,action:'saveSettings',settings:{brand:$('setBrand').value,defaultBaseFare:$('setBase').value,defaultFarePerKm:$('setPerKm').value,minimumFare:$('setMin').value,cancelFee:$('setCancel').value,helpPhone:$('setHelp').value,bankName:$('setBank').value,bankAccount:$('setAccount').value,bankHolder:$('setHolder').value}});toast('Pengaturan berhasil disimpan.','success');await refreshAdmin()}catch(e){toast(e.message,'error')}}
+  function uploadLocalLogo(e){const f=e.target.files?.[0];if(!f)return;if(!f.type.startsWith('image/')){toast('Pilih file gambar.','error');return}const reader=new FileReader();reader.onload=()=>{logoData=reader.result;localStorage.setItem('ma2_logo',logoData);updateLogo();toast('Logo diterapkan pada browser ini.','success')};reader.readAsDataURL(f)}
+  async function adminLogout(){try{await apiCall('logout',{token:adminToken})}catch(e){}adminToken='';localStorage.removeItem('ma2_admin_token');sessionStorage.removeItem('ma2_admin_token');$('adminDashboard').classList.add('hidden');$('adminAuth').classList.remove('hidden');toast('Admin telah keluar.','success')}
+
+  /* ---------------------- SMALL UTILITIES ---------------------- */
+  function formatDate(v){if(!v)return '—';const d=new Date(v);return isNaN(d)?esc(v):d.toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'})}
+  async function boot(){updateLogo();try{const r=await apiCall('bootstrap');settings={...settings,...r.settings};}catch(e){toast('Pengaturan belum termuat: '+e.message,'error')}try{const raw=sessionStorage.getItem('ma2_last_order');if(raw)currentOrder=JSON.parse(raw)}catch(e){}if(PAGE==='home'){goHome()}else if(PAGE==='passenger'){if(location.hash==='#track')openTrack();else enterRole('rider')}else if(PAGE==='driver'){enterRole('driver');if(!$('driverDashboard')||$('driverAuth')&&!$('driverAuth').classList.contains('hidden'))refreshCaptcha()}else if(PAGE==='admin'){enterRole('admin')}if(!BACKEND_MODE){const n=document.querySelector('#adminAuth .notice');if(n)n.textContent='Mode demo lokal aktif. Atur API_URL pada file HTML untuk menghubungkan database MyAnjem.';setTimeout(()=>toast('Mode demo lokal aktif. Data hanya tersimpan di browser ini.','error'),900)}}
+  window.addEventListener('beforeunload',()=>{stopDriverGps();stopTrackingPoll()});
+  boot();
+  </script>
+<script id="myanjem-header-clock">
+(function(){
+  const timeNode=document.getElementById('headerClockTime');
+  const dateNode=document.getElementById('headerClockDate');
+  if(!timeNode||!dateNode)return;
+  const timeFormat=new Intl.DateTimeFormat('id-ID',{timeZone:'Asia/Jakarta',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
+  const dateFormat=new Intl.DateTimeFormat('id-ID',{timeZone:'Asia/Jakarta',weekday:'short',day:'numeric',month:'short'});
+  function update(){const now=new Date();timeNode.textContent=timeFormat.format(now)+' WIB';dateNode.textContent=dateFormat.format(now);}
+  update();setInterval(update,1000);
+})();
+</script>
+</body>
+</html>
