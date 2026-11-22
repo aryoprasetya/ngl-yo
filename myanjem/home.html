@@ -120,10 +120,169 @@ button:hover i.bx{transform:translateY(-1px) scale(1.06)}
 .header-date{font-size:10px;font-weight:800;letter-spacing:.2px;color:#958b95;white-space:nowrap;text-transform:capitalize}
 @media(max-width:640px){.app-header{height:64px!important;min-height:64px!important}.app-header>.container.header-inner{width:calc(100% - 24px)!important;gap:8px!important}.app-header .brand{font-size:18px!important;gap:8px!important}.app-header .brand-mark{width:36px!important;height:36px!important;flex-basis:36px!important}.app-header .brand small{font-size:9px!important;margin-top:2px!important}.app-header .header-actions{gap:0!important}.app-header .header-link{display:none!important}.header-datetime{min-width:98px;padding-left:10px;margin-left:0}.header-clock{font-size:14px}.header-date{font-size:9px}}
 @media(max-width:360px){.app-header>.container.header-inner{width:calc(100% - 18px)!important}.app-header .brand{font-size:17px!important}.header-datetime{min-width:91px}.header-clock{font-size:13px}}
+
+/* MYANJEM WELCOME BANNER */
+.welcome-banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 18px 48px 18px 16px;
+  margin: 16px 0;
+  overflow: hidden;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #fff0f7 0%, #ffe0ef 55%, #fff7fb 100%);
+  border: 1px solid #f8d1e4;
+  box-shadow: 0 5px 18px rgba(232, 62, 140, 0.07);
+  animation: welcomeSlideIn .45s ease;
+}
+
+.welcome-banner::after {
+  content: "";
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  right: -35px;
+  bottom: -55px;
+  background: rgba(232, 62, 140, .08);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.welcome-banner-icon {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: white;
+  font-size: 23px;
+  box-shadow: 0 3px 10px rgba(232, 62, 140, .1);
+}
+
+.welcome-banner-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.welcome-banner-title {
+  font-size: 15px;
+  font-weight: 900;
+  color: #b72569;
+  margin-bottom: 5px;
+}
+
+.welcome-banner-text {
+  font-size: 12.5px;
+  line-height: 1.65;
+  font-weight: 600;
+  color: #68515f;
+}
+
+.welcome-banner-tag {
+  margin-top: 8px;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #d13b83;
+}
+
+.welcome-banner-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  width: 29px;
+  height: 29px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,.75);
+  color: #bd5688;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: .2s;
+}
+
+.welcome-banner-close:hover {
+  background: #fff;
+  color: #e83e8c;
+  transform: rotate(90deg);
+}
+
+@keyframes welcomeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media(max-width:480px) {
+  .welcome-banner {
+    gap: 11px;
+    padding: 15px 40px 15px 12px;
+    border-radius: 17px;
+  }
+
+  .welcome-banner-icon {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    font-size: 20px;
+    border-radius: 14px;
+  }
+
+  .welcome-banner-title {
+    font-size: 14px;
+  }
+
+  .welcome-banner-text {
+    font-size: 11.5px;
+  }
+
+  .welcome-banner-tag {
+    font-size: 10px;
+  }
+}
 </style>
 </head>
 <body data-page="home">
   <header class="app-header"><div class="container header-inner"><a class="brand" href="/home" aria-label="MyAnjem beranda"><div class="brand-mark" id="brandMark"><img src="logo.png.png" alt="Logo MyAnjem"></div><div>MyAnjem<small>Your Ride, Your Way</small></div></a><div class="header-actions"><a class="header-link" href="/order"><i class="bx bx-map-pin"></i> Pesan</a><a class="header-link" href="/about"><i class="bx bx-info-circle"></i> Tentang</a><a class="header-link" href="/account"><i class="bx bx-user-circle"></i> Akun</a><div class="header-datetime" aria-label="Waktu Indonesia Barat"><span class="header-clock" id="headerClockTime">--:-- WIB</span><span class="header-date" id="headerClockDate">Memuat tanggal…</span></div></div></div></header>
+  
+<div class="welcome-banner" id="myanjemWelcome">
+  <div class="welcome-banner-icon">💗</div>
+
+  <div class="welcome-banner-content">
+    <div class="welcome-banner-title">
+      Hai, Sobat MyAnjem! 👋
+    </div>
+
+    <div class="welcome-banner-text">
+      Mau ke mana hari ini? Tenang, kamu tinggal duduk manis.
+      Biar kami yang berjuang melawan macet, bukan kamu yang
+      melawan mood! 😆
+    </div>
+
+    <div class="welcome-banner-tag">
+      ✨ Perjalanan nyaman dimulai dari sini.
+    </div>
+  </div>
+
+  <button
+    class="welcome-banner-close"
+    onclick="closeMyAnjemWelcome()"
+    aria-label="Tutup banner"
+    type="button"
+  >
+    &times;
+  </button>
+</div>
   <main>
 <!-- HOME -->
     <section id="homeView">
@@ -363,6 +522,21 @@ button:hover i.bx{transform:translateY(-1px) scale(1.06)}
   function update(){const now=new Date();timeNode.textContent=timeFormat.format(now)+' WIB';dateNode.textContent=dateFormat.format(now);}
   update();setInterval(update,1000);
 })();
+  
+function closeMyAnjemWelcome() {
+  const banner = document.getElementById("myanjemWelcome");
+
+  if (banner) {
+    banner.style.transition = "opacity .25s, transform .25s";
+    banner.style.opacity = "0";
+    banner.style.transform = "translateY(-8px)";
+
+    setTimeout(() => {
+      banner.remove();
+    }, 250);
+  }
+}
+
 </script>
 </body>
 </html>
