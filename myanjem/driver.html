@@ -147,7 +147,7 @@ button:hover i.bx{transform:translateY(-1px) scale(1.06)}
   <script>
 'use strict';
   // Backend Google Database hanya sebagai API; website tetap di hosting statis.
-  const API_URL = 'https://script.google.com/macros/s/AKfycbw1KhmgUNeHFPAT2ujDlzEnLTRta-CpTqnyOrv6rBvyLy9tHR1QCEjbif6grF-i96pi/exec';
+  const API_URL = 'https://script.google.com/macros/s/AKfycbyDOXuRGzvfKx1znrB0D_eLdkpvgiaoxhkAubQq7PrfuPoiHt25Oi69A8mjHTwJG1vw/exec';
   const BACKEND_MODE = /^https:\/\//i.test(API_URL) && !API_URL.includes('TEMPEL_URL');
   const $ = id => document.getElementById(id);
   const money = n => new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n)||0);
