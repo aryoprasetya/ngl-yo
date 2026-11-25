@@ -36,6 +36,11 @@
       "permanent": true
     },
     {
+      "source": "/myanjem/mentalhealth.html",
+      "destination": "/mentalhealth",
+      "permanent": true
+    },
+    {
       "source": "/myanjem/akun.html",
       "destination": "/account",
       "permanent": true
@@ -65,6 +70,10 @@
     {
       "source": "/track",
       "destination": "/myanjem/lacak.html"
+    },
+    {
+      "source": "/mentalhealth",
+      "destination": "/myanjem/mentalhealth.html"
     },
     {
       "source": "/invoice",
