@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#e83e8c">
+  <meta name="description" content="Ruang Sehat Jiwa MyAnjem: edukasi kesehatan mental, skrining SRQ-20, latihan self-care, dan akses bantuan krisis.">
+  <meta name="robots" content="index,follow">
+  <link rel="icon" type="image/png" sizes="32x32" href="logo.png.png">
+  <link rel="apple-touch-icon" href="logo.png.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+  <link rel="stylesheet" href="myanjem-ui.css">
+  <script src="myanjem-ui.js" defer></script>
+  <title>Mental Health — MyAnjem</title>
+  <style>
+    :root{--mh-pink:var(--ma-accent);--mh-ink:var(--ma-ink);--mh-muted:var(--ma-muted);--mh-line:var(--ma-line);--mh-bg:var(--ma-page);--mh-surface:var(--ma-surface);--mh-soft:var(--ma-accent-soft);--mh-shadow:0 12px 34px rgba(40,20,35,.07)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:92px}body{margin:0;background:var(--mh-bg);color:var(--mh-ink);font-family:'Nunito',sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}a{color:inherit;text-decoration:none}button,input,textarea{font:inherit}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid color-mix(in srgb,var(--ma-accent) 45%,transparent);outline-offset:2px}.mh-wrap{width:min(1120px,calc(100% - 36px));margin:0 auto}.app-header{height:72px;background:var(--mh-surface);border-bottom:1px solid var(--mh-line);display:flex;align-items:center;position:sticky;top:0;z-index:1000;box-shadow:0 2px 12px rgba(35,24,32,.045)}.header-inner{width:min(1160px,calc(100% - 36px));margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:900;letter-spacing:-.55px;white-space:nowrap}.brand-mark{width:40px;height:40px;flex:0 0 40px;display:grid;place-items:center;overflow:hidden}.brand-mark img{width:100%;height:100%;object-fit:contain}.brand small{display:block;color:var(--mh-muted);font-size:10px;font-weight:700;letter-spacing:.35px}.header-actions{display:flex;align-items:center;gap:5px}.header-link{display:inline-flex;align-items:center;gap:6px;padding:9px 10px;border-radius:9px;font-size:12px;font-weight:800;color:var(--mh-ink);white-space:nowrap}.header-link:hover,.header-link.active{background:var(--mh-soft);color:var(--ma-accent-dark)}.header-link i{font-size:17px}.header-datetime{display:none}.mobile-bottom{position:fixed;z-index:950;left:0;right:0;bottom:0;height:64px;display:flex;align-items:stretch;justify-content:stretch;gap:0;padding:6px max(5px,env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(5px,env(safe-area-inset-left));background:var(--mh-surface);border-top:1px solid var(--mh-line);box-shadow:0 -4px 18px rgba(35,24,32,.045)}.mobile-bottom a{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:3px 1px;font-size:9px;font-weight:800;line-height:1.1;color:var(--mh-muted);white-space:nowrap}.mobile-bottom a i{font-size:19px;line-height:1.1}.mobile-bottom a.active{color:var(--ma-accent-dark)}body{padding-bottom:72px}
+    .mh-hero{position:relative;overflow:hidden;padding:52px 0 44px;background:linear-gradient(115deg,var(--mh-surface) 0%,var(--mh-soft) 100%);border-bottom:1px solid var(--mh-line)}.mh-hero:after{content:"";position:absolute;width:300px;height:300px;right:-85px;top:-150px;border-radius:50%;background:color-mix(in srgb,var(--ma-accent) 12%,transparent);pointer-events:none}.mh-hero-grid{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,.8fr);align-items:center;gap:38px;position:relative;z-index:1}.mh-eyebrow{display:inline-flex;align-items:center;gap:7px;background:var(--mh-surface);border:1px solid var(--mh-line);border-radius:99px;padding:7px 11px;color:var(--ma-accent-dark);font-size:11px;font-weight:900;letter-spacing:.05em}.mh-hero h1{margin:16px 0 13px;font-size:clamp(34px,5vw,54px);line-height:1.08;letter-spacing:-1.8px;max-width:660px}.mh-hero h1 span{color:var(--ma-accent)}.mh-hero p{margin:0;color:var(--mh-muted);font-size:16px;max-width:610px}.mh-hero-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.mh-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:43px;padding:10px 15px;border:1px solid var(--mh-line);border-radius:11px;background:var(--mh-surface);color:var(--mh-ink);font-size:13px;font-weight:900;transition:transform .18s,border-color .18s}.mh-btn:hover{transform:translateY(-1px);border-color:var(--ma-accent)}.mh-btn.primary{background:var(--ma-accent);border-color:var(--ma-accent);color:#fff}.mh-btn i{font-size:18px}.mh-hero-note{background:var(--mh-surface);border:1px solid var(--mh-line);border-radius:20px;padding:21px;box-shadow:var(--mh-shadow)}.mh-hero-note-icon{width:50px;height:50px;display:grid;place-items:center;border-radius:15px;background:var(--mh-soft);color:var(--ma-accent-dark);font-size:26px}.mh-hero-note h2{font-size:17px;margin:13px 0 5px}.mh-hero-note p{font-size:12px;line-height:1.6}.mh-note-line{display:flex;gap:9px;align-items:flex-start;margin-top:12px;font-size:12px;color:var(--mh-muted)}.mh-note-line i{font-size:17px;color:var(--ma-accent);flex:none;margin-top:1px}
+    .mh-section{padding:40px 0}.mh-section-head{display:flex;align-items:end;justify-content:space-between;gap:14px;margin-bottom:19px}.mh-kicker{color:var(--ma-accent-dark);font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.mh-section h2{margin:4px 0 5px;font-size:25px;letter-spacing:-.6px}.mh-section-head p{margin:0;color:var(--mh-muted);font-size:13px;max-width:650px}.mh-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.mh-card{min-width:0;padding:19px;border:1px solid var(--mh-line);border-radius:16px;background:var(--mh-surface);box-shadow:0 4px 16px rgba(35,24,32,.035)}.mh-card-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:var(--mh-soft);color:var(--ma-accent-dark);font-size:22px;margin-bottom:12px}.mh-card h3{font-size:15px;margin:0 0 6px}.mh-card p{font-size:12px;color:var(--mh-muted);margin:0;line-height:1.65}.mh-campaign{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.mh-campaign .mh-card{padding:16px}.mh-campaign .mh-card-icon{width:38px;height:38px;font-size:20px}.mh-card .mh-tag{display:inline-flex;padding:4px 8px;border-radius:99px;background:var(--mh-soft);color:var(--ma-accent-dark);font-size:10px;font-weight:900;margin-bottom:9px}
+    .mh-screening{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}.mh-panel{border:1px solid var(--mh-line);border-radius:18px;background:var(--mh-surface);box-shadow:0 5px 20px rgba(35,24,32,.04);overflow:hidden}.mh-panel-head{padding:19px 20px;border-bottom:1px solid var(--mh-line);display:flex;align-items:center;gap:12px}.mh-panel-head .mh-card-icon{margin:0;flex:none}.mh-panel-head h3{margin:0;font-size:16px}.mh-panel-head p{margin:2px 0 0;font-size:11px;color:var(--mh-muted)}.mh-panel-body{padding:20px}.mh-info{padding:12px 13px;border:1px solid var(--mh-line);border-radius:12px;background:var(--mh-bg);font-size:12px;color:var(--mh-muted);line-height:1.6}.mh-info strong{color:var(--mh-ink)}.mh-info.warning{background:#fff6e9;border-color:#f2dfbd;color:#815516}.mh-info.urgent{background:#fff0f2;border-color:#f3c6cf;color:#98394b}.mh-age-check{display:flex;gap:10px;align-items:flex-start;margin:15px 0;font-size:12px;color:var(--mh-ink)}.mh-age-check input{accent-color:var(--ma-accent);width:17px;height:17px;flex:none;margin-top:1px}.mh-progress-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:11px;font-weight:900;color:var(--mh-muted)}.mh-progress{height:7px;border-radius:99px;background:var(--mh-line);overflow:hidden;margin:9px 0 20px}.mh-progress span{display:block;height:100%;width:0;background:var(--ma-accent);border-radius:99px;transition:width .2s}.mh-question{font-size:19px;font-weight:900;line-height:1.4;margin:0 0 18px}.mh-answer-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mh-answer{min-height:48px;border:1px solid var(--mh-line);border-radius:12px;background:var(--mh-bg);color:var(--mh-ink);font-weight:900}.mh-answer.selected{border-color:var(--ma-accent);background:var(--mh-soft);color:var(--ma-accent-dark);box-shadow:inset 0 0 0 1px var(--ma-accent)}.mh-question-alert{margin-top:14px}.mh-quiz-controls{display:flex;justify-content:space-between;gap:10px;margin-top:19px}.mh-quiz-controls .mh-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}.mh-result{border:1px solid var(--mh-line);border-radius:15px;padding:17px;background:var(--mh-bg)}.mh-result-score{font-size:38px;font-weight:900;line-height:1;color:var(--ma-accent-dark)}.mh-result h4{font-size:16px;margin:10px 0 5px}.mh-result p{font-size:12px;color:var(--mh-muted);margin:0;line-height:1.6}.mh-result-urgent{border:1px solid #eeaeb9;background:#fff1f3;border-radius:14px;padding:16px;margin-top:13px;color:#7d2637}.mh-result-urgent h4{margin:0 0 6px;color:#8e2c40}.mh-result-urgent p{font-size:12px;line-height:1.6;margin:0 0 10px}.mh-side-stack{display:grid;gap:12px}.mh-side-card{padding:16px;border-radius:15px;border:1px solid var(--mh-line);background:var(--mh-surface)}.mh-side-card h4{margin:0 0 6px;font-size:14px}.mh-side-card p,.mh-side-card li{font-size:11px;color:var(--mh-muted);line-height:1.6}.mh-side-card ul{padding-left:17px;margin:8px 0 0}
+    .mh-selfcare-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}.mh-tool{padding:19px;border:1px solid var(--mh-line);border-radius:17px;background:var(--mh-surface);box-shadow:0 4px 15px rgba(35,24,32,.035);min-width:0}.mh-tool-head{display:flex;align-items:center;gap:10px;margin-bottom:13px}.mh-tool-head .mh-card-icon{margin:0;width:38px;height:38px}.mh-tool h3{font-size:15px;margin:0}.mh-tool-sub{font-size:11px;color:var(--mh-muted);margin:3px 0 0}.mh-breath-stage{display:grid;justify-items:center;gap:10px;padding:10px 0 4px}.mh-breath-circle{width:118px;height:118px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,var(--mh-surface) 45%,var(--mh-soft) 47%);border:8px solid color-mix(in srgb,var(--ma-accent) 25%,var(--mh-line));color:var(--ma-accent-dark);font-size:13px;font-weight:900;transition:transform 4s ease-in-out,background .3s}.mh-breath-circle.inhale{transform:scale(1.13)}.mh-breath-circle.exhale{transform:scale(.91)}.mh-breath-caption{font-size:12px;font-weight:900;color:var(--mh-ink)}.mh-breath-time{font-size:11px;color:var(--mh-muted)}.mh-tool-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:12px}.mh-mini-btn{border:1px solid var(--mh-line);border-radius:10px;background:var(--mh-bg);color:var(--mh-ink);padding:8px 12px;font-size:11px;font-weight:900}.mh-mini-btn.primary{background:var(--ma-accent);color:#fff;border-color:var(--ma-accent)}.mh-ground-step{border:1px dashed var(--ma-accent);border-radius:14px;padding:17px;background:var(--mh-bg);min-height:125px;display:grid;align-content:center}.mh-ground-count{font-size:26px;font-weight:900;color:var(--ma-accent-dark)}.mh-ground-step strong{font-size:14px}.mh-ground-step p{font-size:11px;color:var(--mh-muted);margin:4px 0 0}.mh-mood-options{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px}.mh-mood{border:1px solid var(--mh-line);border-radius:11px;background:var(--mh-bg);padding:9px 3px;display:grid;justify-items:center;gap:3px;color:var(--mh-muted);font-size:10px;font-weight:900}.mh-mood span{font-size:23px;line-height:1.1}.mh-mood.selected{border-color:var(--ma-accent);background:var(--mh-soft);color:var(--ma-accent-dark)}.mh-mood-reflection{margin-top:12px;padding:11px;border-radius:11px;background:var(--mh-bg);font-size:11px;color:var(--mh-muted);min-height:48px}.mh-journal{width:100%;min-height:125px;resize:vertical;border:1px solid var(--mh-line);border-radius:12px;padding:12px;background:var(--mh-bg);color:var(--mh-ink);font-size:12px;line-height:1.6}.mh-journal:focus{outline:2px solid var(--ma-accent);outline-offset:1px}.mh-privacy-note{font-size:10px;color:var(--mh-muted);line-height:1.5;margin:7px 0 0}
+    .mh-help{background:linear-gradient(110deg,#fff2f4,#fff8fa);border:1px solid #f0c9d0;border-radius:19px;padding:22px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:20px;align-items:center}.mh-help h2{font-size:23px;margin:4px 0 7px;color:#742d3b}.mh-help p{font-size:12px;color:#865d65;margin:0;max-width:700px}.mh-help-actions{display:grid;gap:9px;min-width:205px}.mh-help-btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;border-radius:11px;padding:11px 14px;background:#9e334a;color:white;font-size:12px;font-weight:900}.mh-help-btn.secondary{background:#fff;color:#88384a;border:1px solid #e7b9c2}.mh-emergency-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}.mh-emergency-step{padding:15px;border:1px solid var(--mh-line);border-radius:14px;background:var(--mh-surface)}.mh-emergency-step b{display:block;font-size:12px;margin-bottom:4px}.mh-emergency-step p{font-size:11px;color:var(--mh-muted);margin:0;line-height:1.55}.mh-faq{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.mh-faq details{background:var(--mh-surface);border:1px solid var(--mh-line);border-radius:13px;padding:14px 16px}.mh-faq summary{font-size:12px;font-weight:900;cursor:pointer}.mh-faq details p{font-size:11px;color:var(--mh-muted);line-height:1.65;margin:9px 0 0}.mh-footer{padding:20px 0 24px;border-top:1px solid var(--mh-line);color:var(--mh-muted);font-size:11px}.mh-footer-row{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}.mh-footer a{color:var(--ma-accent-dark);font-weight:900}
+    :root[data-theme="dark"] .mh-hero{background:linear-gradient(115deg,var(--mh-surface),var(--mh-page));border-color:var(--mh-line)}:root[data-theme="dark"] .mh-hero-note,:root[data-theme="dark"] .mh-card,:root[data-theme="dark"] .mh-panel,:root[data-theme="dark"] .mh-side-card,:root[data-theme="dark"] .mh-tool,:root[data-theme="dark"] .mh-emergency-step,:root[data-theme="dark"] .mh-faq details{background:var(--mh-surface);color:var(--mh-ink);border-color:var(--mh-line)}:root[data-theme="dark"] .mh-info,:root[data-theme="dark"] .mh-result,:root[data-theme="dark"] .mh-ground-step,:root[data-theme="dark"] .mh-journal,:root[data-theme="dark"] .mh-mood-reflection{background:var(--mh-surface-2);color:var(--mh-muted);border-color:var(--mh-line)}:root[data-theme="dark"] .mh-answer,:root[data-theme="dark"] .mh-mini-btn{background:var(--mh-surface-2);color:var(--mh-ink);border-color:var(--mh-line)}:root[data-theme="dark"] .mh-answer.selected,:root[data-theme="dark"] .mh-mood.selected{background:var(--mh-accent-soft);color:var(--ma-accent);border-color:var(--ma-accent)}:root[data-theme="dark"] .mh-help{background:#2c2026;border-color:#61404a}:root[data-theme="dark"] .mh-help h2{color:#f4dce2}:root[data-theme="dark"] .mh-help p{color:#d1aeb7}:root[data-theme="dark"] .mh-help-btn.secondary{background:#35272e;color:#f5dbe2;border-color:#65424d}:root[data-theme="dark"] .mh-result-urgent{background:#3b2028;border-color:#77414e;color:#f5d9df}:root[data-theme="dark"] .mh-result-urgent h4{color:#ffced9}:root[data-theme="dark"] .mh-info.warning{background:#382c1c;border-color:#6a512d;color:#f0d9b0}:root[data-theme="dark"] .mh-info.urgent{background:#3b2028;border-color:#77414e;color:#f5d9df}
+    @media(min-width:641px){.header-link.mentalhealth-nav{background:var(--mh-soft);color:var(--ma-accent-dark)}}@media(max-width:900px){.header-actions{gap:1px}.header-link{padding:8px 7px;font-size:11px}.mh-hero-grid{grid-template-columns:1fr .72fr;gap:20px}.mh-screening{grid-template-columns:minmax(0,1fr) 260px}.mh-campaign{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:640px){.mh-wrap{width:calc(100% - 24px)}.app-header{height:64px}.header-inner{width:calc(100% - 22px);gap:7px}.brand{font-size:18px;gap:7px}.brand-mark{width:35px;height:35px;flex-basis:35px}.header-link{display:none}.mh-hero{padding:34px 0 30px}.mh-hero-grid{grid-template-columns:1fr;gap:18px}.mh-hero h1{font-size:36px}.mh-hero p{font-size:14px}.mh-hero-note{padding:17px}.mh-section{padding:30px 0}.mh-section h2{font-size:22px}.mh-section-head{display:block}.mh-grid{grid-template-columns:1fr}.mh-campaign{grid-template-columns:1fr 1fr}.mh-screening{grid-template-columns:1fr}.mh-selfcare-grid{grid-template-columns:1fr}.mh-help{grid-template-columns:1fr;padding:18px}.mh-help h2{font-size:21px}.mh-help-actions{grid-template-columns:1fr 1fr;min-width:0}.mh-emergency-steps{grid-template-columns:1fr}.mh-faq{grid-template-columns:1fr}.mh-panel-body{padding:15px}.mh-question{font-size:17px}.mobile-bottom a{font-size:9px}.mobile-bottom a i{font-size:19px}}
+    @media(max-width:360px){.brand{font-size:16px}.brand-mark{width:32px;height:32px;flex-basis:32px}.mh-hero h1{font-size:32px}.mh-campaign{grid-template-columns:1fr}.mobile-bottom a{font-size:8px}.mobile-bottom a i{font-size:18px}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+  </style>
+</head>
+<body data-page="mentalhealth">
+  <header class="app-header">
+    <div class="header-inner">
+      <a class="brand" href="/home" aria-label="MyAnjem beranda"><span class="brand-mark"><img src="logo.png.png" alt="Logo MyAnjem"></span><span>MyAnjem<small>Your Ride, Your Way</small></span></a>
+      <div class="header-actions" aria-label="Navigasi desktop">
+        <a class="header-link" href="/home"><i class="bx bx-home-alt-2"></i> Beranda</a>
+        <a class="header-link" href="/order"><i class="bx bx-map-pin"></i> Pesan</a>
+        <a class="header-link active" href="/mentalhealth" aria-current="page"><i class="bx bx-brain"></i> Mental Health</a>
+        <a class="header-link" href="/about"><i class="bx bx-info-circle"></i> Tentang</a>
+        <a class="header-link" href="/account"><i class="bx bx-user-circle"></i> Akun</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="mh-hero">
+      <div class="mh-wrap mh-hero-grid">
+        <div>
+          <span class="mh-eyebrow"><i class="bx bx-heart-circle"></i> RUANG SEHAT JIWA · MYANJEM</span>
+          <h1>Perjalanan penting. <span>Kesehatan mental</span> juga.</h1>
+          <p>MyAnjem bukan hanya tentang sampai ke tujuan. Kami juga ingin mengajak kamu lebih peduli pada diri sendiri, memahami apa yang sedang dirasakan, dan tahu ke mana harus mencari bantuan.</p>
+          <div class="mh-hero-actions">
+            <a class="mh-btn primary" href="#srq20"><i class="bx bx-clipboard"></i> Coba skrining SRQ-20</a>
+            <a class="mh-btn" href="#selfcare"><i class="bx bx-leaf"></i> Mulai self-care</a>
+          </div>
+        </div>
+        <aside class="mh-hero-note">
+          <div class="mh-hero-note-icon"><i class="bx bx-heart"></i></div>
+          <h2>Kamu tidak harus selalu baik-baik saja.</h2>
+          <p>Perasaan lelah, sedih, cemas, atau kewalahan layak didengarkan. Tidak perlu menunggu sampai semuanya terasa berat untuk mulai mencari dukungan.</p>
+          <div class="mh-note-line"><i class="bx bx-check-circle"></i><span>Kenali kondisi diri tanpa menghakimi.</span></div>
+          <div class="mh-note-line"><i class="bx bx-check-circle"></i><span>Ambil jeda kecil dan rawat kebutuhan dasar.</span></div>
+          <div class="mh-note-line"><i class="bx bx-check-circle"></i><span>Minta bantuan adalah bentuk keberanian.</span></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="mh-section" aria-labelledby="campaignTitle">
+      <div class="mh-wrap">
+        <div class="mh-section-head"><div><span class="mh-kicker">Kampanye sehat mental</span><h2 id="campaignTitle">Mulai dari hal sederhana</h2><p>Kesehatan mental adalah bagian dari kesehatan secara menyeluruh. Kebiasaan kecil dapat membantu, dan mencari pertolongan profesional tetap penting ketika dibutuhkan.</p></div></div>
+        <div class="mh-campaign">
+          <article class="mh-card"><span class="mh-tag">01 · Kesadaran diri</span><div class="mh-card-icon"><i class="bx bx-message-rounded-dots"></i></div><h3>Kenali emosimu</h3><p>Coba beri nama pada perasaan yang muncul. Kamu boleh merasa kecewa, marah, takut, atau sedih tanpa harus menyalahkan diri.</p></article>
+          <article class="mh-card"><span class="mh-tag">02 · Penerimaan</span><div class="mh-card-icon"><i class="bx bx-heart-circle"></i></div><h3>Validasi perasaan</h3><p>Perasaanmu nyata. Membandingkan masalah sendiri dengan orang lain tidak selalu membuat beban terasa lebih ringan.</p></article>
+          <article class="mh-card"><span class="mh-tag">03 · Keseimbangan</span><div class="mh-card-icon"><i class="bx bx-moon"></i></div><h3>Istirahat itu perlu</h3><p>Atur jeda, tidur cukup, makan teratur, dan kurangi paparan hal yang membuatmu semakin kewalahan.</p></article>
+          <article class="mh-card"><span class="mh-tag">04 · Dukungan</span><div class="mh-card-icon"><i class="bx bx-support"></i></div><h3>Jangan memendam sendiri</h3><p>Ceritakan kepada orang yang kamu percaya atau tenaga profesional. Kamu berhak mendapatkan dukungan yang aman.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="mh-section" id="srq20" aria-labelledby="srqTitle">
+      <div class="mh-wrap">
+        <div class="mh-section-head"><div><span class="mh-kicker">Kenali kondisi diri</span><h2 id="srqTitle">Skrining kesehatan mental · SRQ-20</h2><p>Jawab berdasarkan apa yang kamu alami selama 30 hari terakhir. Tidak ada jawaban benar atau salah—pilih yang paling sesuai dengan pengalamanmu.</p></div></div>
+        <div class="mh-screening">
+          <section class="mh-panel" aria-label="Kuesioner SRQ-20">
+            <div class="mh-panel-head"><div class="mh-card-icon"><i class="bx bx-clipboard"></i></div><div><h3>Self-Reporting Questionnaire</h3><p>20 pertanyaan · sekitar 3–5 menit · jawaban tidak dikirim ke server</p></div></div>
+            <div class="mh-panel-body">
+              <div id="srqIntro">
+                <div class="mh-info"><strong>Perlu diketahui:</strong> SRQ-20 adalah alat skrining awal, bukan alat diagnosis. Pedoman teknis Kementerian Kesehatan mencantumkan penggunaan SRQ-20 untuk usia di atas 18 tahun dan menilai pengalaman dalam 30 hari terakhir. <a href="https://kesprimkom.kemkes.go.id/assets/uploads/contents/others/2023kepmenkes2015.pdf" target="_blank" rel="noopener noreferrer" style="font-weight:900;color:var(--ma-accent-dark)">Baca pedoman Kemenkes</a>.</div>
+                <div class="mh-info warning" style="margin-top:11px"><strong>Jangan menunggu tes jika sedang dalam krisis.</strong> Jika saat ini kamu merasa tidak aman, memiliki dorongan untuk menyakiti diri atau mengakhiri hidup, langsung menuju bagian <a href="#crisisHelp" style="font-weight:900;text-decoration:underline">Bantuan segera</a> atau hubungi orang tepercaya dan layanan darurat.</div>
+                <label class="mh-age-check"><input id="srqAdultConfirm" type="checkbox"><span>Saya berusia di atas 18 tahun dan memahami bahwa tes ini hanya skrining awal, bukan diagnosis.</span></label>
+                <button class="mh-btn primary" id="srqStart" type="button" disabled><i class="bx bx-play-circle"></i> Mulai skrining</button>
+                <p class="mh-privacy-note">Privasi: jawaban hanya diproses sementara di browser perangkat ini. MyAnjem tidak mengirimkan atau menyimpan jawaban SRQ-20 ke backend, akun, atau database transportasi.</p>
+              </div>
+              <div id="srqQuestionWrap" hidden>
+                <div class="mh-progress-meta"><span id="srqProgressText">Pertanyaan 1 dari 20</span><span id="srqProgressPercent">5%</span></div>
+                <div class="mh-progress" aria-hidden="true"><span id="srqProgressBar"></span></div>
+                <p class="mh-question" id="srqQuestionText" aria-live="polite"></p>
+                <div class="mh-answer-row" role="group" aria-label="Pilih jawaban">
+                  <button type="button" class="mh-answer" data-answer="yes" aria-pressed="false">Ya</button>
+                  <button type="button" class="mh-answer" data-answer="no" aria-pressed="false">Tidak</button>
+                </div>
+                <div id="srqQ17Alert" class="mh-info urgent mh-question-alert" hidden><strong>Terima kasih sudah menjawab dengan jujur.</strong> Jika pikiran tersebut masih kamu alami sekarang atau kamu merasa tidak aman, hentikan tes bila perlu dan segera cari bantuan. Kamu tidak harus menghadapi ini sendirian. <a href="#crisisHelp" style="font-weight:900;text-decoration:underline">Lihat bantuan segera</a>.</div>
+                <div class="mh-quiz-controls"><button class="mh-btn" id="srqPrev" type="button"><i class="bx bx-left-arrow-alt"></i> Sebelumnya</button><button class="mh-btn primary" id="srqNext" type="button" disabled>Lanjut <i class="bx bx-right-arrow-alt"></i></button></div>
+              </div>
+              <div id="srqResultWrap" hidden aria-live="polite">
+                <div class="mh-result"><div class="mh-result-score" id="srqScore">0/20</div><h4 id="srqResultTitle">Hasil skrining</h4><p id="srqResultText"></p></div>
+                <div id="srqRiskAlert" class="mh-result-urgent" hidden><h4><i class="bx bx-heart-circle"></i> Prioritaskan keselamatan dan dukungan sekarang</h4><p>Jawaban “Ya” pada pertanyaan tentang pikiran mengakhiri hidup perlu ditindaklanjuti, berapa pun skor totalnya. Jika pikiran itu masih ada sekarang, kamu merasa berisiko bertindak, atau tidak yakin dapat menjaga keselamatan diri, jangan sendirian. Hubungi orang tepercaya dan akses bantuan profesional/darurat.</p><a class="mh-help-btn" href="https://www.healing119.id/" target="_blank" rel="noopener noreferrer"><i class="bx bx-phone-call"></i> Buka Healing119</a></div>
+                <div class="mh-info" style="margin-top:12px"><strong>Ingat:</strong> hasil ini bukan diagnosis dan tidak menggantikan wawancara atau pemeriksaan oleh dokter/psikolog klinis. Kondisi yang mengganggu tetap layak dibicarakan dengan tenaga kesehatan, meskipun skor berada di bawah batas skrining.</div>
+                <div class="mh-tool-actions" style="justify-content:flex-start"><button class="mh-btn primary" id="srqRetake" type="button"><i class="bx bx-refresh"></i> Ulangi skrining</button><a class="mh-btn" href="#crisisHelp"><i class="bx bx-first-aid"></i> Lihat layanan bantuan</a></div>
+              </div>
+            </div>
+          </section>
+          <aside class="mh-side-stack">
+            <div class="mh-side-card"><h4><i class="bx bx-info-circle" style="color:var(--ma-accent)"></i> Cara membaca hasil</h4><ul><li>0–5 jawaban “Ya”: di bawah batas skrining yang digunakan dalam pedoman.</li><li>6–20 jawaban “Ya”: mencapai batas skrining; perlu penelusuran lebih lanjut.</li><li>Jawaban “Ya” pada butir 17 perlu perhatian khusus meskipun total skor di bawah 6.</li></ul></div>
+            <div class="mh-side-card"><h4><i class="bx bx-clinic" style="color:var(--ma-accent)"></i> Langkah selanjutnya</h4><p>Bicarakan hasil dengan Puskesmas, dokter, atau psikolog klinis. Tenaga profesional akan menilai konteks dan menentukan dukungan yang sesuai.</p><a href="https://www.google.com/maps/search/?api=1&query=Puskesmas+terdekat" target="_blank" rel="noopener noreferrer" class="mh-btn" style="margin-top:5px;width:100%"><i class="bx bx-map"></i> Cari Puskesmas terdekat</a></div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="mh-section" id="selfcare" aria-labelledby="selfcareTitle">
+      <div class="mh-wrap">
+        <div class="mh-section-head"><div><span class="mh-kicker">Jeda sejenak</span><h2 id="selfcareTitle">Self-care mini</h2><p>Pilih satu latihan kecil yang terasa nyaman. Tidak harus melakukan semuanya—cukup mulai dari yang paling mungkin dilakukan hari ini.</p></div></div>
+        <div class="mh-selfcare-grid">
+          <article class="mh-tool">
+            <div class="mh-tool-head"><div class="mh-card-icon"><i class="bx bx-wind"></i></div><div><h3>Latihan napas 4–6</h3><p class="mh-tool-sub">Tarik napas 4 hitungan, hembuskan 6 hitungan.</p></div></div>
+            <div class="mh-breath-stage"><div class="mh-breath-circle" id="breathCircle"><span id="breathCircleText">Siap?</span></div><div class="mh-breath-caption" id="breathCaption">Ambil posisi yang nyaman</div><div class="mh-breath-time" id="breathTime">5 putaran · sekitar 50 detik</div></div>
+            <div class="mh-tool-actions"><button class="mh-mini-btn primary" id="breathStart" type="button">Mulai latihan</button><button class="mh-mini-btn" id="breathReset" type="button">Ulangi</button></div>
+            <p class="mh-privacy-note">Bernapaslah sewajarnya, jangan dipaksakan. Hentikan bila terasa pusing atau tidak nyaman.</p>
+          </article>
+          <article class="mh-tool">
+            <div class="mh-tool-head"><div class="mh-card-icon"><i class="bx bx-leaf"></i></div><div><h3>Grounding 5–4–3–2–1</h3><p class="mh-tool-sub">Arahkan perhatian pada hal yang ada di sekitarmu.</p></div></div>
+            <div class="mh-ground-step"><span class="mh-ground-count" id="groundCount">5 hal</span><strong id="groundTitle">Yang bisa kamu lihat</strong><p id="groundPrompt">Perhatikan lima benda atau warna di sekitarmu.</p></div>
+            <div class="mh-tool-actions"><button class="mh-mini-btn" id="groundPrev" type="button" disabled>Sebelumnya</button><button class="mh-mini-btn primary" id="groundNext" type="button">Mulai</button></div>
+            <p class="mh-privacy-note">Latihan ini adalah cara mengalihkan perhatian ke keadaan saat ini, bukan pengganti bantuan profesional.</p>
+          </article>
+          <article class="mh-tool">
+            <div class="mh-tool-head"><div class="mh-card-icon"><i class="bx bx-smile"></i></div><div><h3>Check-in suasana hati</h3><p class="mh-tool-sub">Tidak perlu menilai diri. Cukup perhatikan apa yang sedang kamu rasakan.</p></div></div>
+            <div class="mh-mood-options" role="group" aria-label="Pilih suasana hati">
+              <button class="mh-mood" type="button" data-mood="berat"><span>😞</span>Berat</button>
+              <button class="mh-mood" type="button" data-mood="sedih"><span>😔</span>Sedih</button>
+              <button class="mh-mood" type="button" data-mood="biasa"><span>😐</span>Biasa</button>
+              <button class="mh-mood" type="button" data-mood="cukup"><span>🙂</span>Cukup</button>
+              <button class="mh-mood" type="button" data-mood="baik"><span>😊</span>Baik</button>
+            </div>
+            <div class="mh-mood-reflection" id="moodReflection" aria-live="polite">Pilih satu suasana hati untuk memulai check-in.</div>
+            <p class="mh-privacy-note">Pilihan ini hanya muncul di layar saat ini dan tidak disimpan sebagai riwayat.</p>
+          </article>
+          <article class="mh-tool">
+            <div class="mh-tool-head"><div class="mh-card-icon"><i class="bx bx-notepad"></i></div><div><h3>Jurnal singkat</h3><p class="mh-tool-sub">Tuliskan secukupnya. Kamu tidak wajib punya jawaban sempurna.</p></div></div>
+            <textarea class="mh-journal" id="journalText" placeholder="Saat ini aku sedang merasa…\nHal yang paling membebani pikiranku adalah…\nSatu hal kecil yang bisa kulakukan setelah ini…" maxlength="2500" aria-label="Catatan jurnal pribadi"></textarea>
+            <div class="mh-tool-actions"><button class="mh-mini-btn primary" id="journalDownload" type="button"><i class="bx bx-download"></i> Unduh catatan</button><button class="mh-mini-btn" id="journalClear" type="button">Hapus isi</button></div>
+            <p class="mh-privacy-note">Catatan tidak dikirim atau disimpan MyAnjem. Unduhan dibuat langsung di perangkatmu; gunakan perangkat pribadi.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="mh-section" id="crisisHelp" aria-labelledby="crisisTitle">
+      <div class="mh-wrap">
+        <div class="mh-help">
+          <div><span class="mh-kicker" style="color:#9e334a">Butuh bantuan segera?</span><h2 id="crisisTitle">Kamu tidak harus melewati masa sulit sendirian.</h2><p>Healing119.id adalah layanan dukungan psikologis awal dari Kementerian Kesehatan untuk orang yang sedang mengalami tekanan, keputusasaan, atau dorongan menyakiti diri/mengakhiri hidup. Layanan ini gratis dan bukan pengganti terapi jangka panjang.</p></div>
+          <div class="mh-help-actions"><a class="mh-help-btn" href="tel:119"><i class="bx bx-phone-call"></i> Telepon 119 · ekstensi 8</a><a class="mh-help-btn secondary" href="https://www.healing119.id/" target="_blank" rel="noopener noreferrer"><i class="bx bx-message-rounded-dots"></i> Chat / akses Healing119</a></div>
+        </div>
+        <div class="mh-emergency-steps">
+          <article class="mh-emergency-step"><b>1. Jika ada bahaya langsung</b><p>Segera menuju IGD rumah sakit atau fasilitas kesehatan terdekat. Jangan menunggu hasil skrining atau balasan chat.</p></article>
+          <article class="mh-emergency-step"><b>2. Hubungi orang yang dipercaya</b><p>Minta seseorang menemani secara langsung. Sampaikan dengan jelas bahwa kamu sedang tidak aman atau membutuhkan bantuan.</p></article>
+          <article class="mh-emergency-step"><b>3. Jangan hadapi sendirian</b><p>Jika mendampingi seseorang dalam krisis, tetap bersama orang tersebut bila aman, dengarkan tanpa menghakimi, dan bantu mengakses pertolongan profesional.</p></article>
+        </div>
+        <p class="mh-privacy-note" style="margin-top:12px">Informasi layanan Healing119 mengikuti keterangan resmi Kementerian Kesehatan. Bila panggilan belum tersambung, coba kanal chat melalui situs tersebut atau datangi fasilitas kesehatan terdekat. MyAnjem tidak memantau kondisi darurat secara real-time.</p>
+      </div>
+    </section>
+
+    <section class="mh-section" aria-labelledby="faqTitle">
+      <div class="mh-wrap">
+        <div class="mh-section-head"><div><span class="mh-kicker">Informasi layanan</span><h2 id="faqTitle">Pertanyaan yang sering ditanyakan</h2></div></div>
+        <div class="mh-faq">
+          <details><summary>Apakah MyAnjem memberikan diagnosis atau terapi?</summary><p>Tidak. Halaman ini berisi edukasi, latihan self-care sederhana, dan skrining awal. Diagnosis serta terapi harus dilakukan oleh tenaga profesional yang berwenang.</p></details>
+          <details><summary>Apakah hasil SRQ-20 disimpan?</summary><p>Tidak. Jawaban dihitung sementara di browser perangkatmu. Tidak ada pengiriman jawaban ke backend, akun, atau database transportasi MyAnjem.</p></details>
+          <details><summary>Apakah skor rendah berarti saya pasti baik-baik saja?</summary><p>Tidak. Skrining memiliki keterbatasan. Bila ada keluhan, perubahan perilaku, atau kesulitan menjalani aktivitas yang mengganggu, kamu tetap dapat mencari bantuan meskipun skor rendah.</p></details>
+          <details><summary>Apakah Healing119 menggantikan psikolog atau psikiater?</summary><p>Tidak. Healing119 menyediakan dukungan psikologis awal dan dapat membantu menghubungkan pengguna dengan layanan lanjutan. Untuk terapi atau pemeriksaan mendalam, datangi Puskesmas, rumah sakit, psikolog klinis, atau dokter spesialis kedokteran jiwa.</p></details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="mh-footer"><div class="mh-wrap mh-footer-row"><span>© <span id="mhYear"></span> MyAnjem · Your Ride, Your Way.</span><span>Ruang Sehat Jiwa · <a href="/about">Tentang MyAnjem</a></span></div></footer>
+
+  <nav class="mobile-bottom" aria-label="Navigasi utama">
+    <a href="/home"><i class="bx bx-home-alt-2"></i>Beranda</a>
+    <a href="/order"><i class="bx bx-map-pin"></i>Pesan</a>
+    <a href="/mentalhealth" class="active" aria-current="page"><i class="bx bx-brain"></i>Sehat</a>
+    <a href="/order#track"><i class="bx bx-current-location"></i>Lacak</a>
+    <a href="/about"><i class="bx bx-info-circle"></i>Tentang</a>
+    <a href="/account"><i class="bx bx-user-circle"></i>Akun</a>
+  </nav>
+
+  <script>
+  (()=>{
+    'use strict';
+    const $=id=>document.getElementById(id);
+    $('mhYear').textContent=new Date().getFullYear();
+
+    // SRQ-20 wording follows Kemenkes Formulir Skrining Kesehatan Jiwa.
+    // The responses are held only in this page session and are never transmitted.
+    const questions=[
+      'Apakah Anda sering merasa sakit kepala?',
+      'Apakah Anda kehilangan nafsu makan?',
+      'Apakah tidur Anda tidak nyenyak?',
+      'Apakah Anda mudah merasa takut?',
+      'Apakah Anda merasa cemas, tegang, atau khawatir?',
+      'Apakah tangan Anda gemetar?',
+      'Apakah Anda mengalami gangguan pencernaan?',
+      'Apakah Anda merasa sulit berpikir jernih?',
+      'Apakah Anda merasa tidak bahagia?',
+      'Apakah Anda lebih sering menangis?',
+      'Apakah Anda merasa sulit untuk menikmati aktivitas sehari-hari?',
+      'Apakah Anda mengalami kesulitan untuk mengambil keputusan?',
+      'Apakah aktivitas/tugas sehari-hari Anda terbengkalai?',
+      'Apakah Anda merasa tidak mampu berperan dalam kehidupan ini?',
+      'Apakah Anda kehilangan minat terhadap banyak hal?',
+      'Apakah Anda merasa tidak berharga?',
+      'Apakah Anda mempunyai pikiran untuk mengakhiri hidup Anda?',
+      'Apakah Anda merasa lelah sepanjang waktu?',
+      'Apakah Anda merasa tidak enak di perut?',
+      'Apakah Anda mudah lelah?'
+    ];
+    let answers=Array(20).fill(null),questionIndex=0;
+    const intro=$('srqIntro'),questionWrap=$('srqQuestionWrap'),resultWrap=$('srqResultWrap');
+    $('srqAdultConfirm').addEventListener('change',e=>{$('srqStart').disabled=!e.target.checked});
+    $('srqStart').addEventListener('click',()=>{if(!$('srqAdultConfirm').checked)return;intro.hidden=true;resultWrap.hidden=true;questionWrap.hidden=false;renderQuestion()});
+    function renderQuestion(){
+      const n=questionIndex+1,answer=answers[questionIndex];
+      $('srqProgressText').textContent=`Pertanyaan ${n} dari 20`;
+      $('srqProgressPercent').textContent=`${Math.round(n/20*100)}%`;
+      $('srqProgressBar').style.width=`${n/20*100}%`;
+      $('srqQuestionText').textContent=questions[questionIndex];
+      document.querySelectorAll('.mh-answer').forEach(b=>{const selected=b.dataset.answer===(answer===true?'yes':answer===false?'no':'');b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',String(selected))});
+      $('srqPrev').disabled=questionIndex===0;
+      $('srqNext').disabled=answer===null;
+      $('srqNext').innerHTML=questionIndex===19?'Lihat hasil <i class="bx bx-check"></i>':'Lanjut <i class="bx bx-right-arrow-alt"></i>';
+      $('srqQ17Alert').hidden=!(questionIndex===16&&answer===true);
+    }
+    document.querySelectorAll('.mh-answer').forEach(b=>b.addEventListener('click',()=>{
+      answers[questionIndex]=b.dataset.answer==='yes';renderQuestion();
+    }));
+    $('srqPrev').addEventListener('click',()=>{if(questionIndex>0){questionIndex--;renderQuestion()}});
+    $('srqNext').addEventListener('click',()=>{
+      if(answers[questionIndex]===null)return;
+      if(questionIndex<19){questionIndex++;renderQuestion();return}
+      showResult();
+    });
+    function showResult(){
+      const score=answers.filter(v=>v===true).length;
+      const suicidal=answers[16]===true;
+      questionWrap.hidden=true;resultWrap.hidden=false;
+      $('srqScore').textContent=`${score} / 20`;
+      $('srqRiskAlert').hidden=!suicidal;
+      if(suicidal){
+        $('srqResultTitle').textContent='Perlu dukungan segera';
+        $('srqResultText').textContent='Terlepas dari skor total, jawaban pada butir 17 perlu ditindaklanjuti. Jika pikiran tersebut masih ada sekarang atau kamu merasa tidak aman, segera hubungi orang tepercaya dan layanan bantuan.';
+      }else if(score>=6){
+        $('srqResultTitle').textContent='Disarankan melakukan pemeriksaan lanjutan';
+        $('srqResultText').textContent='Jumlah jawaban “Ya” mencapai batas skrining (6 atau lebih). Ini bukan diagnosis, tetapi sinyal untuk membicarakan kondisi yang kamu alami dengan tenaga kesehatan di Puskesmas atau psikolog klinis.';
+      }else{
+        $('srqResultTitle').textContent='Skor berada di bawah batas skrining';
+        $('srqResultText').textContent='Jumlah jawaban “Ya” berada di bawah batas 6. Hasil ini tidak memastikan bahwa tidak ada masalah. Bila ada sesuatu yang mengganggu atau kamu merasa membutuhkan dukungan, tetap cari bantuan.';
+      }
+      resultWrap.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+    $('srqRetake').addEventListener('click',()=>{answers=Array(20).fill(null);questionIndex=0;resultWrap.hidden=true;questionWrap.hidden=true;intro.hidden=false;$('srqAdultConfirm').checked=false;$('srqStart').disabled=true;$('srq20').scrollIntoView({behavior:'smooth',block:'start'})});
+
+    // Guided 4-6 breathing timer: 5 cycles, 50 seconds total.
+    let breathTimer=null,breathSecond=0;
+    const breathCircle=$('breathCircle');
+    function renderBreath(){
+      if(breathSecond>=50){stopBreath();$('breathCircleText').textContent='Selesai';$('breathCaption').textContent='Bagus, beri jeda sebelum melanjutkan aktivitas.';$('breathTime').textContent='5 putaran selesai';breathCircle.className='mh-breath-circle';return}
+      const cycle=breathSecond%10,inhale=cycle<4;
+      $('breathCircleText').textContent=inhale?'Tarik':'Hembus';
+      $('breathCaption').textContent=inhale?'Tarik napas perlahan · 4 hitungan':'Hembuskan perlahan · 6 hitungan';
+      $('breathTime').textContent=`Putaran ${Math.floor(breathSecond/10)+1} dari 5 · ${50-breathSecond} detik tersisa`;
+      breathCircle.className='mh-breath-circle '+(inhale?'inhale':'exhale');
+    }
+    function stopBreath(){if(breathTimer){clearInterval(breathTimer);breathTimer=null}$('breathStart').textContent=breathSecond>=50?'Selesai':'Lanjutkan'}
+    $('breathStart').addEventListener('click',()=>{
+      if(breathTimer){stopBreath();return}
+      if(breathSecond>=50)breathSecond=0;
+      $('breathStart').textContent='Jeda';renderBreath();
+      breathTimer=setInterval(()=>{breathSecond++;renderBreath()},1000);
+    });
+    $('breathReset').addEventListener('click',()=>{stopBreath();breathSecond=0;$('breathStart').textContent='Mulai latihan';$('breathCircleText').textContent='Siap?';$('breathCaption').textContent='Ambil posisi yang nyaman';$('breathTime').textContent='5 putaran · sekitar 50 detik';breathCircle.className='mh-breath-circle'});
+
+    // 5-4-3-2-1 grounding guide.
+    const groundSteps=[
+      ['5 hal','Yang bisa kamu lihat','Perhatikan lima benda atau warna di sekitarmu.'],
+      ['4 hal','Yang bisa kamu rasakan','Sadari empat sensasi sentuhan, seperti kaki menyentuh lantai atau kain di kulit.'],
+      ['3 hal','Yang bisa kamu dengar','Dengarkan tiga suara, baik yang dekat maupun yang jauh.'],
+      ['2 hal','Yang bisa kamu cium','Sadari dua aroma di sekitarmu. Jika tidak ada, ingat aroma yang menenangkan.'],
+      ['1 hal','Yang bisa kamu rasakan di mulut','Sadari satu rasa, atau teguk air perlahan bila tersedia.'],
+      ['Selesai','Kembali ke saat ini','Tarik napas perlahan dan perhatikan tempatmu berada sekarang.']
+    ];let groundIndex=-1;
+    function renderGround(){if(groundIndex<0){$('groundCount').textContent='5 hal';$('groundTitle').textContent='Yang bisa kamu lihat';$('groundPrompt').textContent='Perhatikan lima benda atau warna di sekitarmu.';$('groundPrev').disabled=true;$('groundNext').textContent='Mulai';return}const s=groundSteps[groundIndex];$('groundCount').textContent=s[0];$('groundTitle').textContent=s[1];$('groundPrompt').textContent=s[2];$('groundPrev').disabled=groundIndex===0;$('groundNext').textContent=groundIndex===groundSteps.length-1?'Ulangi':'Berikutnya'}
+    $('groundNext').addEventListener('click',()=>{if(groundIndex>=groundSteps.length-1)groundIndex=-1;else groundIndex++;renderGround()});
+    $('groundPrev').addEventListener('click',()=>{if(groundIndex>0)groundIndex--;renderGround()});
+
+    const moodCopy={berat:'Terima kasih sudah menyadari bahwa hari ini terasa berat. Coba pilih satu kebutuhan paling dasar yang bisa kamu penuhi sekarang.',sedih:'Tidak apa-apa memberi ruang untuk sedih. Apakah ada orang aman yang bisa kamu ajak bicara?',biasa:'Kondisimu terasa biasa saja. Perhatikan apa yang membantu menjaga keseimbanganmu hari ini.',cukup:'Ada hal yang terasa cukup baik. Coba kenali hal kecil apa yang ikut membantu.',baik:'Senang mendengarnya. Kamu boleh menikmati momen ini tanpa harus merasa bersalah.'};
+    document.querySelectorAll('.mh-mood').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.mh-mood').forEach(x=>x.classList.remove('selected'));b.classList.add('selected');$('moodReflection').textContent=moodCopy[b.dataset.mood]}));
+
+    $('journalDownload').addEventListener('click',()=>{
+      const content=$('journalText').value.trim();
+      if(!content){$('journalText').focus();$('journalText').setCustomValidity('Tuliskan catatan terlebih dahulu.');$('journalText').reportValidity();$('journalText').setCustomValidity('');return}
+      const blob=new Blob([`Jurnal pribadi MyAnjem\n${new Date().toLocaleString('id-ID')}\n\n${content}\n`],{type:'text/plain;charset=utf-8'});
+      const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;const now=new Date(),localDate=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');a.download=`jurnal-pribadi-${localDate}.txt`;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+    });
+    $('journalClear').addEventListener('click',()=>{$('journalText').value='';$('journalText').focus()});
+  })();
+  </script>
+</body>
+</html>
