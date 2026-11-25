@@ -1,0 +1,316 @@
+
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#e83e8c">
+  <meta name="description" content="MyAnjem - Layanan transportasi dan pengiriman yang nyaman, aman, dan terpercaya.">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="logo.png.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="logo.png.png">
+  <link rel="apple-touch-icon" href="logo.png.png">
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <title>MyAnjem</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --pink: var(--ma-accent);
+      --pink-dark: var(--ma-accent-dark);
+      --pink-light: #fff0f7;
+      --text: #29232b;
+      --muted: #938994;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      min-height: 100%;
+    }
+
+    body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 15% 15%, #ffe4f1 0, transparent 35%),
+        radial-gradient(circle at 85% 85%, #ffeaf4 0, transparent 32%),
+        #fffafd;
+      font-family: 'Nunito', sans-serif;
+      color: var(--text);
+    }
+
+    /* Dekorasi background */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      filter: blur(2px);
+      opacity: .55;
+    }
+
+    .orb-1 {
+      width: 260px;
+      height: 260px;
+      top: -100px;
+      right: -80px;
+      background: #ffd1e6;
+    }
+
+    .orb-2 {
+      width: 220px;
+      height: 220px;
+      bottom: -100px;
+      left: -70px;
+      background: #fbd6eb;
+    }
+
+    .container {
+      position: relative;
+      z-index: 2;
+      width: min(100% - 40px, 400px);
+      text-align: center;
+      padding: 45px 30px;
+      animation: containerIn .8s ease both;
+    }
+
+    /* Logo */
+    .logo-wrap {
+      width: 112px;
+      height: 112px;
+      margin: 0 auto 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: white;
+      border-radius: 32px;
+      box-shadow:
+        0 15px 40px rgba(232, 62, 140, .13),
+        0 3px 12px rgba(40, 20, 30, .04);
+      animation: logoIn 1s cubic-bezier(.2,.8,.2,1) both;
+    }
+
+    .logo {
+      width: 82px;
+      height: 82px;
+      object-fit: contain;
+      border-radius: 22px;
+    }
+
+    /* Nama brand */
+    .brand {
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: -1.2px;
+      margin: 0;
+    }
+
+    .brand span {
+      color: var(--pink);
+    }
+
+    .tagline {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 8px;
+      font-weight: 700;
+      letter-spacing: .4px;
+    }
+
+    /* Status loading */
+    .loading-section {
+      margin-top: 45px;
+    }
+
+    .loading-text {
+      font-size: 13px;
+      color: #756b76;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .loading-track {
+      width: 180px;
+      height: 5px;
+      border-radius: 99px;
+      background: #f5dce9;
+      margin: auto;
+      overflow: hidden;
+    }
+
+    .loading-bar {
+      width: 35%;
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #f49ac5, var(--ma-accent));
+      animation: loading 2.2s ease-in-out infinite;
+    }
+
+    .footer {
+      margin-top: 55px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #b2a7b1;
+      letter-spacing: .6px;
+    }
+
+    .manual-link {
+      display: inline-block;
+      margin-top: 22px;
+      color: var(--pink-dark);
+      font-size: 12px;
+      font-weight: 800;
+      text-decoration: none;
+      opacity: 0;
+      animation: fadeIn .5s ease 1.5s forwards;
+    }
+
+    .manual-link:hover {
+      text-decoration: underline;
+    }
+
+    /* Animasi */
+    @keyframes loading {
+      0% {
+        transform: translateX(-120%);
+      }
+      50% {
+        transform: translateX(100%);
+      }
+      100% {
+        transform: translateX(300%);
+      }
+    }
+
+    @keyframes logoIn {
+      from {
+        opacity: 0;
+        transform: translateY(18px) scale(.85);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes containerIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Mobile */
+    @media (max-width: 480px) {
+      .container {
+        padding: 35px 20px;
+      }
+
+      .logo-wrap {
+        width: 100px;
+        height: 100px;
+        border-radius: 28px;
+      }
+
+      .logo {
+        width: 75px;
+        height: 75px;
+      }
+
+      .brand {
+        font-size: 29px;
+      }
+    }
+
+    /* Accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+  </style>
+
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="myanjem-ui.css">
+<script src="myanjem-ui.js" defer></script>
+</head>
+
+<body>
+
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <main class="container">
+
+    <div class="logo-wrap">
+      <img
+        src="logo.png.png"
+        alt="Logo MyAnjem"
+        class="logo"
+        onerror="this.style.display='none';this.parentElement.innerHTML='<span style=\'font-size:32px;font-weight:900;color:#e83e8c\'>MA</span>';"
+      >
+    </div>
+
+    <h1 class="brand">My<span>Anjem</span></h1>
+
+    <p class="tagline">
+      Nyaman dalam perjalanan, mudah dalam layanan.
+    </p>
+
+    <div class="loading-section">
+      <div class="loading-text" id="loadingText">
+        Menyiapkan pengalaman terbaik untuk Anda...
+      </div>
+
+      <div class="loading-track">
+        <div class="loading-bar"></div>
+      </div>
+    </div>
+
+    <a href="/home" class="manual-link">
+      Tidak berpindah otomatis? Klik di sini
+    </a>
+
+    <div class="footer">
+      MYANJEM · YOUR JOURNEY, OUR CARE
+    </div>
+
+  </main>
+
+  <script>
+    // Waktu splash screen: 2,5 detik
+    const REDIRECT_DELAY = 2500;
+
+    // Tujuan halaman utama
+    const TARGET = "/home";
+
+    // Redirect otomatis
+    setTimeout(() => {
+      window.location.replace(TARGET);
+    }, REDIRECT_DELAY);
+  </script>
+
+</body>
+</html>
