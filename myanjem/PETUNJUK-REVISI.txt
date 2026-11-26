@@ -1,0 +1,57 @@
+PETUNJUK REVISI MYANJEM — VERSI 5.2.0
+====================================
+
+ISI PAKET
+- Seluruh halaman HTML MyAnjem yang sudah direvisi.
+- mentalhealth.html sebagai halaman baru Sehat Jiwa.
+- codegs.txt sebagai backend Google Apps Script.
+- logo.png.png sebagai aset logo.
+
+PERUBAHAN UTAMA
+1. Mode terang/gelap dan pengaturan warna aksen tersedia di setiap halaman. Default: mode terang dengan aksen pink (#e83e8c). Preferensi disimpan di browser dan berlaku lintas halaman pada domain yang sama.
+2. Tarif motor: Rp6.000 untuk jarak dasar 1–3 km, lalu tambahan Rp1.500 per km yang dimulai setelah 3 km.
+3. Layanan mobil baru dapat dipilih jika sudah ada driver mobil berstatus disetujui admin. Pemesanan segera mensyaratkan driver mobil online; pemesanan terjadwal dapat dibuat lebih awal jika sudah ada driver mobil terverifikasi.
+4. Pilihan kategori mobil: 1, 4, atau 5+ penumpang. Jadwal tanggal dan jam, jenis kendaraan, kategori penumpang, kode tiket, dan token invoice disimpan bersama data pesanan.
+5. Pesanan mobil terjadwal memiliki tombol unduh tiket PNG dengan QR yang menuju invoice pesanan.
+6. Kalender hari besar ada pada sheet MA2_HOLIDAYS. Sheet akan dibuat otomatis oleh backend jika belum tersedia; kalender 2026 awal sudah disiapkan. Untuk 2027 dan seterusnya, tambahkan baris sesuai kolom sheet dengan tanggal yyyy-mm-dd, judul, tahun, kategori, dan status aktif.
+7. Halaman Tentang memperoleh kontak melalui pengaturan admin. Kontak tidak diisi dengan nomor/email/akun Instagram rekaan; atur nilainya sendiri di panel admin.
+8. Halaman Sehat Jiwa berisi edukasi, SRQ-20 versi redaksi sederhana, informasi bantuan, latihan napas, grounding, dan jurnal singkat. Jawaban SRQ hanya dihitung di browser dan tidak dikirim ke server.
+
+TARIF MOBIL — NILAI AWAL YANG DAPAT DIUBAH
+Karena tarif mobil khusus belum diberikan, nilai awal yang dipasang adalah:
+- 1 penumpang: Rp15.000 untuk 1–3 km.
+- 4 penumpang: Rp20.000 untuk 1–3 km.
+- 5+ penumpang: Rp25.000 untuk 1–3 km.
+- Semua kategori mobil: tambahan Rp1.500 per km setelah 3 km.
+Nilai tersebut dapat diubah melalui Admin > Pengaturan. Samakan keputusan tarif pada aplikasi, kebijakan layanan, dan informasi kepada pengguna sebelum beroperasi.
+
+CARA MEMASANG FILE WEBSITE
+1. Buat cadangan website yang sekarang.
+2. Unggah seluruh file .html dan logo.png.png ke direktori/root hosting statis yang sama seperti website sebelumnya. Jangan tempatkan mentalhealth.html di subfolder lain.
+3. Halaman Sehat Jiwa menggunakan tautan langsung /mentalhealth.html sehingga tidak memerlukan aturan rewrite khusus.
+4. Jangan mengubah nama file dan jangan menghapus halaman yang masih digunakan oleh hosting.
+
+CARA MEMPERBARUI BACKEND GOOGLE APPS SCRIPT
+1. Buka project Google Apps Script yang saat ini digunakan oleh MyAnjem.
+2. Cadangkan kode lama, lalu ganti isi file Code.gs dengan seluruh isi codegs.txt dari paket ini.
+3. Sebelum menyimpan/deploy, cari konstanta ADMIN_PASSWORD di bagian awal codegs.txt. Ganti nilai CHANGE_THIS_BEFORE_DEPLOYMENT dengan kata sandi admin baru yang kuat, unik, dan hanya disimpan oleh pengelola. Jangan memakai kata sandi contoh atau membagikannya di file publik.
+4. Simpan project dan buka Deploy > Manage deployments. Edit deployment Web App yang sedang dipakai, pilih versi baru, lalu deploy. Pertahankan URL deployment yang sudah ada bila memungkinkan.
+5. URL API yang saat ini tertanam pada halaman-halaman terkait dipertahankan dari proyek sumber. Jika kamu membuat deployment Web App baru dengan URL berbeda, ganti nilai API_URL di halaman yang menggunakannya agar menunjuk ke URL /exec terbaru.
+6. Backend memakai database proyek yang sudah ada. Jangan menghapus spreadsheet atau sheet MA2_* lama. Pada pemanggilan API pertama setelah pembaruan, backend menambahkan kolom pesanan baru dan membuat MA2_HOLIDAYS jika belum ada.
+7. Jika memasang sebagai sistem/database yang benar-benar baru, jalankan setupMyAnjemV2() dari editor Apps Script dan selesaikan otorisasi yang diminta. Untuk pembaruan instalasi lama, jangan membuat database baru jika ingin mempertahankan data saat ini.
+
+KONFIGURASI SETELAH DEPLOYMENT
+- Masuk ke panel Admin > Pengaturan.
+- Periksa tarif motor dan tarif awal mobil; ubah tarif mobil sesuai keputusan operasional.
+- Isi nomor WhatsApp/telepon bantuan, email customer service, dan URL Instagram resmi MyAnjem.
+- Periksa pengaturan pembayaran, QRIS, rekening, dan informasi layanan lainnya sebelum menerima pesanan.
+- Verifikasi setidaknya satu akun driver mobil melalui panel admin agar opsi Mobil muncul pada pemesanan.
+
+CATATAN OPERASIONAL DAN PRIVASI
+- Pengujian pada paket ini mencakup pemeriksaan sintaks JavaScript, pemeriksaan sintaks backend, dan pemeriksaan duplikasi ID HTML. Integrasi live dengan spreadsheet/Apps Script perlu diverifikasi kembali setelah kamu melakukan deployment karena perubahan ini belum di-deploy dari akun Google milikmu.
+- SRQ-20 pada halaman ini merupakan adaptasi redaksi untuk edukasi mandiri, bukan formulir standar tervalidasi dan bukan alat diagnosis. Hasil 6 atau lebih adalah sinyal untuk penilaian lanjutan, bukan diagnosis. Gunakan penilaian tenaga kesehatan untuk keputusan klinis.
+- Jika muncul pikiran untuk mengakhiri hidup atau ada risiko keselamatan segera, jangan mengandalkan skor: hubungi orang tepercaya, cari IGD/fasilitas kesehatan, atau gunakan layanan bantuan darurat yang berlaku di wilayahmu. MyAnjem bukan hotline krisis dan tidak memantau jawaban SRQ.
+- Syarat layanan dan kebijakan privasi merupakan draf operasional yang lebih terstruktur, bukan pengesahan atau pendapat hukum. Minta peninjauan hukum sebelum digunakan sebagai kebijakan resmi, terutama terkait perlindungan konsumen, perlindungan data pribadi, dan tanggung jawab penyedia layanan.
+- Transaksi/komunikasi di luar kanal MyAnjem dijelaskan sebagai aktivitas yang tidak dapat dipantau sistem. Ketentuan tersebut tidak dimaksudkan menghapus hak pengguna yang tidak dapat dikesampingkan berdasarkan hukum.
+
+SELESAI

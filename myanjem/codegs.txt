@@ -1,0 +1,1746 @@
+/**
+ * MyAnjem V2 — Google Apps Script backend
+ * Database is created as a NEW spreadsheet and uses MA2_* tab names.
+ * Deploy this project as a Web App. Frontend statis di-host terpisah dan berkomunikasi melalui API JSONP/POST.
+ */
+
+const APP_VERSION = '5.2.0';
+const DB_PROPERTY = 'MYANJEM_V2_DB_ID';
+const DB_ID_OVERRIDE = '1wvfFQ6_ix22TyezGC8B03Hmf0eh-5IRiDzcuWjrZOF4'; // Optional: paste a dedicated spreadsheet ID here.
+const ADMIN_USERNAME = 'admin';
+const ADMIN_PASSWORD = 'CHANGE_THIS_BEFORE_DEPLOYMENT'; // Wajib diganti dengan kata sandi unik sebelum deployment.
+const SESSION_TTL_SECONDS = 21600; // 6 hours
+const EMAIL_OTP_TTL_SECONDS = 300;
+const EMAIL_OTP_COOLDOWN_SECONDS = 60;
+const MAX_ID_DOCUMENT_BYTES = 2 * 1024 * 1024;
+
+const TABLES = {
+  CONFIG: 'MA2_CONFIG',
+  DRIVERS: 'MA2_DRIVERS',
+  ORDERS: 'MA2_ORDERS',
+  PAYMENTS: 'MA2_PAYMENTS',
+  EVENTS: 'MA2_EVENTS',
+  RIDERS: 'MA2_RIDERS',
+  RIDER_ORDERS: 'MA2_RIDER_ORDERS',
+  AUDIT: 'MA2_AUDIT',
+  WITHDRAWALS: 'MA2_WITHDRAWALS',
+  REPORTS: 'MA2_REPORTS',
+  VOUCHERS: 'MA2_VOUCHERS',
+  HOLIDAYS: 'MA2_HOLIDAYS'
+};
+
+const HEADERS = {
+  MA2_CONFIG: ['key', 'value'],
+  MA2_DRIVERS: [
+    'driverId','name','phone','email','vehicleType','vehicleBrand','plate','region',
+    'passwordSalt','passwordHash','status','online','baseFare','farePerKm','rating',
+    'ratingCount','balance','lat','lng','lastLocationAt','createdAt','approvedAt','lastLoginAt',
+    'emailVerified','identityDocType','identityDocFileId','identityDocFileName','payoutMethod','payoutDetails','payoutUpdatedAt','passwordResetAt','welcomeEmailSentAt'
+  ],
+  MA2_ORDERS: [
+    'orderId','createdAt','updatedAt','riderName','riderPhone','driverId','driverName',
+    'pickupAddress','pickupLat','pickupLng','dropoffAddress','dropoffLat','dropoffLng',
+    'distanceKm','durationMin','fare','paymentMethod','paymentStatus','orderStatus','note',
+    'cancelReason','acceptedAt','arrivedAt','startedAt','completedAt',
+    'rating','ratingComment','ratedAt','invoiceToken','riderId','originalFare','voucherCode','discountAmount',
+    'vehicleType','passengerCount','bookingMode','scheduleAt','ticketCode'
+  ],
+  MA2_PAYMENTS: ['paymentId','orderId','method','amount','status','reference','updatedAt','creditedAt'],
+  MA2_EVENTS: ['eventId','orderId','actorType','actorId','eventType','message','createdAt'],
+  MA2_RIDERS: ['riderId','name','phone','email','passwordSalt','passwordHash','status','createdAt','lastLoginAt','emailVerified','passwordResetAt','welcomeEmailSentAt'],
+  MA2_RIDER_ORDERS: ['linkId','orderId','riderId','createdAt'],
+  MA2_AUDIT: ['auditId','actor','action','targetType','targetId','detail','createdAt'],
+  MA2_WITHDRAWALS: ['withdrawalId','driverId','driverName','amount','method','destination','status','requestedAt','processedAt','adminNote'],
+  MA2_REPORTS: ['reportId','reportType','orderId','reporterName','reporterPhone','details','status','createdAt','adminNote'],
+  MA2_VOUCHERS: ['voucherCode','description','discountType','discountValue','minimumOrder','maximumDiscount','usageLimit','usedCount','startAt','endAt','status','createdAt','updatedAt'],
+  MA2_HOLIDAYS: ['holidayDate','title','description','year','category','isActive','source','createdAt']
+};
+
+
+/**
+ * MyAnjem V2 — JSONP API Gateway
+ * Frontend: Static HTML hosted externally
+ * Backend: Google Apps Script + Google Spreadsheet
+ *
+ * Compatible with:
+ * ?ma2=1&action=bootstrap&payload=...&callback=...
+ */
+
+function doGet(e) {
+  const params = (e && e.parameter) ? e.parameter : {};
+
+  // Semua request frontend menggunakan JSONP.
+  if (String(params.ma2 || '') === '1') {
+    return handleJsonp_(params);
+  }
+
+  // Endpoint dibuka tanpa parameter API.
+  return ContentService
+    .createTextOutput(JSON.stringify({
+      ok: false,
+      message: 'MyAnjem V2 API aktif. Gunakan endpoint JSONP.'
+    }))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+/** POST bridge untuk data besar/sensitif (dokumen identitas). Frontend memakai
+ * hidden iframe + postMessage agar tidak bergantung pada CORS browser. */
+function doPost(e) {
+  const params = (e && e.parameter) ? e.parameter : {};
+  const nonce = String(params.nonce || '').replace(/[^A-Za-z0-9_-]/g, '').substring(0, 80);
+  let result;
+  try {
+    if (String(params.ma2 || '') !== '1') throw new Error('Endpoint MyAnjem tidak valid.');
+    const payload = params.payload ? JSON.parse(String(params.payload)) : {};
+    if (!payload || typeof payload !== 'object' || Array.isArray(payload)) throw new Error('Format payload tidak valid.');
+    result = api(String(params.action || ''), payload);
+  } catch (err) {
+    result = fail_(err && err.message ? err.message : 'Permintaan POST gagal.');
+  }
+  // HtmlService content runs inside Google's sandboxed iframe wrapper.
+  // parent.postMessage() can target Google's intermediate frame instead of
+  // the external page that created the hidden POST iframe. Send to top so the
+  // frontend can receive the response; the frontend validates origin + nonce.
+  const message = JSON.stringify({ __myanjem: true, nonce: nonce, result: result }).replace(/</g, '\\u003c');
+  const responseHtml = '<!doctype html><html><head><meta charset="utf-8"></head><body>' +
+    '<script>(function(){var response=' + message + ';' +
+    'try{window.top.postMessage(response,"*");}' +
+    'catch(err){try{window.parent.parent.postMessage(response,"*");}catch(ignore){}}' +
+    '})();<\/script></body></html>';
+  return HtmlService.createHtmlOutput(responseHtml)
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+
+/**
+ * Memproses request JSONP dari empat halaman frontend.
+ */
+function handleJsonp_(params) {
+  const callback = String(params.callback || '');
+
+  // Validasi callback untuk mencegah injeksi JavaScript.
+  if (!/^__ma2_cb_[A-Za-z0-9_$]+$/.test(callback)) {
+    return ContentService
+      .createTextOutput('/* Invalid JSONP callback */')
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
+
+  let payload = {};
+
+  try {
+    // Payload dikirim frontend dalam format Base64 URL-safe.
+    const encoded = String(params.payload || '');
+
+    if (encoded) {
+      const bytes = Utilities.base64DecodeWebSafe(encoded);
+      const decoded = Utilities.newBlob(bytes)
+        .getDataAsString('UTF-8');
+
+      payload = JSON.parse(decoded);
+
+      if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
+        throw new Error('Format payload tidak valid.');
+      }
+    }
+
+    // Jalankan API utama yang sudah tersedia di Code.gs.
+    const result = api(
+      String(params.action || ''),
+      payload
+    );
+
+    return jsonpResponse_(callback, result);
+
+  } catch (error) {
+    console.error(error.stack || error);
+
+    return jsonpResponse_(callback, {
+      ok: false,
+      message: error.message || 'Terjadi kesalahan pada API MyAnjem.'
+    });
+  }
+}
+
+
+/**
+ * Membungkus respons menjadi JavaScript JSONP.
+ */
+function jsonpResponse_(callback, data) {
+  const json = JSON.stringify(data || {
+    ok: false,
+    message: 'Respons server kosong.'
+  });
+
+  return ContentService
+    .createTextOutput(callback + '(' + json + ');')
+    .setMimeType(ContentService.MimeType.JAVASCRIPT);
+}
+
+/** Run once from the Apps Script editor. Creates a separate database spreadsheet. */
+function setupMyAnjemV2() {
+  const props = PropertiesService.getScriptProperties();
+  let id = DB_ID_OVERRIDE || props.getProperty(DB_PROPERTY);
+  let ss;
+  if (id) {
+    ss = SpreadsheetApp.openById(id);
+  } else {
+    ss = SpreadsheetApp.create('MyAnjem Database V2');
+    id = ss.getId();
+    props.setProperty(DB_PROPERTY, id);
+  }
+  ensureTables_(ss);
+  Logger.log('MyAnjem V5 database: ' + ss.getUrl());
+  return ss.getUrl();
+}
+
+/** Public RPC called by google.script.run from index.html. */
+function api(action, payload) {
+  payload = payload || {};
+  try {
+    ensureDatabase_();
+    switch (String(action || '')) {
+      case 'bootstrap': return ok_({ version: APP_VERSION, settings: publicSettings_() });
+      case 'todayHoliday': return todayHoliday_();
+      case 'captchaChallenge':
+      case 'orderCaptchaChallenge': return captchaChallenge_();
+      case 'sendEmailOtp': return sendEmailOtp_(payload);
+      case 'registerRider': return registerRider_(payload);
+      case 'riderLogin': return riderLogin_(payload);
+      case 'riderMe': return riderMe_(payload);
+      case 'riderUpdate': return riderUpdate_(payload);
+      case 'forgotPassword': return forgotPassword_(payload);
+      case 'rateDriver': return rateDriver_(payload);
+      case 'submitSupportReport': return submitSupportReport_(payload);
+      case 'publicInvoice': return publicInvoice_(payload);
+      case 'publicInvoiceByOrderPhone': return publicInvoiceByOrderPhone_(payload);
+      case 'riderLogout': return logout_(payload);
+      case 'registerDriver': return registerDriver_(payload);
+      case 'driverLogin': return driverLogin_(payload);
+      case 'adminLogin': return adminLogin_(payload);
+      case 'publicDrivers': return publicDrivers_();
+      case 'createOrder': return createOrder_(payload);
+      case 'voucherPreview': return voucherPreview_(payload);
+      case 'getOrder': return getOrder_(payload);
+      case 'cancelCustomerOrder': return cancelCustomerOrder_(payload);
+      case 'submitPaymentReference': return submitPaymentReference_(payload);
+      case 'driverDashboard': return driverDashboard_(payload);
+      case 'requestWithdrawal': return requestWithdrawal_(payload);
+      case 'adminDriverDocument': return adminDriverDocument_(payload);
+      case 'driverUpdate': return driverUpdate_(payload);
+      case 'driverLocation': return driverLocation_(payload);
+      case 'driverAction': return driverAction_(payload);
+      case 'adminDashboard': return adminDashboard_(payload);
+      case 'adminAction': return adminAction_(payload);
+      case 'logout': return logout_(payload);
+      default: return fail_('Aksi tidak dikenali. Muat ulang aplikasi.');
+    }
+  } catch (err) {
+    console.error(err && err.stack ? err.stack : err);
+    return fail_(err && err.message ? err.message : 'Terjadi kesalahan server.');
+  }
+}
+
+/* ------------------------------ DATABASE ------------------------------ */
+
+function ensureDatabase_() {
+  const props = PropertiesService.getScriptProperties();
+  let id = DB_ID_OVERRIDE || props.getProperty(DB_PROPERTY);
+  if (!id) {
+    const created = SpreadsheetApp.create('MyAnjem Database V2');
+    id = created.getId();
+    props.setProperty(DB_PROPERTY, id);
+  }
+  const cache = CacheService.getScriptCache();
+  const readyKey = 'MYANJEM_SCHEMA_READY_' + APP_VERSION + '_' + id;
+  if (cache.get(readyKey) !== '1') {
+    const lock = LockService.getScriptLock();
+    lock.waitLock(10000);
+    try {
+      if (cache.get(readyKey) !== '1') {
+        ensureTables_(SpreadsheetApp.openById(id));
+        cache.put(readyKey, '1', 21600);
+      }
+    } finally { lock.releaseLock(); }
+  }
+  return SpreadsheetApp.openById(id);
+}
+
+/** Jalankan sekali secara manual dari editor Apps Script untuk memberi izin layanan. */
+function authorizeMyAnjemServices() {
+  const id = DB_ID_OVERRIDE || PropertiesService.getScriptProperties().getProperty(DB_PROPERTY);
+  if (id) SpreadsheetApp.openById(id).getId();
+  DriveApp.getRootFolder().getId();
+  MailApp.getRemainingDailyQuota();
+  Logger.log('Izin Spreadsheet, Drive, dan Mail tersedia untuk MyAnjem.');
+  return 'Authorization check complete';
+}
+
+function ensureTables_(ss) {
+  Object.keys(HEADERS).forEach(name => {
+    let sh = ss.getSheetByName(name);
+    if (!sh) sh = ss.insertSheet(name);
+    const expected = HEADERS[name];
+    const lastCol = sh.getLastColumn();
+    let current = lastCol > 0
+      ? sh.getRange(1, 1, 1, lastCol).getDisplayValues()[0].map(v => String(v || '').trim())
+      : [];
+    while (current.length && !current[current.length - 1]) current.pop();
+
+    if (!current.length) {
+      if (sh.getMaxColumns() < expected.length) sh.insertColumnsAfter(sh.getMaxColumns(), expected.length - sh.getMaxColumns());
+      sh.getRange(1, 1, 1, expected.length).setValues([expected]);
+    } else {
+      const compatible = current.length <= expected.length && current.every((header, index) => header === expected[index]);
+      if (!compatible) {
+        throw new Error('Header tabel ' + name + ' tidak cocok dengan skema MyAnjem V5. Tidak ada kolom yang ditimpa; periksa urutan header sheet terlebih dahulu.');
+      }
+      if (current.length < expected.length) {
+        if (sh.getMaxColumns() < expected.length) sh.insertColumnsAfter(sh.getMaxColumns(), expected.length - sh.getMaxColumns());
+        sh.getRange(1, current.length + 1, 1, expected.length - current.length).setValues([expected.slice(current.length)]);
+      }
+    }
+    if (sh.getMaxColumns() < expected.length) sh.insertColumnsAfter(sh.getMaxColumns(), expected.length - sh.getMaxColumns());
+    sh.setFrozenRows(1);
+    sh.getRange(1, 1, 1, expected.length).setFontWeight('bold').setBackground('#fce7f3');
+
+    // Store phone fields as text and repair legacy numeric cells that lost their leading zero.
+    const phoneColumns = ['phone','riderPhone','reporterPhone'].map(k => expected.indexOf(k) + 1).filter(n => n > 0);
+    phoneColumns.forEach(col => {
+      const lastRow = sh.getLastRow();
+      if (lastRow >= 2) {
+        const range = sh.getRange(2, col, lastRow - 1, 1);
+        const values = range.getValues().map(row => {
+          const value = row[0];
+          return [value === '' || value === null ? '' : phone_(value)];
+        });
+        range.setNumberFormat('@');
+        range.setValues(values);
+      } else {
+        sh.getRange(2, col, 1, 1).setNumberFormat('@');
+      }
+    });
+  });
+  const cfg = readConfig_();
+  // Tarif motor diperbarui menjadi Rp6.000 untuk 1–3 km dan Rp1.500/km berikutnya.
+  // Nilai lama 5 km dimigrasikan satu kali agar instalasi aktif mengikuti ketentuan baru.
+  if (!('fareIncludedKm' in cfg) || Number(cfg.fareIncludedKm) === 5) {
+    upsertConfig_('defaultBaseFare', '6000');
+    upsertConfig_('defaultFarePerKm', '1500');
+    upsertConfig_('minimumFare', '6000');
+    upsertConfig_('fareIncludedKm', '3');
+  }
+  const defaults = {
+    brand: 'MyAnjem', defaultBaseFare: '6000', defaultFarePerKm: '1500', minimumFare: '6000', fareIncludedKm: '3',
+    defaultCarBaseFare1: '15000', defaultCarBaseFare4: '20000', defaultCarBaseFare5: '25000',
+    defaultCarFarePerKm: '1500', carFareIncludedKm: '3',
+    cancelFee: '0', bankName: 'Bank / E-Wallet', bankAccount: 'Atur nomor rekening di panel admin',
+    bankHolder: 'MyAnjem', helpPhone: '', supportEmail: '', instagramUrl: '', qrisImageUrl: '', qrisMerchantName: 'MyAnjem'
+  };
+  Object.keys(defaults).forEach(k => { if (!(k in cfg)) upsertConfig_(k, defaults[k]); });
+  seedHolidayCalendar_(ss.getSheetByName(TABLES.HOLIDAYS));
+}
+
+function db_() {
+  const id = DB_ID_OVERRIDE || PropertiesService.getScriptProperties().getProperty(DB_PROPERTY);
+  if (!id) throw new Error('Database belum dibuat. Jalankan setupMyAnjemV2() terlebih dahulu.');
+  return SpreadsheetApp.openById(id);
+}
+
+function sheet_(table) {
+  const sh = db_().getSheetByName(table);
+  if (!sh) throw new Error('Tabel ' + table + ' tidak ditemukan. Jalankan setupMyAnjemV2().');
+  return sh;
+}
+
+function records_(table) {
+  const sh = sheet_(table);
+  const values = sh.getDataRange().getValues();
+  if (values.length < 2) return [];
+  const headers = values[0].map(String);
+  return values.slice(1).map((row, idx) => {
+    const obj = { _row: idx + 2 };
+    headers.forEach((h, i) => {
+      let value = serial_(row[i]);
+      if (['phone','riderPhone','reporterPhone'].includes(h) && value !== '' && value != null) value = phone_(value);
+      obj[h] = value;
+    });
+    return obj;
+  }).filter(r => Object.keys(r).some(k => k !== '_row' && r[k] !== '' && r[k] !== null));
+}
+
+function append_(table, obj) {
+  const sh = sheet_(table);
+  const headers = HEADERS[table];
+  const row = headers.map(h => obj[h] === undefined ? '' : obj[h]);
+  const rowNumber = Math.max(2, sh.getLastRow() + 1);
+  // Phone values must be written as literal text before setting the value,
+  // otherwise Sheets can reinterpret an Indonesian 08... number as numeric.
+  ['phone','riderPhone','reporterPhone'].forEach(field => {
+    const index = headers.indexOf(field);
+    if (index >= 0) {
+      const value = row[index];
+      row[index] = value === '' || value == null ? '' : String(phone_(value));
+      sh.getRange(rowNumber, index + 1).setNumberFormat('@');
+    }
+  });
+  sh.getRange(rowNumber, 1, 1, headers.length).setValues([row]);
+}
+
+function update_(table, rowNumber, patch) {
+  const sh = sheet_(table);
+  const headers = HEADERS[table];
+  const current = sh.getRange(rowNumber, 1, 1, headers.length).getValues()[0];
+  headers.forEach((h, i) => {
+    if (Object.prototype.hasOwnProperty.call(patch, h)) current[i] = patch[h];
+  });
+  sh.getRange(rowNumber, 1, 1, headers.length).setValues([current]);
+  ['phone','riderPhone','reporterPhone'].forEach(field => {
+    const col = headers.indexOf(field) + 1;
+    if (col > 0) {
+      sh.getRange(rowNumber, col).setNumberFormat('@');
+      const value = current[col - 1];
+      if (value !== '' && value != null) sh.getRange(rowNumber, col).setValue(String(phone_(value)));
+    }
+  });
+}
+
+function find_(table, field, value) {
+  const target = String(value == null ? '' : value).trim();
+  return records_(table).find(r => String(r[field] == null ? '' : r[field]).trim() === target) || null;
+}
+
+function readConfig_() {
+  const out = {};
+  records_(TABLES.CONFIG).forEach(r => out[String(r.key)] = String(r.value == null ? '' : r.value));
+  return out;
+}
+
+function upsertConfig_(key, value) {
+  const found = find_(TABLES.CONFIG, 'key', key);
+  if (found) update_(TABLES.CONFIG, found._row, { value: String(value) });
+  else append_(TABLES.CONFIG, { key: String(key), value: String(value) });
+}
+
+
+function seedHolidayCalendar_(sheet) {
+  if (!sheet || sheet.getLastRow() > 1) return;
+  const rows = [
+    ['2026-01-01','Tahun Baru 2026 Masehi','Hari libur nasional','2026','Hari Libur Nasional',true,'SKB 3 Menteri 2026',''],
+    ['2026-01-16','Isra Mikraj Nabi Muhammad SAW','Hari libur nasional','2026','Hari Libur Nasional',true,'SKB 3 Menteri 2026',''],
+    ['2026-02-17','Tahun Baru Imlek 2577 Kongzili','Hari libur nasional','2026','Hari Libur Nasional',true,'SKB 3 Menteri 2026',''],
+    ['2026-03-19','Hari Suci Nyepi (Tahun Baru Saka 1948)','Hari libur nasional','2026','Hari Libur Nasional',true,'SKB 3 Menteri 2026',''],
+    ['2026-03-21','Hari Raya Idulfitri 1447 Hijriah','Hari libur nasional','2026','Hari Libur Nasional',true,'SKB 3 Menteri 2026',''],
+    ['2026-03-22','Hari Raya Idulfitri 1447 Hijriah','Hari libur nasional','2026','Hari Libur Nasional',true,'SKB 3 Menteri 2026',''],
+    ['2026-04-03','Wafat Yesus Kristus','Hari libur nasional','2026','Hari Libur Nasional',true,'SKB 3 Menteri 2026',''],
+    ['2026-04-05','Kebangkitan Yesus Kristus (Paskah)','Hari libur nasional','2026','Hari Libur Nasional',true,'SKB 3 Menteri 2026',''],
+    ['2026-05-01','Hari Buruh Internasional','Hari libur nasional','2026','Hari Libur Nasional',true,'SKB 3 Menteri 2026',''],
+    ['2026-05-14','Kenaikan Yesus Kristus','Hari libur nasional','2026','Hari Libur Nasional',true,'SKB 3 Menteri 2026',''],
+    ['2026-05-27','Iduladha 1447 Hijriah','Hari libur nasional','2026','Hari Libur Nasional',true,'SKB 3 Menteri 2026',''],
+    ['2026-05-31','Hari Raya Waisak 2570 BE','Hari libur nasional','2026','Hari Libur Nasional',true,'SKB 3 Menteri 2026',''],
+    ['2026-06-01','Hari Lahir Pancasila','Hari libur nasional','2026','Hari Libur Nasional',true,'SKB 3 Menteri 2026',''],
+    ['2026-06-16','1 Muharam 1448 Hijriah','Tahun Baru Islam','2026','Hari Libur Nasional',true,'SKB 3 Menteri 2026',''],
+    ['2026-08-17','Hari Kemerdekaan Republik Indonesia','Hari Proklamasi Kemerdekaan','2026','Hari Libur Nasional',true,'SKB 3 Menteri 2026',''],
+    ['2026-08-25','Maulid Nabi Muhammad SAW','Hari libur nasional','2026','Hari Libur Nasional',true,'SKB 3 Menteri 2026',''],
+    ['2026-12-25','Hari Natal','Hari libur nasional','2026','Hari Libur Nasional',true,'SKB 3 Menteri 2026',''],
+    ['2026-02-16','Cuti Bersama Tahun Baru Imlek','Cuti bersama','2026','Cuti Bersama',true,'SKB 3 Menteri 2026',''],
+    ['2026-03-18','Cuti Bersama Hari Suci Nyepi','Cuti bersama','2026','Cuti Bersama',true,'SKB 3 Menteri 2026',''],
+    ['2026-03-20','Cuti Bersama Idulfitri','Cuti bersama','2026','Cuti Bersama',true,'SKB 3 Menteri 2026',''],
+    ['2026-03-23','Cuti Bersama Idulfitri','Cuti bersama','2026','Cuti Bersama',true,'SKB 3 Menteri 2026',''],
+    ['2026-03-24','Cuti Bersama Idulfitri','Cuti bersama','2026','Cuti Bersama',true,'SKB 3 Menteri 2026',''],
+    ['2026-05-15','Cuti Bersama Kenaikan Yesus Kristus','Cuti bersama','2026','Cuti Bersama',true,'SKB 3 Menteri 2026',''],
+    ['2026-05-28','Cuti Bersama Iduladha','Cuti bersama','2026','Cuti Bersama',true,'SKB 3 Menteri 2026',''],
+    ['2026-12-24','Cuti Bersama Hari Natal','Cuti bersama','2026','Cuti Bersama',true,'SKB 3 Menteri 2026',''],
+    ['2026-10-01','Hari Kesaktian Pancasila','Peringatan nasional','2026','Peringatan Nasional',true,'Kalender peringatan nasional',''],
+    ['2026-10-02','Hari Batik Nasional','Peringatan nasional','2026','Peringatan Nasional',true,'Kalender peringatan nasional',''],
+    ['2026-10-22','Hari Santri Nasional','Peringatan nasional','2026','Peringatan Nasional',true,'Kalender peringatan nasional',''],
+    ['2026-10-28','Hari Sumpah Pemuda','Peringatan nasional','2026','Peringatan Nasional',true,'Kalender peringatan nasional',''],
+    ['2026-11-10','Hari Pahlawan','Peringatan nasional','2026','Peringatan Nasional',true,'Kalender peringatan nasional',''],
+    ['2026-11-25','Hari Guru Nasional','Peringatan nasional','2026','Peringatan Nasional',true,'Kalender peringatan nasional',''],
+    ['2026-12-22','Hari Ibu','Peringatan nasional','2026','Peringatan Nasional',true,'Kalender peringatan nasional','']
+  ];
+  const now = now_();
+  const values = rows.map(r => [r[0],r[1],r[2],r[3],r[4],r[5],r[6],now]);
+  if (values.length) sheet.getRange(2,1,values.length,HEADERS.MA2_HOLIDAYS.length).setValues(values);
+}
+
+function todayHoliday_() {
+  const today = Utilities.formatDate(new Date(), 'Asia/Jakarta', 'yyyy-MM-dd');
+  const events = records_(TABLES.HOLIDAYS).filter(x => String(x.holidayDate) === today && String(x.isActive).toLowerCase() !== 'false');
+  return ok_({ date: today, holiday: events.length ? {
+    title: String(events[0].title || ''),
+    description: String(events[0].description || ''),
+    category: String(events[0].category || '')
+  } : null });
+}
+
+function publicSettings_() {
+  const c = readConfig_();
+  return {
+    brand: c.brand || 'MyAnjem',
+    defaultBaseFare: number_(c.defaultBaseFare, 6000),
+    defaultFarePerKm: number_(c.defaultFarePerKm, 1500),
+    minimumFare: number_(c.minimumFare, 6000),
+    fareIncludedKm: number_(c.fareIncludedKm, 3),
+    defaultCarBaseFare1: number_(c.defaultCarBaseFare1, 15000),
+    defaultCarBaseFare4: number_(c.defaultCarBaseFare4, 20000),
+    defaultCarBaseFare5: number_(c.defaultCarBaseFare5, 25000),
+    defaultCarFarePerKm: number_(c.defaultCarFarePerKm, 1500),
+    carFareIncludedKm: number_(c.carFareIncludedKm, 3),
+    cancelFee: number_(c.cancelFee, 0),
+    bankName: c.bankName || '',
+    bankAccount: c.bankAccount || '',
+    bankHolder: c.bankHolder || '',
+    helpPhone: c.helpPhone || '',
+    supportEmail: c.supportEmail || '',
+    instagramUrl: c.instagramUrl || '',
+    qrisImageUrl: c.qrisImageUrl || '',
+    qrisMerchantName: c.qrisMerchantName || 'MyAnjem'
+  };
+}
+
+function serial_(v) {
+  return v instanceof Date ? v.toISOString() : v;
+}
+
+/* ------------------------------ SECURITY ------------------------------ */
+
+function randomId_(prefix) {
+  return prefix + '-' + Utilities.getUuid().replace(/-/g, '').substring(0, 10).toUpperCase();
+}
+
+
+function hashPassword_(password, salt) {
+  const normalizedSalt = String(salt == null ? '' : salt).trim();
+
+  const bytes = Utilities.computeDigest(
+    Utilities.DigestAlgorithm.SHA_256,
+    normalizedSalt + String(password == null ? '' : password),
+    Utilities.Charset.UTF_8
+  );
+
+  return Utilities.base64Encode(bytes);
+}
+
+
+function createSession_(role, userId, extra) {
+  const token = Utilities.getUuid().replace(/-/g, '') + Utilities.getUuid().replace(/-/g, '');
+  CacheService.getScriptCache().put('MYANJEM_V2_SESSION_' + token, JSON.stringify({ role: role, userId: userId, extra: extra || {} }), SESSION_TTL_SECONDS);
+  return token;
+}
+
+function session_(token, role) {
+  if (!token) throw new Error('Sesi tidak ditemukan. Silakan masuk kembali.');
+  const raw = CacheService.getScriptCache().get('MYANJEM_V2_SESSION_' + String(token));
+  if (!raw) throw new Error('Sesi sudah berakhir. Silakan masuk kembali.');
+  const s = JSON.parse(raw);
+  if (role && s.role !== role) throw new Error('Akses tidak diizinkan.');
+  return s;
+}
+
+function logout_(p) {
+  if (p.token) CacheService.getScriptCache().remove('MYANJEM_V2_SESSION_' + String(p.token));
+  return ok_({ loggedOut: true });
+}
+
+/* ------------------------------ EMAIL VERIFICATION ------------------------------ */
+function sendEmailOtp_(p) {
+  const role = String(p.role || '');
+  if (!['rider', 'driver'].includes(role)) return fail_('Jenis verifikasi tidak valid.');
+  const email = String(p.email || '').trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 120) return fail_('Masukkan alamat email yang valid.');
+  const cache = CacheService.getScriptCache();
+  const key = 'MYANJEM_V4_OTP_' + role + '_' + email;
+  const cooldown = cache.get(key + '_cooldown');
+  if (cooldown) return fail_('Kode sudah dikirim. Coba kirim ulang setelah 60 detik.');
+  const otpSeed = Utilities.getUuid().replace(/-/g, '').substring(0, 8);
+  const otp = String(parseInt(otpSeed, 16) % 1000000).padStart(6, '0');
+  const salt = Utilities.getUuid();
+  const hash = hashPassword_(otp, salt);
+  cache.put(key, JSON.stringify({ salt: salt, hash: hash, attempts: 0 }), EMAIL_OTP_TTL_SECONDS);
+  cache.put(key + '_cooldown', '1', EMAIL_OTP_COOLDOWN_SECONDS);
+  const roleLabel = role === 'driver' ? 'pendaftaran driver' : 'pendaftaran penumpang';
+  const htmlBody = '<div style="font-family:Arial,sans-serif;color:#25212a;max-width:520px;margin:auto">' +
+    '<h2 style="color:#c92d75">Verifikasi Email MyAnjem</h2><p>Gunakan kode berikut untuk melanjutkan ' + roleLabel + '.</p>' +
+    '<p style="font-size:30px;font-weight:bold;letter-spacing:8px;background:#fff0f6;padding:16px;text-align:center;border-radius:10px">' + otp + '</p>' +
+    '<p>Kode berlaku selama 5 menit. Jangan bagikan kode ini kepada siapa pun.</p><p style="color:#777">Abaikan email ini jika kamu tidak meminta kode verifikasi.</p></div>';
+  try {
+    MailApp.sendEmail({ to: email, subject: 'Kode verifikasi MyAnjem', htmlBody: htmlBody, body: 'Kode verifikasi MyAnjem: ' + otp + '. Berlaku 5 menit.' });
+    return ok_({ sent: true, expiresIn: EMAIL_OTP_TTL_SECONDS });
+  } catch (err) {
+    cache.remove(key); cache.remove(key + '_cooldown');
+    return fail_('Email belum dapat dikirim. Pastikan izin MailApp sudah diberikan dan kuota email tersedia.');
+  }
+}
+
+function consumeEmailOtp_(role, email, otp) {
+  const key = 'MYANJEM_V4_OTP_' + role + '_' + String(email || '').trim().toLowerCase();
+  const cache = CacheService.getScriptCache();
+  const raw = cache.get(key);
+  if (!raw) return false;
+  const state = JSON.parse(raw);
+  if (Number(state.attempts || 0) >= 5) { cache.remove(key); return false; }
+  const valid = hashPassword_(String(otp || ''), state.salt) === String(state.hash || '');
+  if (!valid) {
+    state.attempts = Number(state.attempts || 0) + 1;
+    cache.put(key, JSON.stringify(state), EMAIL_OTP_TTL_SECONDS);
+    return false;
+  }
+  cache.remove(key);
+  cache.remove(key + '_cooldown');
+  return true;
+}
+
+/* ------------------------------ PASSENGER ACCOUNTS ------------------------------ */
+
+function safeRider_(r) {
+  if (!r) return null;
+  return {
+    riderId: String(r.riderId || ''),
+    name: String(r.name || ''),
+    phone: String(r.phone || ''),
+    email: String(r.email || ''),
+    status: String(r.status || 'ACTIVE'),
+    createdAt: serial_(r.createdAt)
+  };
+}
+
+function registerRider_(p) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const name = clean_(p.name, 90);
+    const phone = phone_(p.phone);
+    const email = clean_(String(p.email || '').toLowerCase(), 120);
+    const password = String(p.password || '');
+    if (name.length < 2) return fail_('Nama lengkap minimal 2 karakter.');
+    if (!/^0[0-9]{8,14}$/.test(phone)) return fail_('Nomor telepon harus memakai format 08xxxxxxxxxx.');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail_('Email wajib diisi dengan alamat yang valid.');
+    if (password.length < 8) return fail_('Kata sandi minimal 8 karakter.');
+    if (records_(TABLES.RIDERS).some(r => String(r.phone) === phone || String(r.email || '').toLowerCase() === email)) return fail_('Nomor telepon atau email sudah terdaftar. Silakan masuk.');
+    if (!consumeEmailOtp_('rider', email, p.emailOtp)) return fail_('Kode verifikasi email salah atau kedaluwarsa. Kirim kode baru.');
+    const salt = Utilities.getUuid();
+    const rider = {
+      riderId: randomId_('RDR'), name: name, phone: phone, email: email,
+      passwordSalt: salt, passwordHash: hashPassword_(password, salt),
+      status: 'ACTIVE', createdAt: now_(), lastLoginAt: now_(), emailVerified: true
+    };
+    append_(TABLES.RIDERS, rider);
+    const welcomeEmailSent = sendWelcomeEmail_('rider', rider);
+    if (welcomeEmailSent) {
+      const savedRider = find_(TABLES.RIDERS, 'riderId', rider.riderId);
+      if (savedRider) update_(TABLES.RIDERS, savedRider._row, { welcomeEmailSentAt: now_() });
+    }
+    const token = createSession_('rider', rider.riderId);
+    return ok_({ token: token, rider: safeRider_(rider), welcomeEmailSent: welcomeEmailSent });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function riderLogin_(p) {
+  const phone = phone_(p.phone);
+  const password = String(p.password || '');
+  if (phone.length < 9 || !password) return fail_('Masukkan nomor telepon dan kata sandi.');
+  const rider = find_(TABLES.RIDERS, 'phone', phone);
+  if (!rider || hashPassword_(password, rider.passwordSalt) !== String(rider.passwordHash)) return fail_('Nomor telepon atau kata sandi salah.');
+  if (String(rider.status) !== 'ACTIVE') return fail_('Akun penumpang sedang dinonaktifkan. Hubungi bantuan MyAnjem.');
+  update_(TABLES.RIDERS, rider._row, { lastLoginAt: now_() });
+  const token = createSession_('rider', rider.riderId);
+  return ok_({ token: token, rider: safeRider_(rider) });
+}
+
+function riderMe_(p) {
+  const s = session_(p.token, 'rider');
+  const rider = find_(TABLES.RIDERS, 'riderId', s.userId);
+  if (!rider || String(rider.status) !== 'ACTIVE') throw new Error('Akun penumpang tidak aktif.');
+  const links = records_(TABLES.RIDER_ORDERS).filter(x => String(x.riderId) === String(rider.riderId));
+  const allOrders = links.map(x => find_(TABLES.ORDERS, 'orderId', x.orderId)).filter(Boolean)
+    .sort((a,b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+  const orders = allOrders.slice(0, 50).map(safeOrder_);
+  const totalSpent = allOrders.reduce((sum, o) => {
+    const paid = o.paymentStatus === 'PAID' || o.paymentStatus === 'PAID_CASH' || (o.paymentMethod === 'CASH' && o.orderStatus === 'COMPLETED');
+    return sum + (paid ? number_(o.fare, 0) : 0);
+  }, 0);
+  return ok_({ rider: safeRider_(rider), orders: orders, totalSpent: totalSpent, totalTrips: allOrders.length });
+}
+
+function riderUpdate_(p) {
+  const s = session_(p.token, 'rider');
+  const rider = find_(TABLES.RIDERS, 'riderId', s.userId);
+  if (!rider || rider.status !== 'ACTIVE') return fail_('Akun penumpang tidak aktif.');
+  const patch = {};
+  const name = p.name === undefined ? rider.name : clean_(p.name, 90);
+  const phone = p.phone === undefined ? phone_(rider.phone) : phone_(p.phone);
+  const email = p.email === undefined ? String(rider.email || '').toLowerCase() : clean_(String(p.email || '').toLowerCase(), 120);
+  if (name.length < 2) return fail_('Nama minimal 2 karakter.');
+  if (!/^0[0-9]{8,14}$/.test(phone)) return fail_('Nomor telepon harus memakai format 08xxxxxxxxxx.');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail_('Email tidak valid.');
+  const duplicate = records_(TABLES.RIDERS).find(x => x.riderId !== rider.riderId && (phone_(x.phone) === phone || String(x.email || '').toLowerCase() === email));
+  if (duplicate) return fail_('Nomor telepon atau email sudah digunakan akun lain.');
+  if (email !== String(rider.email || '').toLowerCase() && !consumeEmailOtp_('rider', email, p.emailOtp)) return fail_('Verifikasi email baru salah atau kedaluwarsa.');
+  patch.name = name; patch.phone = phone; patch.email = email;
+  if (p.newPassword !== undefined && String(p.newPassword)) {
+    if (String(p.newPassword).length < 8) return fail_('Kata sandi baru minimal 8 karakter.');
+    if (hashPassword_(String(p.currentPassword || ''), rider.passwordSalt) !== String(rider.passwordHash)) return fail_('Kata sandi saat ini tidak cocok.');
+    const salt = Utilities.getUuid();
+    patch.passwordSalt = salt; patch.passwordHash = hashPassword_(String(p.newPassword), salt); patch.passwordResetAt = now_();
+  }
+  update_(TABLES.RIDERS, rider._row, patch);
+  return ok_({ rider: safeRider_(find_(TABLES.RIDERS, 'riderId', rider.riderId)) });
+}
+
+function forgotPassword_(p) {
+  const role = String(p.role || '').toLowerCase();
+  const email = clean_(String(p.email || '').trim().toLowerCase(), 120);
+  if (!['rider','driver'].includes(role) || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail_('Masukkan email yang valid.');
+  const cache = CacheService.getScriptCache();
+  const throttleKey = 'MYANJEM_RESET_' + role + '_' + hashPassword_(email, 'reset');
+  if (cache.get(throttleKey)) return fail_('Permintaan reset baru saja dilakukan. Coba lagi beberapa menit.');
+  cache.put(throttleKey, '1', 300);
+  const table = role === 'driver' ? TABLES.DRIVERS : TABLES.RIDERS;
+  const account = records_(table).find(x => String(x.email || '').toLowerCase() === email);
+  // Do not disclose whether an email is registered.
+  if (!account) return ok_({ accepted: true, message: 'Jika email terdaftar, kata sandi sementara akan dikirim.' });
+  const tempPassword = Utilities.getUuid().replace(/-/g, '').slice(0, 4) + 'Aa9!' + Utilities.getUuid().replace(/-/g, '').slice(0, 4);
+  const salt = Utilities.getUuid();
+  const oldSalt = account.passwordSalt, oldHash = account.passwordHash;
+  update_(table, account._row, { passwordSalt: salt, passwordHash: hashPassword_(tempPassword, salt), passwordResetAt: now_() });
+  try {
+    MailApp.sendEmail({
+      to: email,
+      subject: 'Kata sandi sementara MyAnjem',
+      body: 'Kata sandi sementara akun MyAnjem Anda: ' + tempPassword + '\n\nSegera masuk dan ubah kata sandi melalui halaman Akun. Jangan bagikan kode ini kepada siapa pun.'
+    });
+  } catch (err) {
+    update_(table, account._row, { passwordSalt: oldSalt, passwordHash: oldHash });
+    cache.remove(throttleKey);
+    return fail_('Email reset belum dapat dikirim. Periksa izin MailApp dan kuota email.');
+  }
+  return ok_({ accepted: true, message: 'Kata sandi sementara dikirim ke email terdaftar.' });
+}
+
+function rateDriver_(p) {
+  const lock = LockService.getScriptLock(); lock.waitLock(10000);
+  try {
+    const order = find_(TABLES.ORDERS, 'orderId', clean_(p.orderId, 40));
+    if (!order) return fail_('Perjalanan tidak ditemukan.');
+    if (order.orderStatus !== 'COMPLETED') return fail_('Penilaian hanya tersedia setelah perjalanan selesai.');
+    const ratingRaw = Number(p.rating);
+    if (!Number.isFinite(ratingRaw) || ratingRaw < 1 || ratingRaw > 5) return fail_('Pilih nilai bintang 1 sampai 5.');
+    const rating = Math.round(ratingRaw);
+    if (order.rating) return fail_('Perjalanan ini sudah diberi penilaian.');
+    if (p.token) {
+      const session = session_(p.token, 'rider');
+      const rider = find_(TABLES.RIDERS, 'riderId', session.userId);
+      const link = records_(TABLES.RIDER_ORDERS).some(x => x.orderId === order.orderId && x.riderId === session.userId);
+      if (!rider || !link) return fail_('Perjalanan tidak terhubung dengan akun ini.');
+    } else if (phone_(p.phone) !== phone_(order.riderPhone)) return fail_('Nomor telepon tidak cocok dengan pesanan.');
+    if (!order.driverId) return fail_('Driver perjalanan tidak ditemukan.');
+    const driver = find_(TABLES.DRIVERS, 'driverId', order.driverId);
+    if (!driver) return fail_('Akun driver tidak ditemukan.');
+    const comment = clean_(p.comment || '', 300);
+    update_(TABLES.ORDERS, order._row, { rating: rating, ratingComment: comment, ratedAt: now_() });
+    const allRated = records_(TABLES.ORDERS).filter(x => String(x.driverId) === String(driver.driverId) && number_(x.rating, 0) > 0);
+    const count = allRated.length;
+    const average = count ? allRated.reduce((sum,x) => sum + number_(x.rating, 0), 0) / count : 5;
+    update_(TABLES.DRIVERS, driver._row, { rating: Math.round(average * 10) / 10, ratingCount: count });
+    addEvent_(order.orderId, 'CUSTOMER', order.riderPhone, 'RATED', 'Penumpang memberikan penilaian ' + rating + '/5');
+    return ok_({ rating: rating, driverRating: Math.round(average * 10) / 10, ratingCount: count });
+  } finally { lock.releaseLock(); }
+}
+
+function submitSupportReport_(p) {
+  const type = clean_(p.reportType || 'GENERAL', 40).toUpperCase();
+  const allowed = ['CUSTOMER_SERVICE','HARASSMENT','VIOLENCE','SAFETY','PAYMENT','OTHER'];
+  if (!allowed.includes(type)) return fail_('Jenis laporan tidak valid.');
+  const details = clean_(p.details || '', 2000);
+  if (details.length < 15) return fail_('Ceritakan kejadian atau kendala minimal 15 karakter.');
+  const reporterPhone = p.reporterPhone ? phone_(p.reporterPhone) : '';
+  if (reporterPhone && !/^0[0-9]{8,14}$/.test(reporterPhone)) return fail_('Nomor pelapor gunakan format 08xxxxxxxxxx.');
+  const id = randomId_('RPT');
+  append_(TABLES.REPORTS, {
+    reportId: id, reportType: type, orderId: clean_(p.orderId || '', 40),
+    reporterName: clean_(p.reporterName || '', 90), reporterPhone: reporterPhone,
+    details: details, status: 'NEW', createdAt: now_(), adminNote: ''
+  });
+  const supportEmail = publicSettings_().supportEmail;
+  if (supportEmail) {
+    try { MailApp.sendEmail({to:supportEmail,subject:'Laporan MyAnjem baru: '+type,body:'Kode laporan: '+id+'\nJenis: '+type+'\nPesanan: '+clean_(p.orderId||'',40)+'\nPelapor: '+clean_(p.reporterName||'',90)+'\nTelepon: '+(reporterPhone||'—')+'\n\n'+details}); }
+    catch (mailError) { console.error('Notifikasi email laporan gagal: '+mailError); }
+  }
+  return ok_({ reportId: id, status: 'NEW', message: 'Laporan diterima. Simpan kode laporan ini: ' + id });
+}
+
+/* ------------------------------ PUBLIC INVOICE ------------------------------ */
+
+/**
+ * Invoice melalui token unik.
+ * Tetap kompatibel dengan link invoice versi sebelumnya.
+ */
+function publicInvoice_(p) {
+  const token = clean_(p.token || '', 80);
+
+  if (token.length < 20) {
+    return fail_('Token invoice tidak valid.');
+  }
+
+  const order = find_(TABLES.ORDERS, 'invoiceToken', token);
+
+  if (!order) {
+    return fail_('Invoice tidak ditemukan atau token tidak valid.');
+  }
+
+  return publicInvoiceData_(order);
+}
+
+/**
+ * Invoice melalui verifikasi ID pesanan + nomor telepon.
+ * Action API: publicInvoiceByOrderPhone
+ */
+function publicInvoiceByOrderPhone_(p) {
+  const orderId = clean_(p.orderId || '', 40);
+  const phone = phone_(p.phone || '');
+
+  if (!orderId || !phone) {
+    return fail_('Masukkan ID pesanan dan nomor telepon.');
+  }
+
+  if (!/^0[0-9]{8,14}$/.test(phone)) {
+    return fail_('Format nomor telepon tidak valid.');
+  }
+
+  const order = find_(TABLES.ORDERS, 'orderId', orderId);
+
+  // Pesan generik agar tidak membocorkan keberadaan data pesanan.
+  if (!order || phone_(order.riderPhone) !== phone) {
+    return fail_('Invoice tidak ditemukan atau data verifikasi tidak cocok.');
+  }
+
+  return publicInvoiceData_(order);
+}
+
+/**
+ * Membuat data invoice publik yang aman untuk frontend.
+ * Nomor telepon dimasking dan data sensitif internal tidak dikirim.
+ */
+function publicInvoiceData_(order) {
+  if (!order) {
+    return fail_('Invoice tidak ditemukan.');
+  }
+
+  const driver = order.driverId
+    ? find_(TABLES.DRIVERS, 'driverId', order.driverId)
+    : null;
+
+  const link = records_(TABLES.RIDER_ORDERS)
+    .find(x => String(x.orderId) === String(order.orderId));
+
+  const rider = link
+    ? find_(TABLES.RIDERS, 'riderId', link.riderId)
+    : null;
+
+  const phone = phone_(order.riderPhone || '');
+
+  const maskedPhone = phone.length > 5
+    ? phone.slice(0, 3) + '****' + phone.slice(-2)
+    : '—';
+
+  const publicOrder = safeOrder_(order);
+
+  // Hindari mengirim nomor telepon lengkap pada data invoice publik.
+  publicOrder.riderPhone = maskedPhone;
+
+  // Jangan expose ID akun rider yang sebenarnya.
+  publicOrder.riderId = rider ? 'RIDER-VERIFIED' : 'GUEST';
+
+  const publicEvents = records_(TABLES.EVENTS)
+    .filter(x => String(x.orderId) === String(order.orderId))
+    .sort((a, b) => String(a.createdAt).localeCompare(String(b.createdAt)))
+    .slice(-30)
+    .map(x => ({
+      eventType: x.eventType,
+      message: x.message,
+      createdAt: x.createdAt
+    }));
+
+  return ok_({
+    order: publicOrder,
+
+    rider: {
+      riderId: rider ? 'RIDER-VERIFIED' : 'GUEST',
+      name: String(order.riderName || ''),
+      phone: maskedPhone
+    },
+
+    driver: driver
+      ? {
+          driverId: String(driver.driverId || ''),
+          name: String(driver.name || ''),
+          vehicle: String(driver.vehicleBrand || driver.vehicleType || ''),
+          plate: String(driver.plate || '')
+        }
+      : null,
+
+    events: publicEvents,
+    verified: true
+  });
+}
+
+/* ------------------------------ DRIVER ------------------------------ */
+
+function captchaChallenge_() {
+  // Custom visual-count challenge (not a plain addition question).
+  const symbols = ['★','●','◆','▲'];
+  const target = symbols[Math.floor(Math.random() * symbols.length)];
+  const length = 7 + Math.floor(Math.random() * 4);
+  const sequence = [];
+  let count = 0;
+  for (let i = 0; i < length; i++) {
+    const symbol = symbols[Math.floor(Math.random() * symbols.length)];
+    sequence.push(symbol);
+    if (symbol === target) count++;
+  }
+  if (count === 0) { sequence[Math.floor(Math.random() * length)] = target; count = sequence.filter(x => x === target).length; }
+  const token = Utilities.getUuid().replace(/-/g, '');
+  CacheService.getScriptCache().put('MYANJEM_V2_CAPTCHA_' + token, String(count), 300);
+  return ok_({ captchaToken: token, question: 'Hitung jumlah simbol ' + target + ' pada urutan berikut: ' + sequence.join('  '), challengeType: 'symbol-count' });
+}
+
+function consumeCaptcha_(token, answer) {
+  const key = 'MYANJEM_V2_CAPTCHA_' + String(token || '');
+  const cache = CacheService.getScriptCache();
+  const expected = token ? cache.get(key) : null;
+  if (token) cache.remove(key);
+  return !!expected && String(Number(answer)) === String(expected);
+}
+
+function registerDriver_(p) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    if (!consumeCaptcha_(p.captchaToken, p.captchaAnswer)) return fail_('Verifikasi keamanan salah atau kedaluwarsa. Muat tantangan baru.');
+    const name = clean_(p.name, 90), phone = phone_(p.phone), email = clean_(String(p.email || '').toLowerCase(), 120);
+    const password = String(p.password || ''), plate = clean_(p.plate, 20).toUpperCase();
+    if (name.length < 3) return fail_('Nama lengkap minimal 3 karakter.');
+    if (!/^0[0-9]{8,14}$/.test(phone)) return fail_('Nomor telepon harus memakai format 08xxxxxxxxxx.');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return fail_('Email wajib diisi dengan alamat yang valid.');
+    if (password.length < 8) return fail_('Kata sandi minimal 8 karakter.');
+    if (plate.length < 3) return fail_('Nomor polisi kendaraan wajib diisi.');
+    if (records_(TABLES.DRIVERS).some(d => String(d.phone) === phone || String(d.email || '').toLowerCase() === email)) return fail_('Nomor telepon atau email sudah terdaftar.');
+    if (!consumeEmailOtp_('driver', email, p.emailOtp)) return fail_('Kode verifikasi email salah atau kedaluwarsa. Kirim kode baru.');
+    const doc = p.identityDocument || {};
+    if (!doc.base64 || !doc.mimeType || !doc.fileName) return fail_('Unggah KTP atau KTM untuk verifikasi identitas.');
+    const storedDoc = saveDriverDocument_(doc);
+    const salt = Utilities.getUuid(), settings = publicSettings_();
+    const d = {
+      driverId: randomId_('DRV'), name: name, phone: phone, email: email,
+      vehicleType: p.vehicleType === 'Mobil' ? 'Mobil' : 'Motor',
+      vehicleBrand: clean_(p.vehicleBrand, 60), plate: plate, region: clean_(p.region, 100),
+      passwordSalt: salt, passwordHash: hashPassword_(password, salt), status: 'PENDING', online: false,
+      baseFare: Math.max(0, Math.min(7000, number_(p.baseFare, settings.defaultBaseFare))),
+      farePerKm: Math.max(0, Math.min(2000, number_(p.farePerKm, settings.defaultFarePerKm))),
+      rating: 5, ratingCount: 0, balance: 0, lat: '', lng: '', lastLocationAt: '',
+      createdAt: now_(), approvedAt: '', lastLoginAt: '', emailVerified: true,
+      identityDocType: doc.documentType === 'KTM' ? 'KTM' : 'KTP',
+      identityDocFileId: storedDoc.fileId, identityDocFileName: storedDoc.fileName,
+      payoutMethod: '', payoutDetails: '', payoutUpdatedAt: ''
+    };
+    append_(TABLES.DRIVERS, d);
+    return ok_({ driverId: d.driverId, status: d.status, message: 'Pendaftaran berhasil. Akun menunggu pemeriksaan dokumen dan persetujuan admin.' });
+  } finally {
+    lock.releaseLock();
+  }
+}
+function saveDriverDocument_(doc) {
+  const mimeType = String(doc.mimeType || '').toLowerCase();
+  if (!['image/jpeg','image/png','application/pdf'].includes(mimeType)) throw new Error('Dokumen harus berformat JPG, PNG, atau PDF.');
+  const encoded = String(doc.base64 || '').replace(/^data:[^,]+,/, '').replace(/[^A-Za-z0-9+/=]/g, '');
+  if (encoded.length > Math.ceil(MAX_ID_DOCUMENT_BYTES / 3) * 4 + 16) throw new Error('Ukuran dokumen maksimal 2 MB.');
+  const bytes = Utilities.base64Decode(encoded);
+  if (!bytes.length || bytes.length > MAX_ID_DOCUMENT_BYTES) throw new Error('Ukuran dokumen maksimal 2 MB.');
+  // Do not trust the browser-supplied MIME type alone; verify the file signature.
+  const signature = bytes.slice(0, 8).map(function(b) { return (b + 256) % 256; });
+  const isJpeg = signature[0] === 0xFF && signature[1] === 0xD8 && signature[2] === 0xFF;
+  const isPng = signature.join(',') === '137,80,78,71,13,10,26,10';
+  const isPdf = signature[0] === 0x25 && signature[1] === 0x50 && signature[2] === 0x44 && signature[3] === 0x46;
+  if ((mimeType === 'image/jpeg' && !isJpeg) || (mimeType === 'image/png' && !isPng) || (mimeType === 'application/pdf' && !isPdf)) {
+    throw new Error('Isi file tidak sesuai dengan format dokumen yang dipilih. Pilih ulang JPG, PNG, atau PDF yang valid.');
+  }
+  const cleanName = clean_(doc.fileName || 'identitas', 80).replace(/[\\/:*?"<>|]/g, '_');
+  const blob = Utilities.newBlob(bytes, mimeType, 'MyAnjem-' + Date.now() + '-' + cleanName);
+  const props = PropertiesService.getScriptProperties();
+  let folderId = props.getProperty('MYANJEM_DRIVER_DOC_FOLDER_ID');
+  let folder;
+  if (folderId) { try { folder = DriveApp.getFolderById(folderId); } catch (e) { folder = null; } }
+  if (!folder) { folder = DriveApp.createFolder('MyAnjem - Dokumen Identitas Driver'); props.setProperty('MYANJEM_DRIVER_DOC_FOLDER_ID', folder.getId()); }
+  const file = folder.createFile(blob);
+  return { fileId: file.getId(), fileName: cleanName };
+}
+
+
+function driverLogin_(p) {
+  const inputPhone = phone_(p.phone);
+  const inputPassword = String(p.password == null ? '' : p.password);
+
+  if (!inputPhone || !inputPassword) {
+    return fail_('Nomor telepon dan kata sandi wajib diisi.');
+  }
+
+  const drivers = records_(TABLES.DRIVERS);
+
+  // Normalisasi nomor telepon dari input dan Spreadsheet.
+  const d = drivers.find(function(driver) {
+    return phone_(driver.phone) === inputPhone;
+  });
+
+  if (!d) {
+    return fail_('Nomor telepon atau kata sandi salah.');
+  }
+
+  const salt = String(d.passwordSalt == null ? '' : d.passwordSalt).trim();
+  const storedHash = String(d.passwordHash == null ? '' : d.passwordHash).trim();
+
+  if (!salt || !storedHash) {
+    console.error('Driver memiliki data autentikasi yang tidak lengkap: ' + d.driverId);
+    return fail_('Data keamanan akun bermasalah. Hubungi admin MyAnjem.');
+  }
+
+  const calculatedHash = hashPassword_(inputPassword, salt);
+
+  // Verifikasi password tanpa melewati autentikasi.
+  if (calculatedHash !== storedHash) {
+    return fail_('Nomor telepon atau kata sandi salah.');
+  }
+
+  if (d.status === 'REJECTED' || d.status === 'SUSPENDED') {
+    return fail_('Akun driver belum dapat digunakan. Hubungi admin MyAnjem.');
+  }
+
+  if (d.status !== 'APPROVED') {
+    return fail_('Akun driver masih menunggu persetujuan admin.');
+  }
+
+  const token = createSession_('driver', d.driverId);
+
+  update_(TABLES.DRIVERS, d._row, {
+    lastLoginAt: now_()
+  });
+
+  return ok_({
+    token: token,
+    driver: safeDriver_(d)
+  });
+}
+
+
+function publicDrivers_() {
+  const allDrivers = records_(TABLES.DRIVERS);
+  const activeOrders = records_(TABLES.ORDERS).filter(o => ['ACCEPTED','ARRIVED','ON_TRIP'].includes(o.orderStatus) && o.driverId);
+  const busyIds = new Set(activeOrders.map(o => String(o.driverId)));
+  const approved = allDrivers.filter(d => d.status === 'APPROVED');
+  const online = approved.filter(d => String(d.online) === 'true');
+  const drivers = online.map(d => Object.assign(publicDriver_(d), { busy: busyIds.has(String(d.driverId)) }));
+  const countType = (list, type) => list.filter(d => String(d.vehicleType || 'Motor') === type).length;
+  return ok_({ drivers: drivers, availability: {
+    onlineDrivers: online.length,
+    busyDrivers: online.filter(d => busyIds.has(String(d.driverId))).length,
+    availableDrivers: online.filter(d => !busyIds.has(String(d.driverId))).length,
+    verifiedVehicles: { Motor: countType(approved, 'Motor'), Mobil: countType(approved, 'Mobil') },
+    onlineVehicles: { Motor: countType(online, 'Motor'), Mobil: countType(online, 'Mobil') }
+  } });
+}
+
+function driverDashboard_(p) {
+  const s = session_(p.token, 'driver');
+  const d = find_(TABLES.DRIVERS, 'driverId', s.userId);
+  if (!d) return fail_('Akun driver tidak ditemukan.');
+  const allOrders = records_(TABLES.ORDERS);
+  const declinedIds = new Set(records_(TABLES.EVENTS).filter(e => e.eventType === 'DRIVER_DECLINED' && String(e.actorId) === String(d.driverId)).map(e => String(e.orderId)));
+  const assigned = allOrders.filter(o => String(o.driverId) === String(d.driverId));
+  const activeTrips = assigned.filter(o => ['ACCEPTED','ARRIVED','ON_TRIP'].includes(o.orderStatus));
+  const broadcast = d.status === 'APPROVED' && String(d.online) === 'true' && activeTrips.length === 0
+    ? allOrders.filter(o => o.orderStatus === 'REQUESTED' && !String(o.driverId || '') && !declinedIds.has(String(o.orderId)) && String(o.vehicleType || 'Motor') === String(d.vehicleType || 'Motor'))
+    : [];
+  const orders = assigned.concat(broadcast).sort((a,b) => String(b.createdAt).localeCompare(String(a.createdAt))).slice(0, 120);
+  const completed = assigned.filter(o => o.orderStatus === 'COMPLETED');
+  return ok_({
+    driver: safeDriver_(d), orders: orders.map(safeOrder_),
+    withdrawals: records_(TABLES.WITHDRAWALS).filter(w => String(w.driverId) === String(d.driverId)).sort((a,b) => String(b.requestedAt).localeCompare(String(a.requestedAt))).slice(0, 30),
+    stats: { total: completed.length, active: activeTrips.length, openRequests: broadcast.length,
+      earnings: completed.reduce((sum,o) => sum + number_(o.fare,0), 0) }
+  });
+}
+
+function driverUpdate_(p) {
+  const s = session_(p.token, 'driver');
+  const d = find_(TABLES.DRIVERS, 'driverId', s.userId);
+  if (!d) return fail_('Akun driver tidak ditemukan.');
+  const patch = {};
+  if (p.online !== undefined) {
+    if (d.status !== 'APPROVED' && p.online) return fail_('Akun harus disetujui admin sebelum bisa online.');
+    if (p.online === false) {
+      const activeTrip = records_(TABLES.ORDERS).some(o => String(o.driverId) === String(d.driverId) && ['ACCEPTED','ARRIVED','ON_TRIP'].includes(o.orderStatus));
+      if (activeTrip) return fail_('Selesaikan atau batalkan perjalanan aktif sebelum menonaktifkan status online.');
+    }
+    patch.online = Boolean(p.online);
+  }
+  if (p.baseFare !== undefined) { const value = number_(p.baseFare, NaN); if (!isFinite(value) || value < 0 || value > 7000) return fail_('Tarif awal pribadi maksimal Rp7.000.'); patch.baseFare = value; }
+  if (p.farePerKm !== undefined) { const value = number_(p.farePerKm, NaN); if (!isFinite(value) || value < 0 || value > 2000) return fail_('Tarif tambahan pribadi maksimal Rp2.000 per km.'); patch.farePerKm = value; }
+  if (p.vehicleBrand !== undefined) patch.vehicleBrand = clean_(p.vehicleBrand, 60);
+  if (p.plate !== undefined) patch.plate = clean_(p.plate, 20).toUpperCase();
+  if (p.payoutMethod !== undefined) { const m = String(p.payoutMethod || ''); if (!['BANK','QRIS'].includes(m)) return fail_('Metode pencairan tidak valid.'); patch.payoutMethod = m; }
+  if (p.payoutDetails !== undefined) { const v = clean_(p.payoutDetails, 220); if (v.length < 5) return fail_('Detail rekening atau QRIS belum lengkap.'); patch.payoutDetails = v; }
+  if (p.payoutMethod !== undefined || p.payoutDetails !== undefined) patch.payoutUpdatedAt = now_();
+  if (!Object.keys(patch).length) return fail_('Tidak ada perubahan yang disimpan.');
+  update_(TABLES.DRIVERS, d._row, patch);
+  return ok_({ driver: safeDriver_(find_(TABLES.DRIVERS, 'driverId', d.driverId)) });
+}
+
+function driverLocation_(p) {
+  const s = session_(p.token, 'driver');
+  const d = find_(TABLES.DRIVERS, 'driverId', s.userId);
+  if (!d) return fail_('Akun driver tidak ditemukan.');
+  if (String(d.online) !== 'true') return fail_('Aktifkan status online sebelum membagikan lokasi.');
+  const lat = number_(p.lat, NaN), lng = number_(p.lng, NaN);
+  if (!isFinite(lat) || !isFinite(lng) || Math.abs(lat) > 90 || Math.abs(lng) > 180) return fail_('Koordinat GPS tidak valid.');
+  update_(TABLES.DRIVERS, d._row, { lat: lat, lng: lng, lastLocationAt: now_() });
+  return ok_({ saved: true, at: now_() });
+}
+
+function driverAction_(p) {
+  const s = session_(p.token, 'driver');
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const o = find_(TABLES.ORDERS, 'orderId', p.orderId);
+    const d = find_(TABLES.DRIVERS, 'driverId', s.userId);
+    if (!o || !d) return fail_('Pesanan atau akun driver tidak ditemukan.');
+    const action = String(p.action || '');
+    const unassignedBroadcast = o.orderStatus === 'REQUESTED' && !String(o.driverId || '');
+    if (action !== 'accept' && action !== 'decline' && String(o.driverId) !== String(d.driverId)) return fail_('Pesanan ini bukan untuk akun Anda.');
+    if ((action === 'accept' || action === 'decline') && !unassignedBroadcast && String(o.driverId) !== String(d.driverId)) return fail_('Pesanan sudah ditangani driver lain.');
+    const patch = { updatedAt: now_() };
+    const eventMessages = {
+      accept: ['ACCEPTED','Driver menerima pesanan'],
+      decline: ['DECLINED','Driver menolak pesanan'],
+      arrive: ['ARRIVED','Driver tiba di titik jemput'],
+      start: ['ON_TRIP','Perjalanan dimulai'],
+      complete: ['COMPLETED','Perjalanan selesai'],
+      cancel: ['CANCELLED','Driver membatalkan pesanan']
+    };
+    if (!eventMessages[action]) return fail_('Aksi perjalanan tidak valid.');
+    if (action === 'accept') {
+      if (o.orderStatus !== 'REQUESTED') return fail_('Pesanan sudah diproses atau tidak lagi tersedia.');
+      if (String(o.vehicleType || 'Motor') !== String(d.vehicleType || 'Motor')) return fail_('Jenis kendaraan tidak sesuai dengan pesanan.');
+      if (d.status !== 'APPROVED' || String(d.online) !== 'true') return fail_('Aktifkan status online dan pastikan akun disetujui admin.');
+      const alreadyCarrying = records_(TABLES.ORDERS).some(x => String(x.driverId) === String(d.driverId) && String(x.orderId) !== String(o.orderId) && ['ACCEPTED','ARRIVED','ON_TRIP'].includes(x.orderStatus));
+      if (alreadyCarrying) return fail_('Selesaikan perjalanan aktif terlebih dahulu sebelum menerima pesanan baru.');
+      if (o.driverId && String(o.driverId) !== String(d.driverId)) return fail_('Pesanan sudah diterima driver lain.');
+      patch.orderStatus = 'ACCEPTED'; patch.acceptedAt = now_(); patch.driverId = d.driverId; patch.driverName = d.name;
+    } else if (action === 'decline') {
+      if (o.orderStatus !== 'REQUESTED') return fail_('Pesanan tidak dapat ditolak pada tahap ini.');
+      if (unassignedBroadcast) {
+        addEvent_(o.orderId, 'DRIVER', d.driverId, 'DRIVER_DECLINED', 'Driver melewati tawaran pesanan');
+        return ok_({ declined: true, order: safeOrder_(o) });
+      }
+      patch.orderStatus = 'REQUESTED'; patch.driverId = ''; patch.driverName = '';
+    } else if (action === 'arrive') {
+      if (o.orderStatus !== 'ACCEPTED') return fail_('Tandai tiba setelah pesanan diterima.');
+      patch.orderStatus = 'ARRIVED'; patch.arrivedAt = now_();
+    } else if (action === 'start') {
+      if (o.orderStatus !== 'ARRIVED') return fail_('Perjalanan dapat dimulai setelah driver tiba.');
+      patch.orderStatus = 'ON_TRIP'; patch.startedAt = now_();
+    } else if (action === 'complete') {
+      if (o.orderStatus !== 'ON_TRIP') return fail_('Pesanan belum dalam perjalanan.');
+      patch.orderStatus = 'COMPLETED'; patch.completedAt = now_();
+      if (o.paymentMethod === 'CASH') patch.paymentStatus = 'PAID_CASH';
+    } else if (action === 'cancel') {
+      if (!['REQUESTED','ACCEPTED','ARRIVED'].includes(o.orderStatus)) return fail_('Pesanan tidak dapat dibatalkan pada tahap ini.');
+      patch.orderStatus = 'CANCELLED'; patch.cancelReason = clean_(p.reason || 'Dibatalkan driver', 180);
+      patch.driverId = ''; patch.driverName = '';
+    }
+    update_(TABLES.ORDERS, o._row, patch);
+    addEvent_(o.orderId, 'DRIVER', d.driverId, eventMessages[action][0], eventMessages[action][1]);
+    if (action === 'complete') {
+      const pay = find_(TABLES.PAYMENTS, 'orderId', o.orderId);
+      if (pay && o.paymentMethod === 'CASH') {
+        update_(TABLES.PAYMENTS, pay._row, { status: 'PAID_CASH', updatedAt: now_() });
+      } else if (pay && ['TRANSFER','QRIS'].includes(String(o.paymentMethod)) && pay.status !== 'PAID') {
+        update_(TABLES.PAYMENTS, pay._row, { status: 'WAITING_CONFIRMATION', updatedAt: now_() });
+        const completedOrder = find_(TABLES.ORDERS, 'orderId', o.orderId);
+        if (completedOrder) update_(TABLES.ORDERS, completedOrder._row, { paymentStatus: 'WAITING_CONFIRMATION', updatedAt: now_() });
+      } else if (pay && pay.status === 'PAID' && o.paymentMethod !== 'CASH') {
+        if (creditDriverWallet_(o, pay)) update_(TABLES.PAYMENTS, pay._row, { creditedAt: now_(), updatedAt: now_() });
+      }
+    }
+    return ok_({ order: safeOrder_(find_(TABLES.ORDERS, 'orderId', o.orderId)) });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/* ------------------------------ DRIVER WALLET / DOCUMENTS ------------------------------ */
+function creditDriverWallet_(order, payment) {
+  if (!order || !payment || order.paymentMethod === 'CASH' || payment.status !== 'PAID' || payment.creditedAt || !order.driverId) return false;
+  const driver = find_(TABLES.DRIVERS, 'driverId', order.driverId);
+  if (!driver) return false;
+  update_(TABLES.DRIVERS, driver._row, { balance: number_(driver.balance, 0) + number_(payment.amount, 0) });
+  return true;
+}
+
+function requestWithdrawal_(p) {
+  const s = session_(p.token, 'driver');
+  const lock = LockService.getScriptLock(); lock.waitLock(10000);
+  try {
+    const d = find_(TABLES.DRIVERS, 'driverId', s.userId);
+    if (!d || d.status !== 'APPROVED') return fail_('Akun driver belum aktif.');
+    const amount = Math.floor(number_(p.amount, 0));
+    const balance = number_(d.balance, 0);
+    if (amount < 10000) return fail_('Minimal penarikan Rp10.000.');
+    if (amount > balance) return fail_('Saldo tidak mencukupi.');
+    const method = String(d.payoutMethod || '');
+    const destination = String(d.payoutDetails || '').trim();
+    if (!['BANK','QRIS'].includes(method) || destination.length < 5) return fail_('Lengkapi rekening bank atau detail QRIS di profil pencairan terlebih dahulu.');
+    const id = randomId_('WD');
+    append_(TABLES.WITHDRAWALS, { withdrawalId: id, driverId: d.driverId, driverName: d.name, amount: amount, method: method, destination: destination, status: 'PENDING', requestedAt: now_(), processedAt: '', adminNote: '' });
+    update_(TABLES.DRIVERS, d._row, { balance: balance - amount });
+    return ok_({ withdrawalId: id, balance: balance - amount });
+  } finally { lock.releaseLock(); }
+}
+
+function adminDriverDocument_(p) {
+  session_(p.token, 'admin');
+  const d = find_(TABLES.DRIVERS, 'driverId', p.driverId);
+  if (!d || !d.identityDocFileId) return fail_('Dokumen identitas tidak ditemukan.');
+  const file = DriveApp.getFileById(String(d.identityDocFileId));
+  const blob = file.getBlob();
+  return ok_({ fileName: file.getName(), mimeType: blob.getContentType(), base64: Utilities.base64Encode(blob.getBytes()) });
+}
+
+/* ------------------------------ CUSTOMER ORDERS ------------------------------ */
+
+function createOrder_(p) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    if (!consumeCaptcha_(p.captchaToken, p.captchaAnswer)) return fail_('Verifikasi pesanan salah atau kedaluwarsa. Perbarui tantangan lalu coba lagi.');
+    const riderName = clean_(p.riderName, 90);
+    const riderPhone = phone_(p.riderPhone);
+    const pickupAddress = clean_(p.pickupAddress, 240);
+    const dropoffAddress = clean_(p.dropoffAddress, 240);
+    const pickupLat = number_(p.pickupLat, NaN), pickupLng = number_(p.pickupLng, NaN);
+    const dropoffLat = number_(p.dropoffLat, NaN), dropoffLng = number_(p.dropoffLng, NaN);
+    const distanceKm = Math.max(0.1, Math.min(300, number_(p.distanceKm, 1)));
+    const durationMin = Math.max(1, Math.min(600, number_(p.durationMin, distanceKm * 3)));
+    const vehicleType = String(p.vehicleType || 'Motor') === 'Mobil' ? 'Mobil' : 'Motor';
+    const passengerCount = vehicleType === 'Mobil' ? (number_(p.passengerCount, 1) >= 5 ? 5 : number_(p.passengerCount, 1) >= 4 ? 4 : 1) : 1;
+    const bookingMode = vehicleType === 'Mobil' && String(p.bookingMode || 'NOW') === 'SCHEDULED' ? 'SCHEDULED' : 'NOW';
+    let scheduleAt = '';
+    if (bookingMode === 'SCHEDULED') {
+      const requestedSchedule = new Date(String(p.scheduleAt || ''));
+      if (!isFinite(requestedSchedule.getTime()) || requestedSchedule.getTime() <= Date.now()) return fail_('Tanggal dan jam penjemputan terjadwal harus berada di masa depan.');
+      scheduleAt = requestedSchedule.toISOString();
+    }
+    if (vehicleType === 'Mobil') {
+      const approvedCars = records_(TABLES.DRIVERS).filter(d => d.vehicleType === 'Mobil' && d.status === 'APPROVED');
+      if (!approvedCars.length) return fail_('Layanan mobil belum dapat dipesan karena belum ada mitra mobil yang diverifikasi.');
+      if (bookingMode === 'NOW' && !approvedCars.some(d => String(d.online).toLowerCase() === 'true')) return fail_('Belum ada driver mobil yang online. Pilih jadwal penjemputan untuk memesan lebih awal.');
+    }
+    if (riderName.length < 2) return fail_('Nama penumpang wajib diisi.');
+    if (!/^0[0-9]{8,14}$/.test(riderPhone)) return fail_('Nomor telepon penumpang harus memakai format 08xxxxxxxxxx.');
+    let accountRider = null;
+    if (p.riderToken) {
+      const riderSession = session_(p.riderToken, 'rider');
+      accountRider = find_(TABLES.RIDERS, 'riderId', riderSession.userId);
+      if (!accountRider || String(accountRider.status) !== 'ACTIVE' || String(accountRider.phone) !== riderPhone) {
+        return fail_('Sesi akun penumpang tidak cocok. Silakan masuk kembali.');
+      }
+      if (String(accountRider.name) !== riderName) return fail_('Nama pesanan harus sesuai dengan nama akun.');
+    }
+    if (!pickupAddress || !dropoffAddress) return fail_('Alamat jemput dan tujuan wajib diisi.');
+    if (![pickupLat,pickupLng,dropoffLat,dropoffLng].every(isFinite)) return fail_('Pilih alamat dari hasil pencarian agar titik peta tersimpan.');
+    const requestedMethod = String(p.paymentMethod || 'CASH');
+    if (requestedMethod === 'TRANSFER') return fail_('Pembayaran transfer sedang dalam persiapan (Coming Soon). Pilih tunai atau QRIS jika tersedia.');
+    const method = requestedMethod === 'QRIS' ? 'QRIS' : 'CASH';
+    const cfg = publicSettings_();
+    if (method === 'QRIS' && !cfg.qrisImageUrl) return fail_('QRIS belum diatur oleh admin. Pilih tunai.');
+    // Customer orders are broadcast to approved drivers who are online; the first atomic accept assigns the trip.
+    const driver = null;
+    const originalFare = calculateVehicleFare_(distanceKm, cfg, vehicleType, passengerCount);
+    const voucherCode = clean_(String(p.voucherCode || '').toUpperCase(), 24);
+    let discountAmount = 0;
+    if (voucherCode) {
+      const voucherResult = validateVoucher_(voucherCode, originalFare);
+      if (!voucherResult.ok) return fail_(voucherResult.message);
+      discountAmount = voucherResult.discountAmount;
+      voucherResult.voucher.usedCount = number_(voucherResult.voucher.usedCount, 0) + 1;
+    }
+    const fare = Math.max(0, originalFare - discountAmount);
+    const orderId = randomId_('MA');
+    const o = {
+      orderId: orderId, createdAt: now_(), updatedAt: now_(),
+      riderName: riderName, riderPhone: riderPhone, riderId: accountRider ? accountRider.riderId : '',
+      invoiceToken: Utilities.getUuid().replace(/-/g, '') + Utilities.getUuid().replace(/-/g, ''), rating: '', ratingComment: '', ratedAt: '',
+      driverId: driver ? driver.driverId : '', driverName: driver ? driver.name : '',
+      pickupAddress: pickupAddress, pickupLat: pickupLat, pickupLng: pickupLng,
+      dropoffAddress: dropoffAddress, dropoffLat: dropoffLat, dropoffLng: dropoffLng,
+      distanceKm: distanceKm, durationMin: durationMin, fare: fare,
+      originalFare: originalFare, voucherCode: voucherCode, discountAmount: discountAmount,
+      paymentMethod: method, paymentStatus: method === 'CASH' ? 'PAY_ON_COMPLETION' : 'UNPAID',
+      orderStatus: 'REQUESTED', note: clean_(p.note, 240), cancelReason: '',
+      vehicleType: vehicleType, passengerCount: passengerCount, bookingMode: bookingMode, scheduleAt: scheduleAt, ticketCode: randomId_('TKT'),
+      acceptedAt: '', arrivedAt: '', startedAt: '', completedAt: ''
+    };
+    append_(TABLES.ORDERS, o);
+    if (voucherCode) {
+      const usedVoucher = find_(TABLES.VOUCHERS, 'voucherCode', voucherCode);
+      if (usedVoucher) update_(TABLES.VOUCHERS, usedVoucher._row, { usedCount: number_(usedVoucher.usedCount, 0) + 1, updatedAt: now_() });
+    }
+    if (accountRider) append_(TABLES.RIDER_ORDERS, { linkId: randomId_('RLK'), orderId: orderId, riderId: accountRider.riderId, createdAt: now_() });
+    addEvent_(orderId, 'CUSTOMER', accountRider ? accountRider.riderId : riderPhone, 'REQUESTED', 'Pesanan dibuat oleh penumpang');
+    append_(TABLES.PAYMENTS, {
+      paymentId: randomId_('PAY'), orderId: orderId, method: method, amount: fare,
+      status: method === 'CASH' ? 'PAY_ON_COMPLETION' : 'UNPAID', reference: '', updatedAt: now_(), creditedAt: ''
+    });
+    return ok_({ order: safeOrder_(o), settings: cfg });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function cancelCustomerOrder_(p) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const id = clean_(p.orderId, 40), phone = phone_(p.phone);
+    const o = find_(TABLES.ORDERS, 'orderId', id);
+    if (!o || String(o.riderPhone) !== phone) return fail_('Pesanan tidak ditemukan.');
+    if (o.orderStatus !== 'REQUESTED') return fail_('Pesanan hanya dapat dibatalkan penumpang sebelum diterima driver. Hubungi admin jika ada kendala.');
+    update_(TABLES.ORDERS, o._row, { orderStatus: 'CANCELLED', cancelReason: 'Dibatalkan penumpang', updatedAt: now_() });
+    addEvent_(id, 'CUSTOMER', phone, 'CANCELLED', 'Pesanan dibatalkan penumpang');
+    return ok_({ cancelled: true });
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function submitPaymentReference_(p) {
+  const id = clean_(p.orderId, 40), phone = phone_(p.phone), reference = clean_(p.reference, 120);
+  if (reference.length < 3) return fail_('Masukkan nomor referensi atau catatan transfer.');
+  const o = find_(TABLES.ORDERS, 'orderId', id);
+  if (!o || String(o.riderPhone) !== phone) return fail_('Pesanan tidak ditemukan.');
+  if (!['TRANSFER','QRIS'].includes(String(o.paymentMethod))) return fail_('Pesanan ini menggunakan pembayaran tunai.');
+  const pay = find_(TABLES.PAYMENTS, 'orderId', id);
+  if (!pay) return fail_('Data pembayaran tidak ditemukan.');
+  if (pay.status === 'PAID' || pay.creditedAt) return fail_('Pembayaran pesanan ini sudah dikonfirmasi.');
+  if (['CANCELLED','DECLINED'].includes(String(o.orderStatus))) return fail_('Pesanan sudah dibatalkan atau ditolak; hubungi admin untuk bantuan.');
+  update_(TABLES.PAYMENTS, pay._row, { reference: reference, status: 'WAITING_CONFIRMATION', updatedAt: now_() });
+  update_(TABLES.ORDERS, o._row, { paymentStatus: 'WAITING_CONFIRMATION', updatedAt: now_() });
+  addEvent_(id, 'CUSTOMER', phone, 'PAYMENT_REFERENCE', 'Referensi transfer dikirim untuk verifikasi admin');
+  return ok_({ submitted: true });
+}
+
+function getOrder_(p) {
+  const id = clean_(p.orderId, 40);
+  const phone = phone_(p.phone);
+  const o = find_(TABLES.ORDERS, 'orderId', id);
+  if (!o || String(o.riderPhone) !== phone) return fail_('Pesanan tidak ditemukan. Periksa kode pesanan dan nomor telepon.');
+  let d = o.driverId ? find_(TABLES.DRIVERS, 'driverId', o.driverId) : null;
+  const events = records_(TABLES.EVENTS).filter(e => String(e.orderId) === id)
+    .sort((a,b) => String(a.createdAt).localeCompare(String(b.createdAt))).slice(-30)
+    .map(e => ({ eventType: e.eventType, message: e.message, createdAt: e.createdAt }));
+  let publicTrackingDriver = d ? publicDriver_(d) : null;
+  if (publicTrackingDriver) {
+    publicTrackingDriver.phone = d.phone || '';
+    publicTrackingDriver.lat = ['ACCEPTED','ARRIVED','ON_TRIP'].includes(o.orderStatus) && d.lat !== '' ? number_(d.lat, NaN) : null;
+    publicTrackingDriver.lng = ['ACCEPTED','ARRIVED','ON_TRIP'].includes(o.orderStatus) && d.lng !== '' ? number_(d.lng, NaN) : null;
+    publicTrackingDriver.lastLocationAt = ['ACCEPTED','ARRIVED','ON_TRIP'].includes(o.orderStatus) ? d.lastLocationAt || '' : '';
+  }
+  return ok_({ order: safeOrder_(o), driver: publicTrackingDriver, events: events, settings: publicSettings_() });
+}
+
+/* ------------------------------ ADMIN ------------------------------ */
+
+function adminLogin_(p) {
+  if (String(p.username || '') !== ADMIN_USERNAME || String(p.password || '') !== ADMIN_PASSWORD) return fail_('Username atau kata sandi admin salah.');
+  if (ADMIN_PASSWORD === 'CHANGE_THIS_BEFORE_DEPLOYMENT') return fail_('Atur ADMIN_PASSWORD unik di Code.gs sebelum menggunakan akun admin.');
+  const token = createSession_('admin', 'ADMIN');
+  return ok_({ token: token });
+}
+
+function adminDashboard_(p) {
+  session_(p.token, 'admin');
+  const drivers = records_(TABLES.DRIVERS).sort((a,b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+  const riders = records_(TABLES.RIDERS).sort((a,b) => String(b.createdAt).localeCompare(String(a.createdAt)));
+  const audit = records_(TABLES.AUDIT).sort((a,b) => String(b.createdAt).localeCompare(String(a.createdAt))).slice(0, 150);
+  const orders = records_(TABLES.ORDERS).sort((a,b) => String(b.createdAt).localeCompare(String(a.createdAt))).slice(0, 250);
+  const payments = records_(TABLES.PAYMENTS).sort((a,b) => String(b.updatedAt).localeCompare(String(a.updatedAt))).slice(0, 200);
+  return ok_({
+    drivers: drivers.map(safeDriver_), riders: riders.map(safeRider_), orders: orders.map(safeOrder_), payments: payments, audit: audit,
+    withdrawals: records_(TABLES.WITHDRAWALS).sort((a,b) => String(b.requestedAt).localeCompare(String(a.requestedAt))).slice(0, 200),
+    reports: records_(TABLES.REPORTS).sort((a,b) => String(b.createdAt).localeCompare(String(a.createdAt))).slice(0, 200),
+    vouchers: records_(TABLES.VOUCHERS).sort((a,b) => String(b.createdAt).localeCompare(String(a.createdAt))).slice(0, 300),
+    settings: publicSettings_(),
+    stats: {
+      drivers: drivers.length,
+      riders: riders.length,
+      pendingDrivers: drivers.filter(d => d.status === 'PENDING').length,
+      onlineDrivers: drivers.filter(d => d.status === 'APPROVED' && String(d.online) === 'true').length,
+      orders: orders.length,
+      activeOrders: orders.filter(o => ['REQUESTED','ACCEPTED','ARRIVED','ON_TRIP'].includes(o.orderStatus)).length,
+      completedOrders: orders.filter(o => o.orderStatus === 'COMPLETED').length,
+      grossRevenue: orders.filter(o => o.orderStatus === 'COMPLETED').reduce((sum,o) => sum + number_(o.fare,0), 0),
+      pendingPayments: payments.filter(x => ['UNPAID','WAITING_CONFIRMATION'].includes(x.status)).length
+    }
+  });
+}
+
+function adminAction_(p) {
+  session_(p.token, 'admin');
+  const action = String(p.action || '');
+  if (action === 'saveSettings') {
+    const allowed = ['brand','defaultBaseFare','defaultFarePerKm','minimumFare','fareIncludedKm','defaultCarBaseFare1','defaultCarBaseFare4','defaultCarBaseFare5','defaultCarFarePerKm','carFareIncludedKm','cancelFee','bankName','bankAccount','bankHolder','helpPhone','supportEmail','instagramUrl','qrisImageUrl','qrisMerchantName'];
+    const v = p.settings || {};
+    allowed.forEach(k => {
+      if (v[k] !== undefined) {
+        let val = String(v[k]).trim();
+        if (k === 'qrisImageUrl' && val && !/^https:\/\//i.test(val)) throw new Error('URL gambar QRIS harus menggunakan HTTPS.');
+        if (['defaultBaseFare','defaultFarePerKm','minimumFare','defaultCarBaseFare1','defaultCarBaseFare4','defaultCarBaseFare5','defaultCarFarePerKm','cancelFee'].includes(k)) val = String(Math.max(0, Math.min(100000000, number_(val, 0))));
+        if (['fareIncludedKm','carFareIncludedKm'].includes(k)) val = String(Math.max(0, Math.min(100, number_(val, 3))));
+        if (k === 'instagramUrl' && val && !/^https:\/\//i.test(val)) throw new Error('URL Instagram harus menggunakan HTTPS.');
+        upsertConfig_(k, val.substring(0, 180));
+      }
+    });
+    auditAdmin_('saveSettings', 'CONFIG', 'GLOBAL', 'Pengaturan layanan diperbarui');
+    return ok_({ settings: publicSettings_() });
+  }
+  if (action === 'createVoucher') {
+    const code = clean_(String(p.voucherCode || '').toUpperCase(), 24);
+    const description = clean_(p.description || '', 120);
+    const discountType = String(p.discountType || 'FIXED').toUpperCase();
+    const discountValue = number_(p.discountValue, 0);
+    if (!/^[A-Z0-9_-]{3,24}$/.test(code)) return fail_('Kode voucher 3–24 karakter, hanya huruf, angka, - atau _.');
+    if (find_(TABLES.VOUCHERS, 'voucherCode', code)) return fail_('Kode voucher sudah digunakan.');
+    if (!['FIXED','PERCENT'].includes(discountType) || discountValue <= 0 || (discountType === 'PERCENT' && discountValue > 100)) return fail_('Nilai diskon voucher tidak valid.');
+    const voucher = {
+      voucherCode: code, description: description, discountType: discountType, discountValue: discountValue,
+      minimumOrder: Math.max(0, number_(p.minimumOrder, 0)), maximumDiscount: Math.max(0, number_(p.maximumDiscount, 0)),
+      usageLimit: Math.max(0, Math.floor(number_(p.usageLimit, 0))), usedCount: 0,
+      startAt: clean_(p.startAt || '', 30), endAt: clean_(p.endAt || '', 30), status: 'ACTIVE',
+      createdAt: now_(), updatedAt: now_()
+    };
+    append_(TABLES.VOUCHERS, voucher);
+    auditAdmin_('createVoucher', 'VOUCHER', code, 'Voucher baru dibuat');
+    return ok_({ voucher: voucher });
+  }
+  if (action === 'voucherStatus') {
+    const voucher = find_(TABLES.VOUCHERS, 'voucherCode', String(p.voucherCode || '').toUpperCase());
+    if (!voucher) return fail_('Voucher tidak ditemukan.');
+    const status = String(p.status || '').toUpperCase();
+    if (!['ACTIVE','INACTIVE'].includes(status)) return fail_('Status voucher tidak valid.');
+    update_(TABLES.VOUCHERS, voucher._row, { status: status, updatedAt: now_() });
+    auditAdmin_('voucherStatus', 'VOUCHER', voucher.voucherCode, 'Status voucher diubah menjadi ' + status);
+    return ok_({ updated: true });
+  }
+  if (action === 'riderStatus') {
+    const rider = find_(TABLES.RIDERS, 'riderId', p.riderId);
+    if (!rider) return fail_('Penumpang tidak ditemukan.');
+    const next = String(p.status || '');
+    if (!['ACTIVE','SUSPENDED'].includes(next)) return fail_('Status penumpang tidak valid.');
+    update_(TABLES.RIDERS, rider._row, { status: next });
+    auditAdmin_('riderStatus', 'RIDER', rider.riderId, 'Status penumpang diubah menjadi ' + next);
+    return ok_({ updated: true });
+  }
+  if (action === 'driverStatus') {
+    const d = find_(TABLES.DRIVERS, 'driverId', p.driverId);
+    if (!d) return fail_('Driver tidak ditemukan.');
+    const next = String(p.status || '');
+    if (!['APPROVED','REJECTED','SUSPENDED'].includes(next)) return fail_('Status driver tidak valid.');
+    if (next === 'APPROVED' && !d.identityDocFileId) return fail_('Dokumen identitas driver belum tersedia.');
+    update_(TABLES.DRIVERS, d._row, { status: next, online: false, approvedAt: next === 'APPROVED' ? now_() : d.approvedAt });
+    let welcomeEmailSent = false;
+    if (next === 'APPROVED' && d.status !== 'APPROVED' && !d.welcomeEmailSentAt) {
+      welcomeEmailSent = sendWelcomeEmail_('driver', d);
+      if (welcomeEmailSent) update_(TABLES.DRIVERS, d._row, { welcomeEmailSentAt: now_() });
+    }
+    auditAdmin_('driverStatus', 'DRIVER', d.driverId, 'Status driver diubah menjadi ' + next);
+    return ok_({ updated: true, welcomeEmailSent: welcomeEmailSent });
+  }
+  if (action === 'assignOrder') {
+    // Serialize admin assignment against driver acceptance so a manual assignment
+    // cannot overwrite a broadcast order that a driver has just claimed.
+    const lock = LockService.getScriptLock();
+    lock.waitLock(10000);
+    try {
+      const o = find_(TABLES.ORDERS, 'orderId', p.orderId);
+      const d = find_(TABLES.DRIVERS, 'driverId', p.driverId);
+      if (!o || !d) return fail_('Pesanan atau driver tidak ditemukan.');
+      if (!['REQUESTED','DECLINED'].includes(o.orderStatus)) return fail_('Pesanan sudah berjalan dan tidak dapat dipindahkan.');
+      if (o.driverId && String(o.driverId) !== String(d.driverId)) return fail_('Pesanan sudah ditugaskan atau diterima driver lain.');
+      if (d.status !== 'APPROVED') return fail_('Driver belum disetujui.');
+      if (String(o.vehicleType || 'Motor') !== String(d.vehicleType || 'Motor')) return fail_('Jenis kendaraan driver tidak sesuai dengan pesanan.');
+      const alreadyCarrying = records_(TABLES.ORDERS).some(x => String(x.driverId) === String(d.driverId) && String(x.orderId) !== String(o.orderId) && ['ACCEPTED','ARRIVED','ON_TRIP'].includes(x.orderStatus));
+      if (alreadyCarrying) return fail_('Driver sedang membawa penumpang dan belum dapat menerima penugasan baru.');
+      update_(TABLES.ORDERS, o._row, { driverId: d.driverId, driverName: d.name, orderStatus: 'REQUESTED', updatedAt: now_() });
+      addEvent_(o.orderId, 'ADMIN', 'ADMIN', 'ASSIGNED', 'Admin menugaskan driver ' + d.name);
+      auditAdmin_('assignOrder', 'ORDER', o.orderId, 'Driver ditugaskan: ' + d.name);
+      return ok_({ assigned: true });
+    } finally {
+      lock.releaseLock();
+    }
+  }
+  if (action === 'paymentConfirm') {
+    const lock = LockService.getScriptLock(); lock.waitLock(10000);
+    try {
+      const pay = find_(TABLES.PAYMENTS, 'paymentId', p.paymentId);
+      if (!pay) return fail_('Data pembayaran tidak ditemukan.');
+      const next = p.status === 'REJECTED' ? 'REJECTED' : 'PAID';
+      if (pay.creditedAt && next !== 'PAID') return fail_('Pembayaran sudah dikreditkan ke saldo driver dan tidak dapat ditolak dari panel ini.');
+      const paymentPatch = { status: next, updatedAt: now_() };
+      if (p.reference) paymentPatch.reference = clean_(p.reference, 100);
+      const o = find_(TABLES.ORDERS, 'orderId', pay.orderId);
+      if (next === 'PAID' && o && o.orderStatus === 'COMPLETED' && o.paymentMethod !== 'CASH') {
+        const credit = creditDriverWallet_(o, Object.assign({}, pay, { status: 'PAID' }));
+        if (credit) paymentPatch.creditedAt = now_();
+      }
+      update_(TABLES.PAYMENTS, pay._row, paymentPatch);
+      if (o) update_(TABLES.ORDERS, o._row, { paymentStatus: next, updatedAt: now_() });
+      auditAdmin_('paymentConfirm', 'PAYMENT', pay.paymentId, 'Status pembayaran diubah menjadi ' + next);
+      return ok_({ updated: true });
+    } finally { lock.releaseLock(); }
+  }
+  if (action === 'withdrawalStatus') {
+    const lock = LockService.getScriptLock(); lock.waitLock(10000);
+    try {
+      const w = find_(TABLES.WITHDRAWALS, 'withdrawalId', p.withdrawalId);
+      if (!w) return fail_('Permintaan penarikan tidak ditemukan.');
+      if (w.status !== 'PENDING') return fail_('Permintaan ini sudah diproses.');
+      const next = p.status === 'PAID' ? 'PAID' : 'REJECTED';
+      const driver = find_(TABLES.DRIVERS, 'driverId', w.driverId);
+      if (next === 'REJECTED' && driver) update_(TABLES.DRIVERS, driver._row, { balance: number_(driver.balance, 0) + number_(w.amount, 0) });
+      update_(TABLES.WITHDRAWALS, w._row, { status: next, processedAt: now_(), adminNote: clean_(p.adminNote || '', 180) });
+      auditAdmin_('withdrawalStatus', 'WITHDRAWAL', w.withdrawalId, 'Status penarikan menjadi ' + next);
+      return ok_({ updated: true });
+    } finally { lock.releaseLock(); }
+  }
+  if (action === 'reportStatus') {
+    const report = find_(TABLES.REPORTS, 'reportId', p.reportId);
+    if (!report) return fail_('Laporan tidak ditemukan.');
+    const next = ['REVIEWING','RESOLVED','CLOSED'].includes(String(p.status)) ? String(p.status) : 'REVIEWING';
+    update_(TABLES.REPORTS, report._row, { status: next, adminNote: clean_(p.adminNote || '', 500) });
+    auditAdmin_('reportStatus', 'REPORT', report.reportId, 'Status laporan menjadi ' + next);
+    return ok_({ updated: true });
+  }
+  if (action === 'cancelOrder') {
+    const o = find_(TABLES.ORDERS, 'orderId', p.orderId);
+    if (!o) return fail_('Pesanan tidak ditemukan.');
+    if (['COMPLETED','CANCELLED'].includes(o.orderStatus)) return fail_('Pesanan sudah selesai atau dibatalkan.');
+    update_(TABLES.ORDERS, o._row, { orderStatus: 'CANCELLED', cancelReason: clean_(p.reason || 'Dibatalkan admin', 180), updatedAt: now_() });
+    addEvent_(o.orderId, 'ADMIN', 'ADMIN', 'CANCELLED', 'Pesanan dibatalkan oleh admin');
+    auditAdmin_('cancelOrder', 'ORDER', o.orderId, 'Pesanan dibatalkan admin');
+    return ok_({ updated: true });
+  }
+  return fail_('Aksi admin tidak dikenali.');
+}
+
+function auditAdmin_(action, targetType, targetId, detail) {
+  append_(TABLES.AUDIT, { auditId: randomId_('AUD'), actor: 'ADMIN', action: clean_(action, 60), targetType: clean_(targetType, 40), targetId: clean_(targetId, 80), detail: clean_(detail, 240), createdAt: now_() });
+}
+
+/* ------------------------------ HELPERS ------------------------------ */
+
+function publicDriver_(d) {
+  if (!d) return null;
+  return {
+    driverId: d.driverId, name: d.name, vehicleType: d.vehicleType,
+    vehicleBrand: d.vehicleBrand, plate: d.plate, region: d.region,
+    online: String(d.online) === 'true', baseFare: number_(d.baseFare, 0),
+    farePerKm: number_(d.farePerKm, 0), rating: number_(d.rating, 5),
+    ratingCount: number_(d.ratingCount, 0)
+  };
+}
+
+function safeDriver_(d) {
+  if (!d) return null;
+  return {
+    driverId: d.driverId, name: d.name, phone: d.phone, email: d.email,
+    vehicleType: d.vehicleType, vehicleBrand: d.vehicleBrand, plate: d.plate, region: d.region,
+    status: d.status, online: String(d.online) === 'true',
+    baseFare: number_(d.baseFare,0), farePerKm: number_(d.farePerKm,0),
+    rating: number_(d.rating,5), ratingCount: number_(d.ratingCount,0), balance: number_(d.balance,0),
+    lat: d.lat === '' ? null : number_(d.lat, NaN), lng: d.lng === '' ? null : number_(d.lng, NaN),
+    lastLocationAt: d.lastLocationAt, createdAt: d.createdAt, approvedAt: d.approvedAt,
+    emailVerified: String(d.emailVerified) === 'true', hasIdentityDocument: Boolean(d.identityDocFileId),
+    identityDocType: d.identityDocType || '', identityDocFileName: d.identityDocFileName || '',
+    payoutMethod: d.payoutMethod || '', payoutDetails: d.payoutDetails || '', payoutUpdatedAt: d.payoutUpdatedAt || ''
+  };
+}
+
+
+/* ------------------------------ FARES & VOUCHERS ------------------------------ */
+function calculateDefaultFare_(distanceKm, settings) {
+  return calculateVehicleFare_(distanceKm, settings, 'Motor', 1);
+}
+
+function calculateVehicleFare_(distanceKm, settings, vehicleType, passengerCount) {
+  const cfg = settings || publicSettings_();
+  const km = Math.max(0, number_(distanceKm, 0));
+  const isCar = String(vehicleType || 'Motor') === 'Mobil';
+  const pax = Math.max(1, number_(passengerCount, 1));
+  const includedKm = Math.max(0, number_(isCar ? cfg.carFareIncludedKm : cfg.fareIncludedKm, 3));
+  const extraStartedKm = Math.max(0, Math.ceil(km - includedKm - 1e-9));
+  let base, perKm, minimum;
+  if (isCar) {
+    base = pax >= 5 ? number_(cfg.defaultCarBaseFare5, 25000) : pax >= 4 ? number_(cfg.defaultCarBaseFare4, 20000) : number_(cfg.defaultCarBaseFare1, 15000);
+    perKm = number_(cfg.defaultCarFarePerKm, 1500);
+    minimum = base;
+  } else {
+    base = number_(cfg.defaultBaseFare, 6000);
+    perKm = number_(cfg.defaultFarePerKm, 1500);
+    minimum = number_(cfg.minimumFare, 6000);
+  }
+  return Math.max(minimum, base + extraStartedKm * perKm);
+}
+
+function validateVoucher_(code, orderFare) {
+  const voucher = find_(TABLES.VOUCHERS, 'voucherCode', String(code || '').toUpperCase());
+  if (!voucher) return { ok: false, message: 'Kode voucher tidak ditemukan.' };
+  if (String(voucher.status || '').toUpperCase() !== 'ACTIVE') return { ok: false, message: 'Voucher sedang tidak aktif.' };
+  const now = Date.now();
+  let startValue = String(voucher.startAt || '').trim();
+  if (startValue && /^\d{4}-\d{2}-\d{2}$/.test(startValue)) startValue += 'T00:00:00+07:00';
+  const start = startValue ? Date.parse(startValue) : NaN;
+  let endValue = String(voucher.endAt || '').trim();
+  if (endValue && /^\d{4}-\d{2}-\d{2}$/.test(endValue)) endValue += 'T23:59:59+07:00';
+  const end = endValue ? Date.parse(endValue) : NaN;
+  if (isFinite(start) && now < start) return { ok: false, message: 'Voucher belum mulai berlaku.' };
+  if (isFinite(end) && now > end) return { ok: false, message: 'Masa berlaku voucher sudah berakhir.' };
+  const limit = Math.max(0, number_(voucher.usageLimit, 0));
+  const used = Math.max(0, number_(voucher.usedCount, 0));
+  if (limit > 0 && used >= limit) return { ok: false, message: 'Kuota voucher sudah habis.' };
+  const fare = Math.max(0, number_(orderFare, 0));
+  if (fare < number_(voucher.minimumOrder, 0)) return { ok: false, message: 'Pesanan belum mencapai minimum transaksi voucher.' };
+  let discount = String(voucher.discountType).toUpperCase() === 'PERCENT'
+    ? Math.floor(fare * number_(voucher.discountValue, 0) / 100)
+    : Math.floor(number_(voucher.discountValue, 0));
+  const cap = number_(voucher.maximumDiscount, 0);
+  if (cap > 0) discount = Math.min(discount, cap);
+  discount = Math.max(0, Math.min(fare, discount));
+  if (discount <= 0) return { ok: false, message: 'Voucher tidak memberikan potongan pada pesanan ini.' };
+  return { ok: true, voucher: voucher, discountAmount: discount };
+}
+
+function voucherPreview_(p) {
+  const code = clean_(String(p.voucherCode || '').toUpperCase(), 24);
+  if (!code) return fail_('Masukkan kode voucher.');
+  const distance = Math.max(0.1, Math.min(300, number_(p.distanceKm, 0)));
+  const originalFare = calculateVehicleFare_(distance, publicSettings_(), p.vehicleType || 'Motor', p.passengerCount || 1);
+  const checked = validateVoucher_(code, originalFare);
+  if (!checked.ok) return fail_(checked.message);
+  return ok_({
+    originalFare: originalFare,
+    discountAmount: checked.discountAmount,
+    finalFare: Math.max(0, originalFare - checked.discountAmount),
+    voucher: {
+      voucherCode: checked.voucher.voucherCode,
+      description: checked.voucher.description,
+      discountType: checked.voucher.discountType,
+      discountValue: checked.voucher.discountValue,
+      maximumDiscount: checked.voucher.maximumDiscount
+    }
+  });
+}
+
+function sendWelcomeEmail_(role, account) {
+  const email = String(account && account.email || '').trim().toLowerCase();
+  if (!email) return false;
+  const name = String(account.name || 'Pengguna MyAnjem');
+  const safeName = name.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const isDriver = role === 'driver';
+  const subject = isDriver ? 'Akun Driver MyAnjem berhasil diverifikasi' : 'Selamat datang di MyAnjem! Akun kamu berhasil dibuat';
+  const headline = isDriver ? 'Akun driver kamu telah diverifikasi!' : 'Selamat, akun MyAnjem kamu berhasil dibuat!';
+  const message = isDriver
+    ? 'Pemeriksaan dokumen dan verifikasi akun kamu telah selesai. Akun driver sekarang aktif dan kamu dapat masuk untuk mulai menerima pesanan.'
+    : 'Pendaftaran akun penumpang kamu berhasil. Sekarang kamu dapat masuk, memesan perjalanan, dan melihat riwayat pesanan melalui MyAnjem.';
+  const htmlBody = '<div style="font-family:Arial,sans-serif;max-width:560px;margin:24px auto;padding:28px;border:1px solid #f2dce7;border-radius:18px;color:#29232b">' +
+    '<div style="font-size:25px;font-weight:800;color:#e83e8c">MyAnjem</div><p style="color:#8a7e88;font-size:12px;letter-spacing:1px">YOUR RIDE, YOUR WAY</p>' +
+    '<h2 style="color:#c92d75">' + headline + '</h2><p>Halo <b>' + safeName + '</b>,</p><p>' + message + '</p>' +
+    '<p style="background:#fff0f6;padding:14px;border-radius:10px"><b>ID akun:</b> ' + String(account.riderId || account.driverId || '') + '</p>' +
+    '<p>Terima kasih telah menjadi bagian dari MyAnjem. Semoga perjalananmu selalu nyaman dan aman.</p><p style="color:#888;font-size:12px">Email otomatis dari MyAnjem. Mohon tidak membalas email ini.</p></div>';
+  try {
+    MailApp.sendEmail({ to: email, subject: subject, htmlBody: htmlBody, body: headline + '\n\nHalo ' + name + ',\n' + message + '\nID akun: ' + String(account.riderId || account.driverId || '') + '\n\nTerima kasih telah menggunakan MyAnjem.' });
+    return true;
+  } catch (err) {
+    console.error('Welcome email failed for ' + role + ': ' + err);
+    return false;
+  }
+}
+
+function safeOrder_(o) {
+  if (!o) return null;
+  const out = {};
+  HEADERS[TABLES.ORDERS].forEach(k => out[k] = o[k] === undefined ? '' : o[k]);
+  return out;
+}
+
+function addEvent_(orderId, actorType, actorId, eventType, message) {
+  append_(TABLES.EVENTS, {
+    eventId: randomId_('EVT'), orderId: orderId, actorType: actorType, actorId: actorId,
+    eventType: eventType, message: message, createdAt: now_()
+  });
+}
+
+function now_() { return new Date().toISOString(); }
+function ok_(data) { return Object.assign({ ok: true }, data || {}); }
+function fail_(message) { return { ok: false, message: String(message || 'Permintaan gagal.') }; }
+function clean_(v, max) { return String(v == null ? '' : v).replace(/[<>]/g, '').trim().substring(0, max || 200); }
+
+function phone_(v) {
+  let phone = String(v == null ? '' : v)
+    .trim()
+    .replace(/[^0-9+]/g, '');
+
+  // Format internasional Indonesia menjadi format lokal.
+  if (phone.startsWith('+62')) {
+    phone = '0' + phone.substring(3);
+  } else if (phone.startsWith('62')) {
+    phone = '0' + phone.substring(2);
+  }
+
+  // Pulihkan angka 0 yang mungkin hilang akibat format Spreadsheet.
+  if (/^8\d{8,12}$/.test(phone)) {
+    phone = '0' + phone;
+  }
+  // Selalu simpan dalam bentuk string lokal 08..., bukan angka spreadsheet.
+
+  return phone;
+}
+
+function number_(v, fallback) { const n = Number(v); return isFinite(n) ? n : fallback; }
+function roundTo500_(n) { return Math.ceil(n / 500) * 500; }
+
+
+function diagnoseDriverAccount(phone) {
+  const target = phone_(phone);
+  const drivers = records_(TABLES.DRIVERS);
+
+  const d = drivers.find(function(x) {
+    return phone_(x.phone) === target;
+  });
+
+  if (!d) {
+    Logger.log('HASIL: DRIVER TIDAK DITEMUKAN');
+    Logger.log('Nomor pencarian: ' + target);
+    return;
+  }
+
+  Logger.log('HASIL: DRIVER DITEMUKAN');
+  Logger.log('ID: ' + d.driverId);
+  Logger.log('Nama: ' + d.name);
+  Logger.log('Nomor tersimpan: ' + d.phone);
+  Logger.log('Nomor normalisasi: ' + phone_(d.phone));
+  Logger.log('Status: ' + d.status);
+  Logger.log('Salt tersedia: ' + Boolean(d.passwordSalt));
+  Logger.log('Hash tersedia: ' + Boolean(d.passwordHash));
+  Logger.log('Panjang hash: ' + String(d.passwordHash || '').length);
+}

@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="id">
+<head>
+<!-- Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="logo.png.png">
+<link rel="icon" type="image/png" sizes="192x192" href="logo.png.png">
+<link rel="apple-touch-icon" href="logo.png.png">
+
+<!-- Browser Theme -->
+<meta name="theme-color" content="#e83e8c">
+<meta name="msapplication-TileColor" content="#e83e8c">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#e83e8c">
+<meta name="description" content="Invoice perjalanan resmi MyAnjem."><title>Invoice Perjalanan · MyAnjem</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"><link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<style>
+:root{--pink:#e83e8c;--pink-dark:#c92d75;--pink-soft:#fff0f6;--ink:#28232a;--muted:#77717b;--line:#eae5ea;--bg:#f7f5f7;--green:#16845a}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:Nunito,system-ui,sans-serif;line-height:1.5;padding-bottom:92px}a{color:inherit;text-decoration:none}.container{width:min(900px,calc(100% - 28px));margin:auto}.app-header{height:72px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;position:sticky;top:0;z-index:10}.header-inner{display:flex;align-items:center;justify-content:space-between;gap:15px}.brand{display:flex;align-items:center;gap:10px;font-size:20px;font-weight:900}.brand-mark{width:39px;height:39px}.brand-mark img{width:100%;height:100%;object-fit:contain}.brand small{display:block;font-size:10px;color:var(--muted);font-weight:600;margin-top:-4px}.header-actions{display:flex;gap:8px}.header-link{padding:9px 11px;border-radius:9px;font-weight:800;color:#615963}.header-link:hover{background:var(--pink-soft);color:var(--pink-dark)}main{padding:26px 0 38px}.tools{display:flex;gap:9px;flex-wrap:wrap;justify-content:flex-end;margin-bottom:12px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:#fff;font-weight:900;cursor:pointer}.btn.primary{background:var(--pink);border-color:var(--pink);color:#fff}.invoice{background:#fff;border:1px solid var(--line);border-radius:17px;box-shadow:0 8px 28px rgba(34,22,33,.06);overflow:hidden}.invoice-head{padding:26px 30px;background:linear-gradient(110deg,#fff 0%,#fff 70%,#fff1f7 100%);border-bottom:1px solid var(--line);display:flex;align-items:flex-start;justify-content:space-between;gap:20px}.company{display:flex;gap:13px;align-items:center}.company img{width:60px;height:60px;object-fit:contain}.company h1{font-size:24px;margin:0;letter-spacing:-.5px}.company p{font-size:11px;color:var(--muted);margin:1px 0}.doc-tag{text-align:right}.doc-tag strong{display:block;color:var(--pink-dark);font-size:15px;letter-spacing:1px}.doc-tag small{font-size:11px;color:var(--muted)}.invoice-body{padding:26px 30px}.row-two{display:grid;grid-template-columns:1fr 1fr;gap:20px}.label{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.7px;font-weight:900;margin-bottom:5px}.value{font-size:14px;font-weight:800;overflow-wrap:anywhere}.subvalue{font-size:12px;color:var(--muted);margin-top:2px}.meta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:23px 0;padding:15px;background:#faf8fa;border:1px solid var(--line);border-radius:12px}.route{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:20px 0}.route-point{border-left:3px solid var(--pink);padding:5px 0 5px 12px}.route-point.destination{border-color:#28232a}.amount-table{width:100%;border-collapse:collapse;margin-top:18px}.amount-table th,.amount-table td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:left;font-size:12px}.amount-table th{color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.6px}.amount-table td:last-child,.amount-table th:last-child{text-align:right}.grand-total{display:flex;justify-content:space-between;align-items:center;padding:16px 10px 7px;font-weight:900}.grand-total strong{font-size:23px;color:var(--pink-dark)}.bottom-grid{display:grid;grid-template-columns:1fr 180px;gap:24px;align-items:center;margin-top:25px;padding-top:20px;border-top:1px solid var(--line)}.timeline{display:grid;gap:9px}.timeline-item{display:flex;gap:10px;font-size:12px}.timeline-item i{font-size:17px;color:var(--pink-dark)}.qr-panel{text-align:center;border:1px solid var(--line);border-radius:12px;padding:12px}.qr-panel b{font-size:12px}.qr-panel small{display:block;color:var(--muted);font-size:10px;margin-top:5px}.qr-box{min-height:130px;display:grid;place-items:center;margin-top:8px}.qr-box img{max-width:130px}.legal{font-size:10px;color:var(--muted);line-height:1.5;margin-top:19px}.status{display:inline-flex;border-radius:30px;padding:5px 9px;background:#eef5ff;color:#315b9f;font-size:10px;font-weight:900}.status.done{background:#e8f7ef;color:var(--green)}.loading,.error{background:#fff;border:1px solid var(--line);border-radius:14px;padding:25px;text-align:center;color:var(--muted)}.error{color:#9e2c43}.mobile-bottom{position:fixed;z-index:950;bottom:0;left:0;right:0;height:72px;display:flex;background:#fff;border-top:1px solid var(--line);padding:5px max(5px,env(safe-area-inset-right)) calc(5px + env(safe-area-inset-bottom)) max(5px,env(safe-area-inset-left));box-shadow:0 -4px 18px rgba(35,24,32,.045)}.mobile-bottom a{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10px;font-weight:800;color:#817984;white-space:nowrap}.mobile-bottom a i{font-size:21px}.mobile-bottom a.active{color:var(--pink-dark)}@media(max-width:640px){.header-actions{display:none}.invoice-head,.invoice-body{padding:18px}.invoice-head{flex-direction:column}.doc-tag{text-align:left}.row-two,.route{grid-template-columns:1fr;gap:13px}.meta-grid{grid-template-columns:1fr 1fr}.bottom-grid{grid-template-columns:1fr 150px;gap:12px}.qr-panel{padding:8px}.qr-box{min-height:110px}.tools{justify-content:flex-start}.mobile-bottom{height:76px}.mobile-bottom a{font-size:9px}.mobile-bottom a i{font-size:19px}}@media print{@page{size:A4;margin:12mm}body{background:#fff;padding:0}.app-header,.mobile-bottom,.tools{display:none!important}main{padding:0}.container{width:100%;max-width:none}.invoice{box-shadow:none;border:0;border-radius:0}.invoice-head{-webkit-print-color-adjust:exact;print-color-adjust:exact}.invoice-body{padding:20px 24px}.qr-panel{break-inside:avoid}.invoice{break-inside:avoid}.error,.loading{border:0}}@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+@media(min-width:641px){.mobile-bottom{display:none!important}}
+
+[hidden]{display:none!important}
+.lookup-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;margin:0 0 16px;box-shadow:0 6px 22px rgba(34,22,33,.045)}
+.lookup-heading{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px}
+.lookup-icon{width:44px;height:44px;flex:none;border-radius:13px;display:grid;place-items:center;background:var(--pink-soft);color:var(--pink-dark);font-size:23px}
+.lookup-heading h2{margin:0;font-size:18px}.lookup-heading p{margin:3px 0 0;color:var(--muted);font-size:12px}
+.lookup-form{display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end}
+.lookup-field label{display:block;font-size:12px;font-weight:900;margin-bottom:5px}
+.lookup-field input{width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font:inherit;outline:none;background:#fff}
+.lookup-field input:focus{border-color:#e67aad;box-shadow:0 0 0 3px rgba(232,62,140,.1)}
+.lookup-help{font-size:11px;color:var(--muted);margin-top:10px}
+.lookup-result{font-size:12px;margin-top:10px;min-height:18px;color:var(--muted)}
+.lookup-result.error{color:#a52c44;background:#fff0f2;border:0;padding:0;text-align:left}
+.lookup-result.success{color:var(--green)}
+@media(max-width:640px){.lookup-card{padding:16px}.lookup-form{grid-template-columns:1fr}.lookup-form .btn{width:100%;min-height:44px}}
+@media print{.lookup-card{display:none!important}}
+
+</style>
+<style id="myanjem-consistent-header">
+.app-header{height:72px!important;min-height:72px!important;background:#fff!important;border-bottom:1px solid #eee8ed!important;display:flex!important;align-items:center!important;position:sticky!important;top:0!important;z-index:1000!important;box-shadow:0 2px 12px rgba(35,24,32,.045)!important}
+.app-header>.container.header-inner{width:min(1160px,calc(100% - 36px))!important;max-width:1160px!important;margin:0 auto!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:16px!important}
+.app-header .brand{display:flex!important;align-items:center!important;gap:10px!important;font-size:21px!important;font-weight:900!important;letter-spacing:-.55px!important;line-height:1.1!important;white-space:nowrap!important}
+.app-header .brand-mark{width:40px!important;height:40px!important;flex:0 0 40px!important;display:grid!important;place-items:center!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:visible!important}
+.app-header .brand-mark img{display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;padding:0!important;background:transparent!important;border-radius:0!important}
+.app-header .brand small{display:block!important;margin-top:3px!important;color:#8a818b!important;font-size:10px!important;font-weight:700!important;letter-spacing:.35px!important}
+.app-header .header-actions{display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:7px!important;min-width:0!important}
+.app-header .header-link{display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:6px!important;border:0!important;background:transparent!important;padding:9px 11px!important;border-radius:9px!important;color:#5d5660!important;font-size:13px!important;font-weight:800!important;white-space:nowrap!important;text-decoration:none!important}
+.app-header .header-link:hover{background:var(--ma-accent-soft,var(--pink-soft,#fff0f6))!important;color:var(--ma-accent-dark,var(--pink-dark,#c92d75))!important}
+.header-datetime{display:flex;flex-direction:column;align-items:flex-end;justify-content:center;gap:1px;min-width:104px;padding-left:13px;margin-left:5px;border-left:1px solid #eee8ed;color:#6f6570;line-height:1.2;font-variant-numeric:tabular-nums}
+.header-clock{font-size:14px;font-weight:900;letter-spacing:.15px;color:var(--ma-accent-dark,var(--pink-dark,#c92d75));white-space:nowrap}
+.header-date{font-size:10px;font-weight:800;letter-spacing:.2px;color:#958b95;white-space:nowrap;text-transform:capitalize}
+@media(max-width:640px){.app-header{height:64px!important;min-height:64px!important}.app-header>.container.header-inner{width:calc(100% - 24px)!important;gap:8px!important}.app-header .brand{font-size:18px!important;gap:8px!important}.app-header .brand-mark{width:36px!important;height:36px!important;flex-basis:36px!important}.app-header .brand small{font-size:9px!important;margin-top:2px!important}.app-header .header-actions{gap:0!important}.app-header .header-link{display:none!important}.header-datetime{min-width:98px;padding-left:10px;margin-left:0}.header-clock{font-size:14px}.header-date{font-size:9px}}
+@media(max-width:360px){.app-header>.container.header-inner{width:calc(100% - 18px)!important}.app-header .brand{font-size:17px!important}.header-datetime{min-width:91px}.header-clock{font-size:13px}}
+</style>
+
+<style id="myanjem-appearance-system">
+:root{--ma-accent:#e83e8c;--ma-accent-dark:#c92d75;--ma-accent-soft:#fff0f6;--ma-accent-pale:#fff7fa;--ma-surface:#fff;--ma-bg:#f7f5f7;--ma-text:#28232a;--ma-muted:#817984;--ma-border:#eee8ed;color-scheme:light}
+:root[data-ma-theme="dark"]{color-scheme:dark;--ma-surface:#211c24;--ma-bg:#151219;--ma-text:#f3edf2;--ma-muted:#b9aeba;--ma-border:#403544;--ma-accent-soft:#392333;--ma-accent-pale:#2c202b}
+body{background:var(--ma-bg)!important;color:var(--ma-text)}
+/* Accent refinements for the full MyAnjem interface */
+.mobile-bottom a.active{color:var(--ma-accent-dark)!important}
+.app-header .header-link:hover{background:var(--ma-accent-soft)!important;color:var(--ma-accent-dark)!important}
+.header-clock,.result-code,.quote-total strong,.visual-price,.price-value{color:var(--ma-accent-dark)!important}
+.choice.active,.driver-choice.selected,.car-option.active,.tab.active{border-color:var(--ma-accent)!important;background:var(--ma-accent-soft)!important;color:var(--ma-accent-dark)!important}
+.route-point .dot,.route-line-accent,.progress-step.done:before{border-color:var(--ma-accent)!important;background-color:var(--ma-accent)!important}
+
+/* Theme color follows the selected accent while preserving the original component system. */
+.btn-primary,.btn.primary,.primary,.welcome-banner-tag,.mobile-bottom a.active,.header-clock,.pink{color:var(--ma-accent-dark)}
+.btn-primary,.btn.primary,.primary{background:var(--ma-accent);border-color:var(--ma-accent);color:#fff}
+.btn-primary:hover,.btn.primary:hover,.primary:hover{background:var(--ma-accent-dark);border-color:var(--ma-accent-dark);color:#fff}
+.eyebrow,.btn-soft,.passenger-entry-icon,.auth-brand-mark,.head-icon,.service-icon,.service-card .icon,.acc-icon,.mobile-bottom a.active{background-color:var(--ma-accent-soft);color:var(--ma-accent-dark)}
+.brand span,.visual-price,.doc-tag strong,.grand-total strong,.passenger-entry-action,.section .pink{color:var(--ma-accent-dark)}
+.btn-light:hover,.header-link:hover,.tab:hover{border-color:var(--ma-accent);color:var(--ma-accent-dark)}
+.mobile-bottom{border-color:var(--ma-border)}
+.ma-appearance-toggle{position:fixed;right:18px;top:88px;z-index:2400;width:43px;height:43px;border:1px solid var(--ma-border);border-radius:13px;background:var(--ma-surface);color:var(--ma-accent-dark);box-shadow:0 6px 20px rgba(35,24,32,.12);display:grid;place-items:center;cursor:pointer}
+.ma-appearance-toggle i{font-size:22px}
+.ma-appearance-panel{position:fixed;right:18px;top:139px;z-index:2401;width:min(310px,calc(100vw - 28px));padding:16px;background:var(--ma-surface);color:var(--ma-text);border:1px solid var(--ma-border);border-radius:17px;box-shadow:0 16px 42px rgba(20,12,22,.2);display:none}
+.ma-appearance-panel.open{display:block;animation:maPanelIn .18s ease both}
+@keyframes maPanelIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.ma-appearance-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:13px}
+.ma-appearance-head b{font-size:14px;font-weight:900}
+.ma-appearance-close{width:30px;height:30px;border:0;border-radius:9px;background:var(--ma-accent-soft);color:var(--ma-accent-dark);font-size:20px;cursor:pointer}
+.ma-appearance-label{display:block;font-size:11px;font-weight:900;color:var(--ma-muted);margin:13px 0 8px;text-transform:uppercase;letter-spacing:.55px}
+.ma-appearance-modes{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ma-appearance-mode{border:1px solid var(--ma-border);border-radius:10px;padding:10px 8px;background:var(--ma-bg);color:var(--ma-text);display:flex;align-items:center;justify-content:center;gap:7px;font-size:12px;font-weight:800;cursor:pointer}
+.ma-appearance-mode.active{border-color:var(--ma-accent);background:var(--ma-accent-soft);color:var(--ma-accent-dark);box-shadow:inset 0 0 0 1px var(--ma-accent)}
+.ma-color-swatches{display:grid;grid-template-columns:repeat(6,1fr);gap:9px}
+.ma-color-swatch{width:100%;aspect-ratio:1;border-radius:50%;border:2px solid var(--ma-surface);outline:1px solid var(--ma-border);cursor:pointer;position:relative}
+.ma-color-swatch.active{outline:2px solid var(--ma-accent);outline-offset:2px}
+.ma-color-swatch.active:after{content:'✓';position:absolute;inset:0;display:grid;place-items:center;color:#fff;text-shadow:0 1px 3px #000;font-size:14px;font-weight:900}
+.ma-custom-color{display:flex;align-items:center;gap:10px;border:1px solid var(--ma-border);background:var(--ma-bg);padding:8px 10px;border-radius:11px}
+.ma-custom-color input{width:36px;height:30px;padding:0;border:0;background:transparent;cursor:pointer}
+.ma-custom-color span{font-size:12px;font-weight:800;color:var(--ma-text)}
+.ma-appearance-note{font-size:10px;line-height:1.45;color:var(--ma-muted);margin:10px 0 0}
+@media(max-width:640px){.ma-appearance-toggle{top:73px;right:12px;width:39px;height:39px;border-radius:12px}.ma-appearance-panel{top:119px;right:12px}.ma-appearance-toggle i{font-size:21px}}
+
+/* dark mental-health surfaces */
+:root[data-ma-theme="dark"] .intro-card,:root[data-ma-theme="dark"] .selfcare-card,:root[data-ma-theme="dark"] .emergency-card,:root[data-ma-theme="dark"] .srq-item{background:#211c24!important;color:#f3edf2!important;border-color:#403544!important}
+:root[data-ma-theme="dark"] .intro-card p,:root[data-ma-theme="dark"] .selfcare-card p,:root[data-ma-theme="dark"] .emergency-card p,:root[data-ma-theme="dark"] .privacy-note,:root[data-ma-theme="dark"] .grounding-fields label,:root[data-ma-theme="dark"] .srq-count{color:#b9aeba!important}
+:root[data-ma-theme="dark"] .srq-choice,:root[data-ma-theme="dark"] .grounding-fields input,:root[data-ma-theme="dark"] .journal-area{background:#19151d!important;color:#f3edf2!important;border-color:#4a3d4d!important}
+:root[data-ma-theme="dark"] .srq-result{background:#2a2029!important;color:#f3edf2!important;border-color:#5a3b4d!important}
+:root[data-ma-theme="dark"] .srq-progress{background:#403544!important}
+:root[data-ma-theme="dark"] .emergency-alert{background:#342326!important;color:#f4cccc!important;border-color:#684047!important}
+:root[data-ma-theme="dark"] .breath-orb{background:#392333!important;color:#f2a8ca!important;border-color:#614056!important}
+:root[data-ma-theme="dark"] .mobile-bottom a{color:#b9aeba!important}
+:root[data-ma-theme="dark"] .mobile-bottom a.active{color:var(--pink)!important}
+
+/* Dark palette: surface-only overrides keep original layout, spacing, typography and accent identity. */
+:root[data-ma-theme="dark"] body{background:#151219!important;color:#f3edf2!important}
+:root[data-ma-theme="dark"] .app-header,:root[data-ma-theme="dark"] .mobile-bottom,:root[data-ma-theme="dark"] .panel,:root[data-ma-theme="dark"] .section,:root[data-ma-theme="dark"] .card,:root[data-ma-theme="dark"] .service-card,:root[data-ma-theme="dark"] .stat,:root[data-ma-theme="dark"] .item-card,:root[data-ma-theme="dark"] .result-card,:root[data-ma-theme="dark"] .profile-panel,:root[data-ma-theme="dark"] .accordion details,:root[data-ma-theme="dark"] .help-card,:root[data-ma-theme="dark"] .passenger-entry-card,:root[data-ma-theme="dark"] .passenger-account-bar,:root[data-ma-theme="dark"] .auth-wrap,:root[data-ma-theme="dark"] .auth-card,:root[data-ma-theme="dark"] .lookup-card,:root[data-ma-theme="dark"] .invoice,:root[data-ma-theme="dark"] .invoice-body,:root[data-ma-theme="dark"] .modal,:root[data-ma-theme="dark"] .modal-content,:root[data-ma-theme="dark"] .driver-choice,:root[data-ma-theme="dark"] .quote-card,:root[data-ma-theme="dark"] .bank-box,:root[data-ma-theme="dark"] .map-card,:root[data-ma-theme="dark"] .map-box,:root[data-ma-theme="dark"] .ma-appearance-panel{background:#211c24!important;color:#f3edf2!important;border-color:#403544!important}
+:root[data-ma-theme="dark"] .app-header,:root[data-ma-theme="dark"] .mobile-bottom{box-shadow:0 2px 14px rgba(0,0,0,.22)!important}
+:root[data-ma-theme="dark"] .hero,:root[data-ma-theme="dark"] .invoice-head,:root[data-ma-theme="dark"] .welcome-banner,:root[data-ma-theme="dark"] .passenger-welcome{background:linear-gradient(120deg,#211c24 0%,#28202a 100%)!important;border-color:#44313f!important}
+:root[data-ma-theme="dark"] .route-preview,:root[data-ma-theme="dark"] .meta-grid,:root[data-ma-theme="dark"] .captcha-box,:root[data-ma-theme="dark"] .captcha-question,:root[data-ma-theme="dark"] .notice,:root[data-ma-theme="dark"] .quote-total,:root[data-ma-theme="dark"] .table-wrap,:root[data-ma-theme="dark"] .table-scroll,:root[data-ma-theme="dark"] .empty,:root[data-ma-theme="dark"] .loading,:root[data-ma-theme="dark"] .error{background:#1b1720!important;color:#e9e0e8!important;border-color:#403544!important}
+:root[data-ma-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),:root[data-ma-theme="dark"] select,:root[data-ma-theme="dark"] textarea{background:#19151d!important;color:#f3edf2!important;border-color:#4a3d4d!important}
+:root[data-ma-theme="dark"] input::placeholder,:root[data-ma-theme="dark"] textarea::placeholder{color:#938895!important}
+:root[data-ma-theme="dark"] .btn-light,:root[data-ma-theme="dark"] .secondary,:root[data-ma-theme="dark"] .icon-btn{background:#2a2330!important;color:#eee6ef!important;border-color:#4b3d4e!important}
+:root[data-ma-theme="dark"] .muted,:root[data-ma-theme="dark"] .tiny.muted,:root[data-ma-theme="dark"] .small.muted,:root[data-ma-theme="dark"] .subvalue,:root[data-ma-theme="dark"] .section-head p,:root[data-ma-theme="dark"] .section>p,:root[data-ma-theme="dark"] .hero p,:root[data-ma-theme="dark"] .hero .lead,:root[data-ma-theme="dark"] .profile-copy,:root[data-ma-theme="dark"] .service-card p,:root[data-ma-theme="dark"] .lead,:root[data-ma-theme="dark"] .label,:root[data-ma-theme="dark"] .header-link{color:#b9aeba!important}
+:root[data-ma-theme="dark"] .field label,:root[data-ma-theme="dark"] .panel-title,:root[data-ma-theme="dark"] .section h2,:root[data-ma-theme="dark"] .item-card h3,:root[data-ma-theme="dark"] .value,:root[data-ma-theme="dark"] .principle,:root[data-ma-theme="dark"] .accordion summary,:root[data-ma-theme="dark"] .service-card b{color:#f3edf2}
+:root[data-ma-theme="dark"] .table-wrap table,:root[data-ma-theme="dark"] table{color:#f3edf2}
+:root[data-ma-theme="dark"] th,:root[data-ma-theme="dark"] td{border-color:#403544!important}
+:root[data-ma-theme="dark"] .footer,:root[data-ma-theme="dark"] .footer p{color:#a99eaa!important}
+:root[data-ma-theme="dark"] .brand small,:root[data-ma-theme="dark"] .header-date{color:#b9aeba!important}
+:root[data-ma-theme="dark"] .welcome-banner-title,:root[data-ma-theme="dark"] .welcome-banner-text{color:#f3dce9!important}
+:root[data-ma-theme="dark"] .service-icon,:root[data-ma-theme="dark"] .head-icon,:root[data-ma-theme="dark"] .acc-icon,:root[data-ma-theme="dark"] .eyebrow,:root[data-ma-theme="dark"] .passenger-entry-icon{background:#392333!important;color:#f2a8ca!important}
+:root[data-ma-theme="dark"] .qr-panel,:root[data-ma-theme="dark"] .route-point{border-color:#51404f!important}
+:root[data-ma-theme="dark"] .grand-total,:root[data-ma-theme="dark"] .quote-row{border-color:#403544!important}
+:root[data-ma-theme="dark"] .ma-appearance-toggle{background:#211c24;color:#f2a8ca;border-color:#51404f}
+:root[data-ma-theme="dark"] .ma-appearance-mode,:root[data-ma-theme="dark"] .ma-custom-color{background:#19151d;color:#f3edf2;border-color:#4a3d4d}
+:root[data-ma-theme="dark"] .modal-backdrop{background:rgba(0,0,0,.72)!important}
+@media(prefers-reduced-motion:reduce){.ma-appearance-panel.open{animation:none}}
+</style>
+
+</head>
+<body>
+<header class="app-header"><div class="container header-inner"><a class="brand" href="/home" aria-label="MyAnjem beranda"><div class="brand-mark" id="brandMark"><img src="logo.png.png" alt="Logo MyAnjem"></div><div>MyAnjem<small>Your Ride, Your Way</small></div></a><div class="header-actions"><a class="header-link" href="/order"><i class="bx bx-map-pin"></i> Pesan</a><a class="header-link" href="/about"><i class="bx bx-info-circle"></i> Tentang</a><a class="header-link" href="/account"><i class="bx bx-user-circle"></i> Akun</a><div class="header-datetime" aria-label="Waktu Indonesia Barat"><span class="header-clock" id="headerClockTime">--:-- WIB</span><span class="header-date" id="headerClockDate">Memuat tanggal…</span></div></div></div></header>
+<main class="container">
+<div class="tools"><a class="btn" href="/account"><i class="bx bx-user"></i> Akun</a><button id="printButton" class="btn primary" type="button" onclick="window.print()" hidden><i class="bx bx-download"></i> Cetak / Simpan PDF</button></div>
+<section class="lookup-card" id="invoiceLookup">
+  <div class="lookup-heading"><div class="lookup-icon"><i class="bx bx-receipt"></i></div><div><h2>Cari atau buat invoice perjalanan</h2><p>Masukkan nomor pesanan dan nomor telepon yang digunakan saat memesan.</p></div></div>
+  <form class="lookup-form" id="lookupForm">
+    <div class="lookup-field"><label for="lookupOrderId">Nomor pesanan</label><input id="lookupOrderId" autocomplete="off" placeholder="Contoh: MA-XXXXXXXX" required maxlength="50"></div>
+    <div class="lookup-field"><label for="lookupPhone">Nomor telepon pemesan</label><input id="lookupPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="08xxxxxxxxxx" required maxlength="20"></div>
+    <button class="btn primary" id="lookupButton" type="submit"><i class="bx bx-search"></i> Cari Invoice</button>
+  </form>
+  <div class="lookup-help">Verifikasi menggunakan kedua data tersebut. Nomor telepon dapat dimasukkan dengan format 08, 62, atau +62.</div>
+  <div id="lookupMessage" class="lookup-result" aria-live="polite"></div>
+</section>
+<div id="invoiceHost" class="loading">Masukkan nomor pesanan dan nomor telepon, atau buka invoice melalui tautan token.</div>
+</main>
+<nav class="mobile-bottom" aria-label="Navigasi utama"><a data-nav="home" href="/home"><i class="bx bx-home-alt-2"></i>Beranda</a><a data-nav="book" href="/order"><i class="bx bx-map-pin"></i>Pesan</a><a data-nav="track" href="/order#track"><i class="bx bx-current-location"></i>Lacak</a><a data-nav="about" href="/about"><i class="bx bx-info-circle"></i>Tentang</a><a data-nav="mentalhealth" href="/mentalhealth" aria-label="Sehat Jiwa"><i class="bx bx-brain"></i>Sehat Jiwa</a><a data-nav="account" href="/account"><i class="bx bx-user-circle"></i>Akun</a></nav>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+'use strict';
+const API_URL='https://script.google.com/macros/s/AKfycbxpXUKQeNXD1S4KyOAz2dWJ3YJiIOwiRa9nTWvX9Qi_4bZaxKEFP5AcePxjDyfp_9dh/exec';
+const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),money=n=>new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n)||0);
+function trustedOrigin(origin){return origin==='https://script.google.com'||origin==='https://script.googleusercontent.com'||/^https:\/\/[a-z0-9-]+-script\.googleusercontent\.com$/i.test(origin)}
+function api(action,payload={}){return new Promise((resolve,reject)=>{const nonce='ma5_invoice_'+Date.now()+'_'+Math.random().toString(36).slice(2,14),frame=document.createElement('iframe'),form=document.createElement('form');frame.name='invoice_'+nonce;frame.hidden=true;form.method='POST';form.action=API_URL;form.target=frame.name;form.hidden=true;form.enctype='application/x-www-form-urlencoded';Object.entries({ma2:'1',action,nonce,payload:JSON.stringify(payload)}).forEach(([k,v])=>{const i=document.createElement('input');i.type='hidden';i.name=k;i.value=String(v);form.appendChild(i)});let ended=false,timer;const clean=()=>{if(ended)return;ended=true;clearTimeout(timer);removeEventListener('message',onMessage);frame.remove();form.remove()};const onMessage=e=>{const x=e.data;if((e.source!==frame.contentWindow&&!trustedOrigin(e.origin))||!x||x.__myanjem!==true||x.nonce!==nonce)return;clean();if(x.result?.ok)resolve(x.result);else reject(new Error(x.result?.message||'Invoice tidak dapat dimuat.'))};addEventListener('message',onMessage);timer=setTimeout(()=>{clean();reject(new Error('Server belum mengirim respons.'))},60000);document.body.append(frame,form);try{form.submit()}catch(e){clean();reject(e)}})}
+function date(v){if(!v)return '—';const d=new Date(v);return isNaN(d)?esc(v):d.toLocaleString('id-ID',{dateStyle:'long',timeStyle:'short'})}
+function statusLabel(s){return ({REQUESTED:'Menunggu driver',ACCEPTED:'Driver menerima',ARRIVED:'Driver tiba di jemput',ON_TRIP:'Dalam perjalanan',COMPLETED:'Perjalanan selesai',CANCELLED:'Dibatalkan',PAID:'Lunas',PAID_CASH:'Dibayar tunai',PAY_ON_COMPLETION:'Bayar setelah perjalanan',UNPAID:'Belum dibayar',WAITING_CONFIRMATION:'Menunggu verifikasi'})[s]||s||'—'}
+function renderInvoice(r){const o=r.order||{},rider=r.rider||{},driver=r.driver||null;const done=o.orderStatus==='COMPLETED';$('invoiceHost').className='invoice';$('invoiceHost').innerHTML=`<div class="invoice-head"><div class="company"><img src="logo.png.png" alt="Logo MyAnjem"><div><h1>MyAnjem</h1><p>YOUR RIDE, YOUR WAY</p><p>Invoice perjalanan elektronik</p></div></div><div class="doc-tag"><strong>INVOICE PERJALANAN</strong><small>No. ${esc(o.orderId)}</small><div style="margin-top:9px"><span class="status ${done?'done':''}">${esc(statusLabel(o.orderStatus))}</span></div></div></div><div class="invoice-body"><div class="row-two"><div><span class="label">Ditagihkan kepada</span><div class="value">${esc(rider.name||o.riderName||'Penumpang')}</div><div class="subvalue">ID pelanggan: ${esc(rider.riderId||'GUEST')}</div><div class="subvalue">Telepon: ${esc(rider.phone||'—')}</div></div><div><span class="label">Informasi invoice</span><div class="value">${esc(o.orderId)}</div><div class="subvalue">Dibuat: ${date(o.createdAt)}</div><div class="subvalue">Invoice terverifikasi oleh sistem MyAnjem</div></div></div><div class="meta-grid"><div><span class="label">Jarak perjalanan</span><div class="value">${Number(o.distanceKm||0).toFixed(1)} km</div></div><div><span class="label">Estimasi waktu</span><div class="value">${Math.round(Number(o.durationMin||0))} menit</div></div><div><span class="label">Pembayaran</span><div class="value">${o.paymentMethod==='CASH'?'Tunai':o.paymentMethod==='QRIS'?'QRIS':'Transfer'}</div></div><div><span class="label">Kendaraan</span><div class="value">${esc(o.vehicleType||'Motor')}</div></div><div><span class="label">Penumpang</span><div class="value">${o.vehicleType==='Mobil'?(Number(o.passengerCount)>=5?'5+':Number(o.passengerCount||1)):'1'} orang</div></div><div><span class="label">Waktu penjemputan</span><div class="value">${o.bookingMode==='SCHEDULED'&&o.scheduleAt?new Date(o.scheduleAt).toLocaleString('id-ID',{timeZone:'Asia/Jakarta',dateStyle:'medium',timeStyle:'short'})+' WIB':'Segera'}</div></div></div><span class="label">Rincian perjalanan</span><div class="route"><div class="route-point"><span class="label">Titik penjemputan</span><div class="value">${esc(o.pickupAddress)}</div><div class="subvalue">${Number(o.pickupLat||0).toFixed(5)}, ${Number(o.pickupLng||0).toFixed(5)}</div></div><div class="route-point destination"><span class="label">Titik tujuan</span><div class="value">${esc(o.dropoffAddress)}</div><div class="subvalue">${Number(o.dropoffLat||0).toFixed(5)}, ${Number(o.dropoffLng||0).toFixed(5)}</div></div></div><span class="label">Rincian biaya</span><table class="amount-table"><thead><tr><th>Deskripsi</th><th>Jumlah</th></tr></thead><tbody><tr><td>Jasa perjalanan ${esc(o.orderId)}</td><td>${money(o.originalFare||o.fare)}</td></tr>${o.voucherCode?`<tr><td>Voucher ${esc(o.voucherCode)}</td><td>-${money(o.discountAmount||0)}</td></tr>`:''}<tr><td><b>Total setelah diskon</b></td><td><b>${money(o.fare)}</b></td></tr><tr><td>Metode pembayaran</td><td>${o.paymentMethod==='CASH'?'Tunai':o.paymentMethod==='QRIS'?'QRIS':'Transfer'}</td></tr><tr><td>Status pembayaran</td><td>${esc(statusLabel(o.paymentStatus))}</td></tr></tbody></table><div class="grand-total"><span>Total tagihan</span><strong>${money(o.fare)}</strong></div><div class="row-two" style="margin-top:18px"><div><span class="label">Mitra pengemudi</span><div class="value">${esc(driver?.name||o.driverName||'Belum ditugaskan')}</div><div class="subvalue">${esc(driver?.vehicle||'')} ${driver?.plate?'· '+esc(driver.plate):''}</div></div><div><span class="label">Identitas penumpang</span><div class="value">${esc(rider.name||o.riderName||'Penumpang')}</div><div class="subvalue">Nomor telepon disamarkan.</div></div></div><div class="bottom-grid"><div><span class="label">Jejak perjalanan</span><div class="timeline">${(r.events||[]).map(e=>`<div class="timeline-item"><i class="bx bx-check-circle"></i><div><b>${esc(e.message||e.eventType)}</b><div class="subvalue">${date(e.createdAt)}</div></div></div>`).join('')||'<div class="subvalue">Belum ada riwayat status.</div>'}</div></div><div class="qr-panel"><b>Verifikasi invoice</b><div class="qr-box" id="invoiceQr"></div><small>Pindai untuk membuka ringkasan perjalanan.</small></div></div><p class="legal">Invoice ini diterbitkan secara elektronik oleh MyAnjem sebagai bukti rincian pemesanan perjalanan. Nominal merupakan tarif yang tercatat pada sistem. Status pembayaran dapat berubah setelah verifikasi. Data publik dibatasi untuk melindungi privasi pengguna. Simpan dokumen ini untuk referensi bantuan pelanggan.</p></div>`;const qrHost=$('invoiceQr');if(window.QRCode){new QRCode(qrHost,{text:location.href,width:128,height:128,colorDark:'#28232a',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M})}else qrHost.textContent='QR Code tidak dapat dimuat. Tautan invoice tetap dapat dibuka melalui URL.'}
+function normalizePhone(v){let x=String(v||'').trim().replace(/[^0-9+]/g,'');if(x.startsWith('+62'))x='0'+x.slice(3);else if(x.startsWith('62'))x='0'+x.slice(2);else if(/^8\d{8,12}$/.test(x))x='0'+x;return x}
+function lookupMessage(message,type=''){const el=$('lookupMessage');el.className='lookup-result'+(type?' '+type:'');el.textContent=message||''}
+async function lookupInvoice(event){event.preventDefault();const orderId=$('lookupOrderId').value.trim(),phone=normalizePhone($('lookupPhone').value),btn=$('lookupButton');if(!orderId){lookupMessage('Masukkan nomor pesanan.','error');return}if(!/^0[0-9]{8,14}$/.test(phone)){lookupMessage('Nomor telepon tidak valid. Gunakan format 08xxxxxxxxxx.','error');return}btn.disabled=true;btn.innerHTML='<i class="bx bx-loader-alt bx-spin"></i> Memeriksa…';lookupMessage('Memverifikasi data pesanan…');$('invoiceHost').className='loading';$('invoiceHost').textContent='Invoice sedang dicari…';$('printButton').hidden=true;try{const r=await api('publicInvoiceByOrderPhone',{orderId,phone});renderInvoice(r);$('printButton').hidden=false;lookupMessage('Invoice berhasil ditemukan. Kamu bisa mencetak atau menyimpan sebagai PDF.','success');$('invoiceHost').scrollIntoView({behavior:'smooth',block:'start'})}catch(e){$('invoiceHost').className='error';$('invoiceHost').textContent=e.message||'Invoice tidak ditemukan.';lookupMessage(e.message||'Data pesanan tidak cocok.','error')}finally{btn.disabled=false;btn.innerHTML='<i class="bx bx-search"></i> Cari Invoice'}}
+async function boot(){ $('lookupForm').addEventListener('submit',lookupInvoice);const token=new URLSearchParams(location.search).get('token')||'';if(token){$('invoiceLookup').hidden=true;$('invoiceHost').className='loading';$('invoiceHost').textContent='Memuat invoice resmi MyAnjem…';try{const r=await api('publicInvoice',{token});renderInvoice(r);$('printButton').hidden=false}catch(e){$('invoiceHost').className='error';$('invoiceHost').textContent=e.message||'Invoice tidak dapat dimuat.'}}}
+boot();
+</script>
+<script id="myanjem-header-clock">
+(function(){
+  const timeNode=document.getElementById('headerClockTime');
+  const dateNode=document.getElementById('headerClockDate');
+  if(!timeNode||!dateNode)return;
+  const timeFormat=new Intl.DateTimeFormat('id-ID',{timeZone:'Asia/Jakarta',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
+  const dateFormat=new Intl.DateTimeFormat('id-ID',{timeZone:'Asia/Jakarta',weekday:'short',day:'numeric',month:'short'});
+  function update(){const now=new Date();timeNode.textContent=timeFormat.format(now)+' WIB';dateNode.textContent=dateFormat.format(now);}
+  update();setInterval(update,1000);
+})();
+</script>
+
+<script id="myanjem-appearance-manager">
+(function(){
+  const STORE='myanjem-appearance-v1';
+  const colors=[
+    {name:'Pink',hex:'#e83e8c'},{name:'Ungu',hex:'#8756c7'},{name:'Biru',hex:'#3978d4'},
+    {name:'Teal',hex:'#159b91'},{name:'Hijau',hex:'#319b65'},{name:'Oranye',hex:'#e58a35'}
+  ];
+  const $=(id)=>document.getElementById(id);
+  const validHex=v=>/^#[0-9a-f]{6}$/i.test(String(v||''));
+  function shade(hex,amount){const h=hex.replace('#','');const n=[0,2,4].map(i=>parseInt(h.slice(i,i+2),16));return '#'+n.map(v=>Math.max(0,Math.min(255,Math.round(v*(1-amount)))).toString(16).padStart(2,'0')).join('')}
+  function mix(hex,other,ratio){const a=hex.slice(1).match(/.{2}/g).map(x=>parseInt(x,16)),b=other.slice(1).match(/.{2}/g).map(x=>parseInt(x,16));return '#'+a.map((v,i)=>Math.round(v*(1-ratio)+b[i]*ratio).toString(16).padStart(2,'0')).join('')}
+  function read(){try{const x=JSON.parse(localStorage.getItem(STORE)||'{}');return {theme:x.theme==='dark'?'dark':'light',accent:validHex(x.accent)?x.accent:'#e83e8c'}}catch(e){return {theme:'light',accent:'#e83e8c'}}}
+  let state=read();
+  function apply(save=true){const root=document.documentElement;const dark=state.theme==='dark';root.dataset.maTheme=state.theme;
+    const accent=state.accent;root.style.setProperty('--pink',accent);root.style.setProperty('--pink-dark',shade(accent,.18));root.style.setProperty('--pink-soft',mix(accent,'#ffffff',.91));root.style.setProperty('--pink-pale',mix(accent,'#ffffff',.96));root.style.setProperty('--pink-light',mix(accent,'#ffffff',.9));root.style.setProperty('--ma-accent',accent);root.style.setProperty('--ma-accent-dark',shade(accent,.18));root.style.setProperty('--ma-accent-soft',mix(accent,'#ffffff',dark?.82:.91));root.style.setProperty('--ma-accent-pale',mix(accent,'#ffffff',dark?.9:.96));
+    document.querySelectorAll('meta[name="theme-color"]').forEach(m=>m.content=dark?'#151219':accent);
+    document.querySelectorAll('.ma-appearance-mode').forEach(b=>b.classList.toggle('active',b.dataset.theme===state.theme));
+    document.querySelectorAll('.ma-color-swatch').forEach(b=>b.classList.toggle('active',b.dataset.color.toLowerCase()===accent.toLowerCase()));
+    const custom=$('maCustomColor');if(custom)custom.value=accent;const name=$('maColorName');if(name)name.textContent=(colors.find(c=>c.hex.toLowerCase()===accent.toLowerCase())?.name||'Kustom')+' · '+accent.toUpperCase();
+    const trigger=$('maAppearanceToggle');if(trigger){trigger.setAttribute('aria-label',dark?'Ganti ke mode terang':'Ganti ke mode gelap');trigger.innerHTML=dark?'<i class="bx bx-sun"></i>':'<i class="bx bx-moon"></i>'}
+    if(save){try{localStorage.setItem(STORE,JSON.stringify(state))}catch(e){}}
+  }
+  function build(){if($('maAppearanceToggle'))return;
+    const swatches=colors.map(c=>`<button type="button" class="ma-color-swatch" style="background:${c.hex}" data-color="${c.hex}" title="Tema ${c.name}" aria-label="Tema warna ${c.name}"></button>`).join('');
+    document.body.insertAdjacentHTML('beforeend',`<button id="maAppearanceToggle" class="ma-appearance-toggle" type="button" aria-label="Pengaturan tampilan" aria-expanded="false" aria-controls="maAppearancePanel"><i class="bx bx-moon"></i></button><section id="maAppearancePanel" class="ma-appearance-panel" aria-label="Pengaturan tampilan"><div class="ma-appearance-head"><b><i class="bx bx-palette"></i> Tampilan MyAnjem</b><button class="ma-appearance-close" id="maAppearanceClose" type="button" aria-label="Tutup">×</button></div><span class="ma-appearance-label">Mode tampilan</span><div class="ma-appearance-modes"><button type="button" class="ma-appearance-mode" data-theme="light"><i class="bx bx-sun"></i> Terang</button><button type="button" class="ma-appearance-mode" data-theme="dark"><i class="bx bx-moon"></i> Gelap</button></div><span class="ma-appearance-label">Warna utama</span><div class="ma-color-swatches">${swatches}</div><span class="ma-appearance-label">Warna pilihan sendiri</span><label class="ma-custom-color"><input id="maCustomColor" type="color" value="#e83e8c" aria-label="Pilih warna utama"><span id="maColorName">Pink · #E83E8C</span></label><p class="ma-appearance-note">Preferensi tampilan tersimpan di perangkat ini dan digunakan pada seluruh halaman MyAnjem.</p></section>`);
+    const toggle=$('maAppearanceToggle'),panel=$('maAppearancePanel');
+    toggle.addEventListener('click',()=>{const open=panel.classList.toggle('open');toggle.setAttribute('aria-expanded',String(open))});
+    $('maAppearanceClose').addEventListener('click',()=>{panel.classList.remove('open');toggle.setAttribute('aria-expanded','false')});
+    panel.querySelectorAll('[data-theme]').forEach(b=>b.addEventListener('click',()=>{state.theme=b.dataset.theme;apply()}));
+    panel.querySelectorAll('[data-color]').forEach(b=>b.addEventListener('click',()=>{state.accent=b.dataset.color;apply()}));
+    $('maCustomColor').addEventListener('input',e=>{state.accent=e.target.value;apply()});
+    document.addEventListener('click',e=>{if(panel.classList.contains('open')&&!panel.contains(e.target)&&!toggle.contains(e.target)){panel.classList.remove('open');toggle.setAttribute('aria-expanded','false')}});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'){panel.classList.remove('open');toggle.setAttribute('aria-expanded','false')}});
+    apply(false);
+  }
+  apply(false);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',build,{once:true});else build();
+  window.addEventListener('storage',e=>{if(e.key===STORE){state=read();apply(false)}});
+})();
+</script>
+
+</body></html>
